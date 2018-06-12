@@ -11,7 +11,7 @@ namespace GTAPilot
 
         private List<DateTime> Frames = new List<DateTime>();
 
-        private void CalculateFps()
+        public int CalculateFps()
         {
             var oneSecondAgo = DateTime.Now.AddSeconds(-1);
 
@@ -25,6 +25,7 @@ namespace GTAPilot
             catch (Exception) { }
 
             Fps = Frames.Count;
+            return Fps;
         }
 
         public void GotFrame()

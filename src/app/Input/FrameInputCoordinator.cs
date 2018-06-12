@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Threading;
 
 namespace GTAPilot
@@ -9,11 +10,11 @@ namespace GTAPilot
         public FpsCounter DequeuePerf = new FpsCounter();
 
         IFrameProducer _producer;
-        IFrameConsumer _consumer;
+        Action<FrameData> _consumer;
 
         ConcurrentQueue<FrameData> _input = new ConcurrentQueue<FrameData>();
 
-        public FrameInputCoordinator(IFrameProducer producer, IFrameConsumer consumer)
+        public FrameInputCoordinator(IFrameProducer producer, Action<FrameData> consumer)
         {
             _producer = producer;
             _consumer = consumer;
@@ -32,7 +33,7 @@ namespace GTAPilot
                     {
                         DequeuePerf.GotFrame();
 
-                        _consumer.FrameArrived(nextFrame);
+                        _consumer.Invoke(nextFrame);
                     }
                     else
                     {

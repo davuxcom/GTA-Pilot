@@ -10,11 +10,11 @@ namespace GTAPilot
 {
     public partial class App : Application
     {
-        internal InputManager InputManager;
+        internal SystemManager InputManager;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            InputManager = new InputManager();
+            InputManager = new SystemManager();
 
             var mainWindow = new MainWindow(new MainWindowViewModel(InputManager));
             mainWindow.Show();

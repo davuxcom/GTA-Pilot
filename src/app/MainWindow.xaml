@@ -9,18 +9,43 @@
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="28" />
         </Style>
+
+
     </Window.Resources>
     <Grid>
-        <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical">
-                <TextBlock>Enqueue:</TextBlock>
-                <TextBlock Text="{Binding CaptureEnqueueFPS}" />
-            </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Vertical">
-                <TextBlock>Dequeue:</TextBlock>
-                <TextBlock Text="{Binding CaptureDequeueFPS}" />
-            </StackPanel>
+        <ListView ItemsSource="{Binding Counters}">
+            <ListView.ItemTemplate>
+                <ItemContainerTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock FontSize="24" Text="{Binding Name}" />
+                        <TextBlock FontSize="30" Text="{Binding FPS}" />
+                    </StackPanel>
+
+                </ItemContainerTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Grid.Column="1" Orientation="Horizontal">
+            <Image Width="350"
+                   Height="350"
+                   Source="{Binding RollImg}" />
+            <Image Width="350"
+                   Height="350"
+                   Source="{Binding PitchImg}" />
+            <Image Width="350"
+                   Height="350"
+                   Source="{Binding SpeedImg}" />
+            <Image Width="350"
+                   Height="350"
+                   Source="{Binding AltitudeImg}" />
+            <Image Width="350"
+                   Height="350"
+                   Source="{Binding CompassImg}" />
         </StackPanel>
     </Grid>
 </Window>
