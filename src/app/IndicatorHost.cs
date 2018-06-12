@@ -32,10 +32,10 @@ namespace GTAPilot
             };
 
             Roll.Tick(frame);
-            Pitch.Tick(frame);
-            Airspeed.Tick(frame);
-            Altitude.Tick(frame);
-            Compass.Tick(frame);
+          //  Pitch.Tick(frame);
+          //  Airspeed.Tick(frame);
+          //  Altitude.Tick(frame);
+          //  Compass.Tick(frame);
 
         }
     }

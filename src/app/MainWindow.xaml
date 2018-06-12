@@ -30,22 +30,28 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <StackPanel Grid.Column="1" Orientation="Horizontal">
-            <Image Width="350"
-                   Height="350"
-                   Source="{Binding RollImg}" />
-            <Image Width="350"
-                   Height="350"
-                   Source="{Binding PitchImg}" />
-            <Image Width="350"
-                   Height="350"
-                   Source="{Binding SpeedImg}" />
-            <Image Width="350"
-                   Height="350"
-                   Source="{Binding AltitudeImg}" />
-            <Image Width="350"
-                   Height="350"
-                   Source="{Binding CompassImg}" />
+        <StackPanel Grid.Column="1" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="350"
+                       Height="350"
+                       Source="{Binding RollImg}" />
+                <Image Width="350"
+                       Height="350"
+                       Source="{Binding PitchImg}" />
+                <Image Width="350"
+                       Height="350"
+                       Source="{Binding SpeedImg}" />
+                <Image Width="350"
+                       Height="350"
+                       Source="{Binding AltitudeImg}" />
+                <Image Width="350"
+                       Height="350"
+                       Source="{Binding CompassImg}" />
+            </StackPanel>
+
+            <Button Click="Button_Click">SAVE</Button>
         </StackPanel>
+
+
     </Grid>
 </Window>

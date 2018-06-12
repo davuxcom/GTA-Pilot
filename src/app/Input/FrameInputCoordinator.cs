@@ -41,6 +41,23 @@ namespace GTAPilot
                     }
                 }
             }).Start();
+
+            new Thread(() =>
+            {
+                while (true)
+                {
+                    if (_input.TryDequeue(out var nextFrame))
+                    {
+                        DequeuePerf.GotFrame();
+
+                        _consumer.Invoke(nextFrame);
+                    }
+                    else
+                    {
+                        Thread.Sleep(1);
+                    }
+                }
+            }).Start();
         }
 
         private void FrameProducer_FrameProduced(System.Drawing.Bitmap frame)

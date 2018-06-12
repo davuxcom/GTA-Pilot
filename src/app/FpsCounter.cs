@@ -15,9 +15,7 @@ namespace GTAPilot
         {
             var oneSecondAgo = DateTime.Now.AddSeconds(-1);
 
-            var toRemove = new List<DateTime>();
-            foreach (var frame in Frames.Where(f => f < oneSecondAgo)) toRemove.Add(frame);
-
+            var toRemove = Frames.ToArray().Where(f => f < oneSecondAgo);
             try
             {
                 foreach (var f in toRemove) Frames.Remove(f);

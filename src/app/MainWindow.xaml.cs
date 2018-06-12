@@ -25,5 +25,10 @@ namespace GTAPilot
         {
             _viewModel.Tick();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.Save();
+        }
     }
 }

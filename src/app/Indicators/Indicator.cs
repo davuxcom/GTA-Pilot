@@ -170,7 +170,7 @@ public abstract class Indicator
                 }
             }
         }).Start();
-
+        /*
         var thread2 = new System.Threading.Thread(() =>
         {
 
@@ -184,6 +184,7 @@ public abstract class Indicator
         });
         thread2.Priority = System.Threading.ThreadPriority.Lowest;
         thread2.Start();
+        */
     }
 
     private bool IndicatorThreadFrame()
@@ -257,7 +258,7 @@ public abstract class Indicator
 
            // if (_panel.GPS.LastTime_Input <= data.Timestamp)
             {
-                if (lostFrame != null) missedFrames.Enqueue(lostFrame);
+              //  if (lostFrame != null) missedFrames.Enqueue(lostFrame);
             }
                 
         }
@@ -323,9 +324,9 @@ public abstract class Indicator
                 if (IsValidInput)
                 {
 
-                    if (Type == InputType.Yaw)
+                  //  if (Type == InputType.Yaw)
                     {
-                        Trace.WriteLine("Failed compass " + LastAction + " " + good_frames_on_cv);
+                        Trace.WriteLine($"Failed {this}  " + LastAction + " " + good_frames_on_cv);
                         //SavedFrames.TryAdd(data.Id, data);
 
                     }

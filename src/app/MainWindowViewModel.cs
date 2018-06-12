@@ -78,5 +78,10 @@ namespace GTAPilot
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CompassImg)));
 
         }
+
+        internal void Save()
+        {
+            _inputManager.SaveAll();
+        }
     }
 }

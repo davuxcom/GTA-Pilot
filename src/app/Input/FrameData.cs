@@ -18,7 +18,7 @@ namespace GTAPilot
         public FrameData(Bitmap frame)
         {
             Frame = frame;
-            FrameId = ++s_frameId;
+            FrameId = s_frameId++;
             Time = DateTime.Now;
         }
     }

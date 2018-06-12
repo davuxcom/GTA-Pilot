@@ -119,13 +119,13 @@ public class RollIndicator : Indicator
             var inner = rollFrame.Copy(maskInner.ToImage<Gray, byte>());
             var inner_hsv1 = inner.Convert<Hsv, byte>();
             var inner_hsv = inner_hsv1.InRange(TuningValue, new Hsv(180, 255, 255));
-
+            inner_hsv = inner_hsv.PyrUp().PyrDown();
             var cannyEdges3 = new Mat();
 
             CvInvoke.Canny(inner_hsv, cannyEdges3, 1,100);
 
 
-            var markedup_frame = cannyEdges3.ToImage<Bgr, byte>(); 
+            var markedup_frame = cannyEdges3;
 
             var lines = CvInvoke.HoughLinesP(
    cannyEdges3,
@@ -165,11 +165,7 @@ public class RollIndicator : Indicator
                // Trace.WriteLine("BIAS: " + small_angle);
             }
 
-            IntermediateFrameBgr = markedup_frame;
-
-
-
-           // IntermediateFrameGray = ring_hsv;
+            IntermediateFrameGray = markedup_frame.ToImage<Gray, byte>();
 
             CvBlobs small_blobs = new CvBlobs();
             GetBlobDetector().Detect(ring_hsv, small_blobs);

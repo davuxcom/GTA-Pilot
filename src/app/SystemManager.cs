@@ -27,13 +27,19 @@ namespace GTAPilot
 
         FrameInputCoordinator _coordinator;
         IndicatorHost _indicatorHost;
+     //   SaveFrameConsumer _saver;
+        FlightController _control = new FlightController();
 
-        public SystemManager()
+        public SystemManager(IFrameProducer producer)
         {
             _indicatorHost = new IndicatorHost();
-            _coordinator = new FrameInputCoordinator(new DesktopFrameProducer(), _indicatorHost.HandleFrameArrived);
+            _coordinator = new FrameInputCoordinator(producer, FrameArrived);
+
+          //  _saver = new SaveFrameConsumer(@"c:\save\recording1");
 
             _coordinator.Begin();
+
+            _control.LockViewMin();
         }
 
         internal FpsCounter GetCounter(FpsCounterType type)
@@ -62,6 +68,23 @@ namespace GTAPilot
                 case FpsCounterType.Yaw: return _indicatorHost.Compass.BestIntermediate?.ToBitmap();
             }
             throw new NotImplementedException();
+        }
+
+        bool _saving;
+
+        private void FrameArrived(FrameData data)
+        {
+            if (_saving) return;
+
+            _indicatorHost.HandleFrameArrived(data);
+       //     _saver.HandleFrameArrived(data);
+        }
+
+        public void SaveAll()
+        {
+            _saving = true;
+            Thread.Sleep(1000);
+          //  _saver.SaveAll();
         }
     }
 }
