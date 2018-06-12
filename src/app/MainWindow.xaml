@@ -1,0 +1,9 @@
+﻿<Window x:Class="GTAPilot.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GTAPilot"
+        Title="MainWindow"
+        Width="800"
+        Height="450">
+    <Grid />
+</Window>

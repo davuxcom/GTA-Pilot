@@ -1,0 +1,3 @@
+v3.1.2
+
+need to upgrade, investigate CUDA support
