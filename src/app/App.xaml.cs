@@ -8,10 +8,16 @@ using System.Windows;
 
 namespace GTAPilot
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
+        internal InputManager InputManager;
+
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            InputManager = new InputManager();
+
+            var mainWindow = new MainWindow(new MainWindowViewModel(InputManager));
+            mainWindow.Show();
+        }
     }
 }

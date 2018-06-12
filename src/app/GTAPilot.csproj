@@ -84,12 +84,21 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="FpsCounter.cs" />
+    <Compile Include="Input\DesktopDuplicator.cs" />
+    <Compile Include="Input\DesktopFrameProducer.cs" />
+    <Compile Include="Input\FrameData.cs" />
+    <Compile Include="Input\FrameInputCoordinator.cs" />
+    <Compile Include="Input\IFrameConsumer.cs" />
+    <Compile Include="Input\IFrameProducer.cs" />
+    <Compile Include="Input\InputManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
