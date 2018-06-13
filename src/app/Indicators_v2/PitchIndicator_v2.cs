@@ -14,6 +14,8 @@ namespace GTAPilot.Indicators_v2
 {
     class PitchIndicator_v2 : ISimpleIndicator
     {
+        public double CachedTuningValue => dyn_lower.CachedValue;
+
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.04, 100);
 
         public double ReadValue(IndicatorData data, ref object[] debugState)

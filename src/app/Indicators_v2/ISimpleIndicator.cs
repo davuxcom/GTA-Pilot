@@ -10,6 +10,7 @@ namespace GTAPilot.Indicators_v2
 {
     interface ISimpleIndicator
     {
+        double CachedTuningValue { get; }
         double ReadValue(IndicatorData data, ref object[] debugState);
     }
 }

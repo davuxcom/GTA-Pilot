@@ -11,6 +11,8 @@ namespace GTAPilot.Indicators_v2
 {
     class AirspeedIndicator_v2 : ISimpleIndicator
     {
+        public double CachedTuningValue => dyn_lower.CachedValue;
+
         double last_value = 0;
         int num_rejected_values = 0;
         DateTime last_time = DateTime.Now;

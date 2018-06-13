@@ -16,6 +16,7 @@ namespace GTAPilot
         public string Name { get; private set; }
         public double Value => Math.Round(_indicator.Value, 1);
         public double BadFrameCount => _indicator.BadFrames.Count;
+        public double CachedTuningValue => _indicator.CachedTuningValue;
         public ImageSource Img => ((Bitmap)_indicator.Image[0]?.ToBitmap()).ToImageSource();
         public ImageSource Img2 => ((Bitmap)_indicator.Image[1]?.ToBitmap()).ToImageSource();
         public ImageSource Img3 => ((Bitmap)_indicator.Image[2]?.ToBitmap()).ToImageSource();
@@ -39,6 +40,8 @@ namespace GTAPilot
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img4)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BadFrameCount)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CachedTuningValue)));
+            
         }
     }
 

@@ -13,6 +13,8 @@ namespace GTAPilot.Indicators_v2
 {
     class AltitudeIndicator_v2 : ISimpleIndicator
     {
+        public double CachedTuningValue => dyn_lower.CachedValue;
+
         int LastBig = 0;
 
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.04, 100);

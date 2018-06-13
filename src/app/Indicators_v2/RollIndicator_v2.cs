@@ -21,6 +21,7 @@ namespace GTAPilot.Indicators_v2
 
         static Rectangle MovementRect = new Rectangle(600, 450, (Metrics.Frame.Width / 2) - 600 - 100, Metrics.Frame.Height - 450 - 250);
 
+        public double CachedTuningValue => 0;
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {

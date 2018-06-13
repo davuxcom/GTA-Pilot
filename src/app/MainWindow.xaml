@@ -76,6 +76,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Column="0"
@@ -104,6 +105,10 @@
                                 Click="SaveFrameSet_Click"
                                 Content="Save FrameSet"
                                 FontSize="20" />
+                        <TextBlock Grid.Row="3">Tune: </TextBlock>
+                        <TextBlock Grid.Row="3"
+                                   HorizontalAlignment="Right"
+                                   Text="{Binding CachedTuningValue}" />
                     </Grid>
                 </ItemContainerTemplate>
             </ListView.ItemTemplate>

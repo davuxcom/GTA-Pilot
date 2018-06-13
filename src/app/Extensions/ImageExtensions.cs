@@ -45,8 +45,11 @@ namespace GTAPilot.Extensions
         {
             var ret = img.InRange(lower.GetHsv(), higher);
 
+            int rev = 0;
             while (lower.RespondToResult(ret.CountNonzeroAsPercentage()))
             {
+                rev++;
+
                 ret = img.InRange(lower.GetHsv(), higher);
 
                 var ct = ret.CountNonzeroAsPercentage();
@@ -96,11 +99,11 @@ namespace GTAPilot.Extensions
 
             if (diff > 0.02)
             {
-                CachedValue -= 2;
+                CachedValue -= 1;
             }
             else if (diff < -0.02)
             {
-                CachedValue += 2;
+                CachedValue += 1;
             }
             else
             {

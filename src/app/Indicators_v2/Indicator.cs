@@ -7,6 +7,7 @@ namespace GTAPilot.Indicators_v2
         public FpsCounter Counter { get; }
         public double Value { get; private set; }
         public dynamic Image { get; private set; }
+        public double CachedTuningValue => _indicator.CachedTuningValue;
 
         ISimpleIndicator _indicator;
         public HashSet<int> BadFrames = new HashSet<int>();
