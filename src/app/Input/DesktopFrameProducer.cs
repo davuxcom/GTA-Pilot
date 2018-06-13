@@ -7,13 +7,16 @@ namespace GTAPilot
     {
         public event Action<Bitmap> FrameProduced;
 
+        private bool _isRunning;
+
         public void Begin()
         {
+            _isRunning = true;
             var t = new System.Threading.Thread(() =>
             {
                 // CONFIG
                 var desktop = new DesktopDuplication.DesktopDuplicator(0, 2);
-                while (true)
+                while (_isRunning)
                 {
                     var f = desktop.GetLatestFrame();
                     if (f == null)
@@ -27,6 +30,11 @@ namespace GTAPilot
             });
             t.Priority = System.Threading.ThreadPriority.Highest;
             t.Start();
+        }
+
+        public void Stop()
+        {
+            _isRunning = false;
         }
     }
 }

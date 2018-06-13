@@ -8,5 +8,6 @@ namespace GTAPilot
         event Action<Bitmap> FrameProduced;
 
         void Begin();
+        void Stop();
     }
 }

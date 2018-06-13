@@ -46,7 +46,7 @@ namespace GTAPilot
 
             if (tcp == null)
             {
-                tcp = new TcpClient("localhost", 3377);
+                tcp = new TcpClient("127.0.0.1", 3377);
             }
 
             var s = tcp.GetStream();

@@ -24,6 +24,7 @@ namespace GTAPilot
 
         MainWindowViewModel _viewModel;
         DispatcherTimer _fpsTimer = new DispatcherTimer();
+        SaveFrameConsumer _captureSink;
 
         internal MainWindow()
         {
@@ -62,36 +63,49 @@ namespace GTAPilot
         {
             Activated -= MainWindow_Activated;
 
+            Topmost = true;
+            Topmost = false;
+
             var dlg = new SourceSelectionDialog();
             dlg.ShowDialog();
 
             SystemManager mgr;
-            if (dlg.Result == null)
+            if (dlg.Result == SourceType.Live)
             {
                 // TODO: pipe through screen textbox
                 mgr = new SystemManager(new DesktopFrameProducer());
             }
-            else
+            else if (dlg.Result == SourceType.Capture)
             {
-                mgr = new SystemManager(new ReplayFrameProducer(dlg.Result, dlg.txtFrameSet.Text));
+                _captureSink = new SaveFrameConsumer(dlg.txtCaptureLocation.Text);
+                mgr = new SystemManager(new DesktopFrameProducer(), _captureSink.HandleFrameArrived);
             }
+            else if (dlg.Result == SourceType.Playback)
+            {
+                mgr = new SystemManager(new ReplayFrameProducer(dlg.txtRecording.Text, dlg.txtFrameSet.Text));
+            }
+            else throw new NotImplementedException();
 
-            _viewModel = new MainWindowViewModel(mgr);
+            _viewModel = new MainWindowViewModel(mgr, _captureSink);
             DataContext = _viewModel;
 
             _fpsTimer.Interval = TimeSpan.FromMilliseconds(1000 / 40);
             _fpsTimer.Tick += FpsTimer_Tick;
             _fpsTimer.Start();
+
+            if (dlg.Result == SourceType.Capture)
+            {
+                var progress = new CaptureProgress();
+
+                progress.ShowDialog();
+
+                mgr.StopCapture();
+            }
         }
 
         private void FpsTimer_Tick(object sender, EventArgs e)
         {
             _viewModel.Tick();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            _viewModel.Save();
         }
 
         private void SaveFrameSet_Click(object sender, RoutedEventArgs e)

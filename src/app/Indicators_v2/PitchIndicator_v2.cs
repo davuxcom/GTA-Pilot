@@ -124,23 +124,10 @@ namespace GTAPilot.Indicators_v2
                             debugState = new object[] { focus };
 
                             return small_angle;
-
-                        }
-                        else
-                        {
-
                         }
                     }
-
-
-
-
-                    return 0;
                 }
-
-
             }
-
             return double.NaN;
         }
     }

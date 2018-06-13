@@ -23,23 +23,29 @@ namespace GTAPilot
 
     class SystemManager
     {
-
-
+        IFrameProducer _producer;
         FrameInputCoordinator _coordinator;
         public IndicatorHost IndicatorHost;
-     //   SaveFrameConsumer _saver;
         FlightController _control = new FlightController();
 
         public SystemManager(IFrameProducer producer)
         {
             IndicatorHost = new IndicatorHost();
+            _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
-
-          //  _saver = new SaveFrameConsumer(@"c:\save\recording1");
 
             _coordinator.Begin();
 
-        //    _control.LockViewMin();
+           // _control.LockViewMin();
+        }
+
+        public SystemManager(IFrameProducer producer, Action<FrameData> consumer)
+        {
+            _producer = producer;
+            _coordinator = new FrameInputCoordinator(producer, consumer);
+            _coordinator.Begin();
+
+            _control.LockViewMin();
         }
 
         internal FpsCounter GetCounter(FpsCounterType type)
@@ -70,21 +76,14 @@ namespace GTAPilot
             throw new NotImplementedException();
         }
 
-        bool _saving;
-
         private void FrameArrived(FrameData data)
         {
-            if (_saving) return;
-
             IndicatorHost.HandleFrameArrived(data);
-       //     _saver.HandleFrameArrived(data);
         }
 
-        public void SaveAll()
+        internal void StopCapture()
         {
-            _saving = true;
-            Thread.Sleep(1000);
-          //  _saver.SaveAll();
+            _producer.Stop();
         }
     }
 }

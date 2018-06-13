@@ -48,5 +48,10 @@ namespace GTAPilot
             t.Priority = ThreadPriority.Highest;
             t.Start();
         }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
