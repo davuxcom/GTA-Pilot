@@ -88,6 +88,7 @@
     <Compile Include="Indicators\SpeedIndicator.cs" />
     <Compile Include="Indicators_v2\AirspeedIndicator_v2.cs" />
     <Compile Include="Indicators_v2\ISimpleIndicator.cs" />
+    <Compile Include="Indicators_v2\PitchIndicator_v2.cs" />
     <Compile Include="Indicators_v2\RollIndicator_v2.cs" />
     <Compile Include="Input\ReplayFrameProducer.cs" />
     <Compile Include="Input\SaveFrameConsumer.cs" />

@@ -16,7 +16,7 @@ namespace GTAPilot
 
         public TestWindow()
         {
-            _indicator = new AirspeedIndicator_v2();
+            _indicator = new PitchIndicator_v2();
 
             InitializeComponent();
 
