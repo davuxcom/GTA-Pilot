@@ -36,7 +36,7 @@ namespace GTAPilot
 
             _coordinator.Begin();
 
-           // _control.LockViewMin();
+            _control.LockViewMin();
         }
 
         public SystemManager(IFrameProducer producer, Action<FrameData> consumer)

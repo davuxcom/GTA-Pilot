@@ -40,7 +40,7 @@ namespace GTAPilot.Indicators_v2
                 CvInvoke.Circle(maskInnerAlt, new Point(focusFrame.Size.Width / 2, focusFrame.Size.Height / 2), (int)(rollIndicatorCicle.Radius - (rollIndicatorCicle.Radius * 0.275)), new Bgr(Color.Black).MCvScalar, -1);
 
                 var outerMovingRingOnly = focusFrame.Copy(maskInnerAlt.ToImage<Gray, byte>());
-                var outerMovingRingWithoutBottom = outerMovingRingOnly.Copy(new Rectangle(0, 0, outerMovingRingOnly.Width, (int)(outerMovingRingOnly.Height - (outerMovingRingOnly.Height * 0.27))));
+                var outerMovingRingWithoutBottom = outerMovingRingOnly.Copy(new Rectangle(0, 0, outerMovingRingOnly.Width, (int)(outerMovingRingOnly.Height - (outerMovingRingOnly.Height * 0.29))));
 
                 var hsv = outerMovingRingWithoutBottom.Convert<Hsv, byte>();
 

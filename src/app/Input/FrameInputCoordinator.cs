@@ -25,23 +25,15 @@ namespace GTAPilot
         {
             _producer.Begin();
 
-            new Thread(() =>
-            {
-                while (true)
-                {
-                    if (_input.TryDequeue(out var nextFrame))
-                    {
-                        DequeuePerf.GotFrame();
+            StartWorkerThread();
+            //StartWorkerThread();
+           // StartWorkerThread();
+           // StartWorkerThread();
 
-                        _consumer.Invoke(nextFrame);
-                    }
-                    else
-                    {
-                        Thread.Sleep(1);
-                    }
-                }
-            }).Start();
+        }
 
+        private void StartWorkerThread()
+        {
             new Thread(() =>
             {
                 while (true)

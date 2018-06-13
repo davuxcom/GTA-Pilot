@@ -89,7 +89,7 @@ namespace GTAPilot
             _viewModel = new MainWindowViewModel(mgr, _captureSink);
             DataContext = _viewModel;
 
-            _fpsTimer.Interval = TimeSpan.FromMilliseconds(1000 / 40);
+            _fpsTimer.Interval = TimeSpan.FromMilliseconds(1000 / 60);
             _fpsTimer.Tick += FpsTimer_Tick;
             _fpsTimer.Start();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace GTAPilot
@@ -13,26 +14,40 @@ namespace GTAPilot
 
         public int CalculateFps()
         {
-            var oneSecondAgo = DateTime.Now.AddSeconds(-1);
-
-            var toRemove = Frames.ToArray().Where(f => f < oneSecondAgo);
             try
             {
-                foreach (var f in toRemove) Frames.Remove(f);
-            }
-            catch (Exception) { }
+                var oneSecondAgo = DateTime.Now.AddSeconds(-1);
 
-            Fps = Frames.Count;
+                var toRemove = Frames.ToArray().Where(f => f < oneSecondAgo);
+                try
+                {
+                    foreach (var f in toRemove) Frames.Remove(f);
+                }
+                catch (Exception) { }
+
+                Fps = Frames.Count;
+            }
+            catch (Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
             return Fps;
         }
 
         public void GotFrame()
         {
-            var frameTime = DateTime.Now;
-            LastFrameTime = frameTime;
-            Frames.Add(frameTime);
+            try
+            {
+                var frameTime = DateTime.Now;
+                LastFrameTime = frameTime;
+                Frames.Add(frameTime);
 
-            CalculateFps();
+                CalculateFps();
+            }
+            catch(Exception ex)
+            {
+                Trace.WriteLine(ex);
+            }
         }
 
         public int LastFrameMsAgo
