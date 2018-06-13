@@ -11,6 +11,8 @@ namespace GTAPilot.Indicators_v2
     interface ISimpleIndicator
     {
         double CachedTuningValue { get; }
+        double LastGoodValue { get; }
+
         double ReadValue(IndicatorData data, ref object[] debugState);
     }
 }

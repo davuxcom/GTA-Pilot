@@ -14,6 +14,8 @@ namespace GTAPilot.Indicators_v2
     class AltitudeIndicator_v2 : ISimpleIndicator
     {
         public double CachedTuningValue => dyn_lower.CachedValue;
+        public double LastGoodValue => Timeline.Altitude;
+
 
         int LastBig = 0;
 

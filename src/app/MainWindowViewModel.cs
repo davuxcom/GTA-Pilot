@@ -14,7 +14,7 @@ namespace GTAPilot
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string Name { get; private set; }
-        public double Value => Math.Round(_indicator.Value, 1);
+        public double Value => Math.Round(_indicator.LastGoodValue, 1);
         public double BadFrameCount => _indicator.BadFrames.Count;
         public double CachedTuningValue => _indicator.CachedTuningValue;
         public ImageSource Img => ((Bitmap)_indicator.Image[0]?.ToBitmap()).ToImageSource();

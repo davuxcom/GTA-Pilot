@@ -89,6 +89,8 @@ namespace GTAPilot
                 Id = data.FrameId,
             };
 
+            Timeline.LastFrameId = data.FrameId;
+
             var frame = new IndicatorData
             {
                 Frame = new Image<Bgr, byte>(data.Frame),
@@ -102,27 +104,27 @@ namespace GTAPilot
 
         void Tick1(IndicatorData data)
         {
-            Roll.Tick(data);
+            Timeline.Data[data.Id].Roll = Roll.Tick(data);
         }
 
         void Tick2(IndicatorData data)
         {
-            Pitch.Tick(data);
+            Timeline.Data[data.Id].Pitch = Pitch.Tick(data);
         }
 
         void Tick3(IndicatorData data)
         {
-              Airspeed.Tick(data);
+            Timeline.Data[data.Id].Speed = Airspeed.Tick(data);
         }
 
         void Tick4(IndicatorData data)
         {
-            Altitude.Tick(data);
+            Timeline.Data[data.Id].Altitude = Altitude.Tick(data);
         }
 
         void Tick5(IndicatorData data)
         {
-            Compass.Tick(data);
+            Timeline.Data[data.Id].Heading = Compass.Tick(data);
         }
     }
 }

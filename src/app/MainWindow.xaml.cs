@@ -1,5 +1,4 @@
-﻿using GTAPilot.Indicators_v2;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;

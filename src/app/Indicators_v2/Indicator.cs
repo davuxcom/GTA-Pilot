@@ -6,6 +6,7 @@ namespace GTAPilot.Indicators_v2
     {
         public FpsCounter Counter { get; }
         public double Value { get; private set; }
+        public double LastGoodValue => _indicator.LastGoodValue;
         public dynamic Image { get; private set; }
         public double CachedTuningValue => _indicator.CachedTuningValue;
 
@@ -19,7 +20,7 @@ namespace GTAPilot.Indicators_v2
             Image = new object[] { null, null, null, null };
         }
 
-        public void Tick(IndicatorData data)
+        public double Tick(IndicatorData data)
         {
             object[] debugState = new object[] { null, null, null, null };
             Value = _indicator.ReadValue(data, ref debugState);
@@ -31,6 +32,7 @@ namespace GTAPilot.Indicators_v2
             {
                 BadFrames.Add(data.Id);
             }
+            return Value;
         }
     }
 }

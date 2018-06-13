@@ -15,6 +15,7 @@ namespace GTAPilot.Indicators_v2
     class PitchIndicator_v2 : ISimpleIndicator
     {
         public double CachedTuningValue => dyn_lower.CachedValue;
+        public double LastGoodValue => Timeline.Pitch;
 
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.04, 100);
 
