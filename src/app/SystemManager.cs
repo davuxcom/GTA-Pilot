@@ -26,20 +26,20 @@ namespace GTAPilot
 
 
         FrameInputCoordinator _coordinator;
-        IndicatorHost _indicatorHost;
+        public IndicatorHost IndicatorHost;
      //   SaveFrameConsumer _saver;
         FlightController _control = new FlightController();
 
         public SystemManager(IFrameProducer producer)
         {
-            _indicatorHost = new IndicatorHost();
+            IndicatorHost = new IndicatorHost();
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
 
           //  _saver = new SaveFrameConsumer(@"c:\save\recording1");
 
             _coordinator.Begin();
 
-            _control.LockViewMin();
+        //    _control.LockViewMin();
         }
 
         internal FpsCounter GetCounter(FpsCounterType type)
@@ -48,11 +48,11 @@ namespace GTAPilot
             {
                 case FpsCounterType.Capture_Enqueue: return _coordinator.EnqueuePerf;
                 case FpsCounterType.Capture_Dequeue: return _coordinator.DequeuePerf;
-                case FpsCounterType.Roll: return _indicatorHost.Roll.Counter;
-                case FpsCounterType.Pitch: return _indicatorHost.Pitch.Counter;
-                case FpsCounterType.Airspeed: return _indicatorHost.Airspeed.Counter;
-                case FpsCounterType.Altitude: return _indicatorHost.Altitude.Counter;
-                case FpsCounterType.Yaw: return _indicatorHost.Compass.Counter;
+                case FpsCounterType.Roll: return IndicatorHost.Roll.Counter;
+                case FpsCounterType.Pitch: return IndicatorHost.Pitch.Counter;
+                case FpsCounterType.Airspeed: return IndicatorHost.Airspeed.Counter;
+                case FpsCounterType.Altitude: return IndicatorHost.Altitude.Counter;
+                case FpsCounterType.Yaw: return IndicatorHost.Compass.Counter;
             }
             throw new NotImplementedException();
         }
@@ -61,11 +61,11 @@ namespace GTAPilot
         {
             switch(type)
             {
-                case FpsCounterType.Roll: return _indicatorHost.Roll.Image?.ToBitmap();
-                case FpsCounterType.Pitch: return _indicatorHost.Pitch.Image?.ToBitmap();
-                case FpsCounterType.Airspeed: return _indicatorHost.Airspeed.Image?.ToBitmap();
-                case FpsCounterType.Altitude: return _indicatorHost.Altitude.Image?.ToBitmap();
-                case FpsCounterType.Yaw: return _indicatorHost.Compass.Image?.ToBitmap();
+                case FpsCounterType.Roll: return IndicatorHost.Roll.Image?.ToBitmap();
+                case FpsCounterType.Pitch: return IndicatorHost.Pitch.Image?.ToBitmap();
+                case FpsCounterType.Airspeed: return IndicatorHost.Airspeed.Image?.ToBitmap();
+                case FpsCounterType.Altitude: return IndicatorHost.Altitude.Image?.ToBitmap();
+                case FpsCounterType.Yaw: return IndicatorHost.Compass.Image?.ToBitmap();
             }
             throw new NotImplementedException();
         }
@@ -76,7 +76,7 @@ namespace GTAPilot
         {
             if (_saving) return;
 
-            _indicatorHost.HandleFrameArrived(data);
+            IndicatorHost.HandleFrameArrived(data);
        //     _saver.HandleFrameArrived(data);
         }
 

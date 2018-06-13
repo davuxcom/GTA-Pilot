@@ -1,12 +1,4 @@
-﻿using Emgu.CV;
-using Emgu.CV.Structure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GTAPilot.Indicators_v2
+﻿namespace GTAPilot.Indicators_v2
 {
     class Indicator
     {
@@ -15,6 +7,7 @@ namespace GTAPilot.Indicators_v2
         public dynamic Image { get; private set; }
 
         ISimpleIndicator _indicator;
+        IndicatorData _nextData;
 
         public Indicator(ISimpleIndicator indicator)
         {
@@ -22,13 +15,15 @@ namespace GTAPilot.Indicators_v2
             _indicator = indicator;
         }
 
-        public void Tick(Image<Bgr, byte> frame)
+        public void Tick(IndicatorData data)
         {
             object[] debugState = null;
-            Value = _indicator.ReadValue(frame, ref debugState);
+            Value = _indicator.ReadValue(data.Frame, ref debugState);
             Image = (debugState != null ? debugState[0] : null);
-
-            Counter.GotFrame();
+            if (!double.IsNaN(Value))
+            {
+                Counter.GotFrame();
+            }
         }
     }
 }

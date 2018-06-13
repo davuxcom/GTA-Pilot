@@ -156,13 +156,13 @@ namespace GTAPilot.Indicators_v2
                     }
                     else
                     {
-                        return -1;
+                        return double.NaN;
                     }
 
                     var dist = Math2.GetDistance(boundary_one, boundary_two);
                     if (dist < 88 || dist > 140)
                     {
-                        return -1;
+                        return double.NaN;
                     }
 
                     var line = new LineSegment2D(boundary_one, boundary_two);
@@ -196,7 +196,7 @@ namespace GTAPilot.Indicators_v2
                 }
             }
 
-            return -1;
+            return double.NaN;
         }
 
         public static bool TryFindRollCircleInFullFrame(Image<Bgr, byte> frame, out CircleF ret)

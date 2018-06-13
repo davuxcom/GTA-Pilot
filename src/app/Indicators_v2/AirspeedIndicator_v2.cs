@@ -166,7 +166,7 @@ namespace GTAPilot.Indicators_v2
                                                 if (change > 40 && num_rejected_values < 10)
                                                 {
                                                     num_rejected_values++;
-                                                    return -1;
+                                                    return double.NaN;
                                                 }
 
                                                 last_value = ObservedValue;
@@ -195,12 +195,12 @@ namespace GTAPilot.Indicators_v2
                 }
                 else
                 {
-                    return -1;
+                    return double.NaN;
                 }
 
             }
 
-            return -1;
+            return double.NaN;
         }
 
             /*
@@ -212,7 +212,7 @@ namespace GTAPilot.Indicators_v2
                 var markedup_circles = vs_hsv[2].Convert<Bgr, byte>();
                 debugState = new object[] { markedup_circles };
 
-                return -1;
+                return double.NaN;
 
 
 
@@ -374,7 +374,7 @@ namespace GTAPilot.Indicators_v2
                                                                 if (change > 40 && num_rejected_values < 10)
                                                                 {
                                                                     num_rejected_values++;
-                                                                    return -1;
+                                                                    return double.NaN;
                                                                 }
 
                                                                 last_value = ObservedValue;
@@ -397,7 +397,7 @@ namespace GTAPilot.Indicators_v2
                                 }
                                 else
                                 {
-                                    return -1;
+                                    return double.NaN;
                                 }
                             }
                         }
@@ -406,7 +406,7 @@ namespace GTAPilot.Indicators_v2
                     {
                         // IntermediateFrameBgr = markedup_circles;
                     }
-                    return -1;
+                    return double.NaN;
                 }
             }
         }

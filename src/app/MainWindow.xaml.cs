@@ -9,16 +9,40 @@ namespace GTAPilot
         MainWindowViewModel _viewModel;
         DispatcherTimer _fpsTimer = new DispatcherTimer();
 
-        internal MainWindow(MainWindowViewModel viewModel)
+        internal MainWindow()
         {
             InitializeComponent();
 
-            _viewModel = viewModel;
-            DataContext = viewModel;
+            Activated += MainWindow_Activated;
+        }
 
-            _fpsTimer.Interval = TimeSpan.FromMilliseconds(200);
+        private void MainWindow_Activated(object sender, EventArgs e)
+        {
+            Activated -= MainWindow_Activated;
+
+            var dlg = new SourceSelectionDialog();
+            dlg.ShowDialog();
+
+            SystemManager mgr;
+            if (dlg.Result == null)
+            {
+                // TODO: pipe through screen textbox
+                mgr = new SystemManager(new DesktopFrameProducer());
+            }
+            else
+            {
+                // TODO: pipe through frameset
+                mgr = new SystemManager(new ReplayFrameProducer(dlg.Result));
+            }
+
+            _viewModel = new MainWindowViewModel(new SystemManager(new ReplayFrameProducer(@"c:\save\recording1")));
+            DataContext = _viewModel;
+
+            _fpsTimer.Interval = TimeSpan.FromMilliseconds(1000 / 40);
             _fpsTimer.Tick += FpsTimer_Tick;
             _fpsTimer.Start();
+
+            // do something
         }
 
         private void FpsTimer_Tick(object sender, EventArgs e)

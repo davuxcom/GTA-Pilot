@@ -19,7 +19,7 @@ namespace GTAPilot
 
         public void Begin()
         {
-            new Thread(() =>
+            var t = new Thread(() =>
             {
                 while (true)
                 {
@@ -27,9 +27,11 @@ namespace GTAPilot
 
                     if (_currentId >= _frames.Length) _currentId = 0;
 
-                   // Thread.Sleep(1000 / 60); // 60fps
+                    // Thread.Sleep(1000 / 60); // 60fps
                 }
-            }).Start();
+            });
+            t.Priority = ThreadPriority.Highest;
+            t.Start();
         }
     }
 }

@@ -9,6 +9,13 @@ using System.Threading.Tasks;
 
 namespace GTAPilot
 {
+    public class IndicatorData
+    {
+        public Image<Bgr, byte> Frame;
+        public DateTime Timestamp;
+        public long Id;
+    }
+
     class IndicatorHost
     {
         public Indicator Roll = new Indicator(new RollIndicator_v2());
@@ -25,14 +32,18 @@ namespace GTAPilot
                 Id = data.FrameId,
             };
 
-            var frame = new Image<Bgr, byte>(data.Frame);
+            var frame = new IndicatorData
+            {
+                Frame = new Image<Bgr, byte>(data.Frame),
+                Id = data.FrameId,
+                Timestamp = data.Time,
+            };
 
             Roll.Tick(frame);
             Pitch.Tick(frame);
             Airspeed.Tick(frame);
-            Altitude.Tick(frame);
-            Compass.Tick(frame);
-
+          //  Altitude.Tick(frame);
+          //  Compass.Tick(frame);
         }
     }
 }

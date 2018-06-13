@@ -90,13 +90,13 @@ namespace GTAPilot.Indicators_v2
                             }
                         }
                       //  LastAction = "Checking Results";
-                        if (results.Count != 2) return -1;
+                        if (results.Count != 2) return double.NaN;
                       //  LastAction = "Have Results";
 
                     }
                     else
                     {
-                        return -1; // no blobs
+                        return double.NaN; // no blobs
                     }
 
                     var parts = new List<CompassPack>();
@@ -159,7 +159,7 @@ namespace GTAPilot.Indicators_v2
                 }
             }
 
-            return -1;
+            return double.NaN;
         }
 
         double CompassProcFrame(List<CompassPack> packs, Image<Bgr, Byte> compass_frame)

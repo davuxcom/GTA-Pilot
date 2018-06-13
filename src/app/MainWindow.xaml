@@ -4,12 +4,25 @@
         xmlns:local="clr-namespace:GTAPilot"
         Title="MainWindow"
         Width="800"
-        Height="450">
+        Height="450"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
     <Window.Resources>
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="28" />
         </Style>
 
+        <Style TargetType="ListViewItem">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
     </Window.Resources>
     <Grid>
@@ -21,37 +34,61 @@
         <ListView ItemsSource="{Binding Counters}">
             <ListView.ItemTemplate>
                 <ItemContainerTemplate>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock FontSize="24" Text="{Binding Name}" />
-                        <TextBlock FontSize="30" Text="{Binding FPS}" />
-                    </StackPanel>
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+
+                        <TextBlock FontSize="30"
+                                   HorizontalAlignment="Center"
+                                   Text="{Binding FPS}" />
+                        <TextBlock FontSize="18"
+                                   HorizontalAlignment="Center"
+                                   Grid.Row="1"
+                                   Text="{Binding Name}" />
+                    </Grid>
+
 
                 </ItemContainerTemplate>
             </ListView.ItemTemplate>
         </ListView>
 
-        <StackPanel Grid.Column="1" Orientation="Vertical">
-            <StackPanel Orientation="Horizontal">
-                <Image Width="350"
-                       Height="350"
-                       Source="{Binding RollImg}" />
-                <Image Width="350"
-                       Height="350"
-                       Source="{Binding PitchImg}" />
-                <Image Width="350"
-                       Height="350"
-                       Source="{Binding SpeedImg}" />
-                <Image Width="350"
-                       Height="350"
-                       Source="{Binding AltitudeImg}" />
-                <Image Width="350"
-                       Height="350"
-                       Source="{Binding CompassImg}" />
-            </StackPanel>
+        <ListView Grid.Column="1"
+                  ItemsSource="{Binding Indicators}">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <ItemContainerTemplate>
+                    <Grid Margin="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-            <Button Click="Button_Click">SAVE</Button>
-        </StackPanel>
-
-
+                        <TextBlock FontSize="30"
+                                   Grid.Column="0"
+                                   Text="{Binding Name}" />
+                        <TextBlock FontSize="30"
+                                   Grid.Column="1"
+                                   HorizontalAlignment="Right"
+                                   Text="{Binding Value}" />
+                        <Image Width="200"
+                               Height="200"
+                               Grid.Row="1"
+                               Grid.ColumnSpan="2"
+                               Source="{Binding Img}" />
+                    </Grid>
+                </ItemContainerTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
     </Grid>
 </Window>

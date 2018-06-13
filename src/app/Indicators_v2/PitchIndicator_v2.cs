@@ -141,7 +141,7 @@ namespace GTAPilot.Indicators_v2
 
             }
 
-            return -1;
+            return double.NaN;
         }
     }
 }

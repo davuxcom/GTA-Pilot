@@ -38,11 +38,16 @@ namespace GTAPilot
 
         }
 
-        static TcpClient tcp = new TcpClient("localhost", 3377);
+        static TcpClient tcp;
 
         private void SendMessage(string msg, bool forceSend = false)
         {
             if (!IsAuto && !forceSend) return;
+
+            if (tcp == null)
+            {
+                tcp = new TcpClient("localhost", 3377);
+            }
 
             var s = tcp.GetStream();
 

@@ -1,15 +1,36 @@
 ﻿using GTAPilot.Extensions;
+using GTAPilot.Indicators_v2;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Drawing;
 using System.Windows.Media;
 
 namespace GTAPilot
 {
+    class IndicatorViewModel : INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string Name { get; private set; }
+        public double Value => Math.Round(_indicator.Value, 1);
+        public ImageSource Img => ((Bitmap)_indicator.Image?.ToBitmap()).ToImageSource();
+
+        Indicator _indicator;
+
+        public IndicatorViewModel(string name, Indicator indicator)
+        {
+            Name = name;
+            _indicator = indicator;
+        }
+
+        public void Tick()
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+        }
+    }
+
     class FpsCounterViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -36,13 +57,7 @@ namespace GTAPilot
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<FpsCounterViewModel> Counters { get; }
-
-        public ImageSource RollImg { get; private set; }
-        public ImageSource PitchImg { get; private set; }
-        public ImageSource SpeedImg { get; private set; }
-        public ImageSource AltitudeImg { get; private set; }
-        public ImageSource CompassImg { get; private set; }
-
+        public ObservableCollection<IndicatorViewModel> Indicators { get; }
 
         SystemManager _inputManager;
 
@@ -59,24 +74,19 @@ namespace GTAPilot
             Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Airspeed), "Airspeed"));
             Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Altitude), "Altitude"));
             Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Yaw), "Yaw"));
+
+            Indicators = new ObservableCollection<IndicatorViewModel>();
+            Indicators.Add(new IndicatorViewModel("Roll", _inputManager.IndicatorHost.Roll));
+            Indicators.Add(new IndicatorViewModel("Pitch", _inputManager.IndicatorHost.Pitch));
+            Indicators.Add(new IndicatorViewModel("Airspeed", _inputManager.IndicatorHost.Airspeed));
+            Indicators.Add(new IndicatorViewModel("Altitude", _inputManager.IndicatorHost.Altitude));
+            Indicators.Add(new IndicatorViewModel("Yaw", _inputManager.IndicatorHost.Compass));
         }
 
         public void Tick()
         {
             foreach (var c in Counters) c.Tick();
-
-            RollImg = _inputManager.GetLatestFrame(FpsCounterType.Roll).ToImageSource();
-            PitchImg = _inputManager.GetLatestFrame(FpsCounterType.Pitch).ToImageSource();
-            SpeedImg = _inputManager.GetLatestFrame(FpsCounterType.Airspeed).ToImageSource();
-            AltitudeImg = _inputManager.GetLatestFrame(FpsCounterType.Altitude).ToImageSource();
-            CompassImg = _inputManager.GetLatestFrame(FpsCounterType.Yaw).ToImageSource();
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(RollImg)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PitchImg)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SpeedImg)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AltitudeImg)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CompassImg)));
-
+            foreach (var i in Indicators) i.Tick();
         }
 
         internal void Save()

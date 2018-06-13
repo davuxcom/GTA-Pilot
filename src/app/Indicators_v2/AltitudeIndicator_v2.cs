@@ -22,7 +22,7 @@ namespace GTAPilot.Indicators_v2
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y - 40);
                 circle.Radius = 45;
                 var firstCrop = Math2.CropCircle(circle, 25);
-                var focus = frame.Copy(firstCrop);
+                var focus = frame.SafeCopy(firstCrop);
 
                 var vs_hsv = focus.Convert<Hsv, byte>(); //.PyrUp().PyrDown();
 
@@ -33,7 +33,7 @@ namespace GTAPilot.Indicators_v2
                     circ.Center = circles[0].Center.Add(firstCrop.Location);
                     circ.Radius = 45;
 
-                    focus = frame.Copy(Math2.CropCircle(circ, 15));
+                    focus = frame.SafeCopy(Math2.CropCircle(circ, 15));
 
                     vs_hsv = focus.Convert<Hsv, byte>();
 
@@ -359,7 +359,7 @@ namespace GTAPilot.Indicators_v2
                             var num_rejected_values = 0;
 
 
-                            if (nextValue < 35) return -1;
+                            if (nextValue < 35) return double.NaN;
 
                             /*
                             if (!double.IsNaN(last_angle))
@@ -409,7 +409,7 @@ namespace GTAPilot.Indicators_v2
                 }
 
             }
-            return -1;
+            return double.NaN;
         }
 
 
