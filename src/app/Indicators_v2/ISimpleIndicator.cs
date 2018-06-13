@@ -10,6 +10,6 @@ namespace GTAPilot.Indicators_v2
 {
     interface ISimpleIndicator
     {
-        double ReadValue(Image<Bgr, byte> frame, ref object[] debugState);
+        double ReadValue(IndicatorData data, ref object[] debugState);
     }
 }

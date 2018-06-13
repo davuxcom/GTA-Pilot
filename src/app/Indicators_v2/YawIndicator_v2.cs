@@ -15,14 +15,17 @@ namespace GTAPilot.Indicators_v2
 {
     class YawIndicator_v2 : ISimpleIndicator
     {
-        public double ReadValue(Image<Bgr, byte> frame, ref object[] debugState)
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.03, 100);
+
+
+        public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(frame, out var circle))
+            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data.Frame, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 1050, circle.Center.Y - 20);
                 circle.Radius = 70;
                 var firstCrop = Math2.CropCircle(circle, 40);
-                var focus = frame.SafeCopy(firstCrop);
+                var focus = data.Frame.SafeCopy(firstCrop);
                 var vs_hsv = focus.Convert<Hsv, byte>().PyrUp().PyrDown();
 
                 var circles = CvInvoke.HoughCircles(vs_hsv[2], HoughType.Gradient, 2.0, 80, 10, 80, 60, 80);
@@ -32,16 +35,18 @@ namespace GTAPilot.Indicators_v2
                     circ.Center = circles[0].Center.Add(firstCrop.Location);
                     circ.Radius = 64;
 
-                    focus = frame.SafeCopy(Math2.CropCircle(circ, 10));
+                    focus = data.Frame.SafeCopy(Math2.CropCircle(circ, 15));
+
+                    debugState[0] = focus;
 
                     vs_hsv = focus.PyrUp().PyrDown().Convert<Hsv, byte>();
 
-                    // Low is TuningValue
-                    var vs_text = vs_hsv.InRange(new Hsv(0, 0, 120), new Hsv(180, 255, 255));
+                    var vs_text = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
                     var vs_mask = vs_hsv.InRange(new Hsv(0, 0, 0), new Hsv(180, 140, 255));
                     var vs_textonly = vs_text.Copy(vs_mask);
                     var markedup_textonly = vs_textonly.Convert<Bgr, byte>();
 
+                  //  debugState[1] = markedup_textonly;
 
                     CvBlobs blobs = new CvBlobs();
                     GetBlobDetector().Detect(vs_textonly, blobs);
@@ -102,6 +107,9 @@ namespace GTAPilot.Indicators_v2
                     var parts = new List<CompassPack>();
                     var only_blobs = vs_textonly.Copy(blobMask.ToImage<Gray, byte>());
 
+                    debugState[1] = only_blobs;
+
+
                     Point v_center_point = new Point(focus.Width / 2, focus.Height / 2);
                     Rectangle lastRect = default(Rectangle);
                     Size lastRotatedFrame = default(Size);
@@ -134,9 +142,20 @@ namespace GTAPilot.Indicators_v2
                             var rotated_frame = only_blobs.Rotate(-1 * angle, new Gray(0));
                             {
                                 lastRotatedFrame = rotated_frame.Size;
-                                lastRect = new Rectangle(rotated_frame.Width / 2 - 15 - 4, 0, 50, 30);
+                                lastRect = new Rectangle(rotated_frame.Width / 2 - 30, 0, 60, 60);
 
                                 var rotated_letter_only = rotated_frame.Copy(lastRect);
+
+                                if (debugState[2] == null)
+                                {
+                                    debugState[2] = rotated_letter_only;
+                                }
+                                else if (debugState[3] == null)
+                                {
+                                    debugState[3] = rotated_letter_only;
+                                }
+
+
                                 parts.Add(new CompassPack { Item1 = rotated_letter_only, Item2 = biased_angle, BlobBox = b.BoundingBox, BlobArea = b.Area });
                             }
 
@@ -148,9 +167,7 @@ namespace GTAPilot.Indicators_v2
                     }
 
 
-                    debugState = new object[] { markedup_textonly };
-
-                    return CompassProcFrame(parts, focus);
+                    return CompassProcFrame(data.Id, parts, focus);
 
 
 
@@ -159,17 +176,21 @@ namespace GTAPilot.Indicators_v2
                 }
             }
 
+
+
             return double.NaN;
         }
 
-        double CompassProcFrame(List<CompassPack> packs, Image<Bgr, Byte> compass_frame)
+        static int cid = 0;
+
+        double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame)
         {
-            /*
-            var my_frameref = Timeline.Data[data.Id];
+            
+            var my_frameref = Timeline.Data[frameId];
 
             TimelineFrame last_frameref = null;
 
-            for (var i = data.Id; i >= 0; i--)
+            for (var i = frameId - 1; i >= 0; i--)
             {
                 var f = Timeline.Data[i];
                 if (!double.IsNaN(f.Heading))
@@ -178,7 +199,7 @@ namespace GTAPilot.Indicators_v2
                     break;
                 }
             }
-            */
+            
 
             if (packs != null)
             {
@@ -199,6 +220,8 @@ namespace GTAPilot.Indicators_v2
                 {
                     var ocr = GetTesseract();
                     ocr.Recognize(pack.Item1);
+
+                 //   pack.Item1.Save($"c:\\save\\{cid++}.png");
 
                     var small_angle = pack.Item2;
                     var b = pack.BlobBox;
@@ -242,9 +265,9 @@ namespace GTAPilot.Indicators_v2
                     if (str == "É") str = "E";
                     if (str == "=") str = "E";
 
-                      Trace.WriteLine("CHO : " + choices.Count);
+                   //   Trace.WriteLine("CHO : " + str);
 
-                    /*
+                    
                     if (last_frameref != null &&
                        (my_frameref.Time - last_frameref.Time).TotalMilliseconds < 1000)
                     {
@@ -282,7 +305,7 @@ namespace GTAPilot.Indicators_v2
                             }
                         }
                     }
-                    */
+                    
 
                     if (str == "N" ||
                         str == "E" ||
@@ -298,25 +321,25 @@ namespace GTAPilot.Indicators_v2
                         switch (str)
                         {
                             case "N":
-                              //  my_frameref.Extended.LastN = pack.Item2;
+                                my_frameref.Extended.LastN = pack.Item2;
                                 new_heading = small_angle;
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Blue).MCvScalar, 1);
 
                                 break;
                             case "E":
-                              //  my_frameref.Extended.LastE = pack.Item2;
+                                my_frameref.Extended.LastE = pack.Item2;
                                 new_heading = (small_angle + 90);
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Yellow).MCvScalar, 1);
 
                                 break;
                             case "S":
-                             //   my_frameref.Extended.LastS = pack.Item2;
+                                my_frameref.Extended.LastS = pack.Item2;
                                 new_heading = (small_angle + 180);
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Red).MCvScalar, 1);
 
                                 break;
                             case "W":
-                              //  my_frameref.Extended.LastW = pack.Item2;
+                                my_frameref.Extended.LastW = pack.Item2;
                                 new_heading = (small_angle + 270);
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Lime).MCvScalar, 1);
 
@@ -366,24 +389,24 @@ namespace GTAPilot.Indicators_v2
                     switch (str)
                     {
                         case "N":
-                         //   my_frameref.Extended.LastN = o_angle;
+                            my_frameref.Extended.LastN = o_angle;
                             new_heading = unused_angle;
 
                             break;
                         case "E":
-                           // my_frameref.Extended.LastE = o_angle;
+                            my_frameref.Extended.LastE = o_angle;
 
                             new_heading = (unused_angle + 90);
 
                             break;
                         case "S":
-                         //   my_frameref.Extended.LastS = o_angle;
+                            my_frameref.Extended.LastS = o_angle;
 
                             new_heading = (unused_angle + 180);
 
                             break;
                         case "W":
-                        //    my_frameref.Extended.LastW = o_angle;
+                            my_frameref.Extended.LastW = o_angle;
 
                             new_heading = (unused_angle + 270);
 

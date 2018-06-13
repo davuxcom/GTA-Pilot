@@ -22,13 +22,13 @@ namespace GTAPilot.Indicators_v2
         static Rectangle MovementRect = new Rectangle(600, 450, (Metrics.Frame.Width / 2) - 600 - 100, Metrics.Frame.Height - 450 - 250);
 
 
-        public double ReadValue(Image<Bgr, byte> frame, ref object[] debugState)
+        public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (TryFindRollCircleInFullFrame(frame, out CircleF rollIndicatorCicle))
+            if (TryFindRollCircleInFullFrame(data.Frame, out CircleF rollIndicatorCicle))
             {
 
                 var FocusRect = Math2.CropCircle(rollIndicatorCicle, 10);
-                var focusFrame = frame.SafeCopy(FocusRect);
+                var focusFrame = data.Frame.SafeCopy(FocusRect);
 
                 debugState[0] = focusFrame;
 

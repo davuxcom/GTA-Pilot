@@ -21,7 +21,7 @@ namespace GTAPilot.Indicators_v2
         public void Tick(IndicatorData data)
         {
             object[] debugState = new object[] { null, null, null, null };
-            Value = _indicator.ReadValue(data.Frame, ref debugState);
+            Value = _indicator.ReadValue(data, ref debugState);
             Image = debugState;
             if (!double.IsNaN(Value))
             {

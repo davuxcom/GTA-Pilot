@@ -43,7 +43,7 @@ namespace GTAPilot
             Pitch.Tick(frame);
             Airspeed.Tick(frame);
             Altitude.Tick(frame);
-          //  Compass.Tick(frame);
+            Compass.Tick(frame);
         }
     }
 }

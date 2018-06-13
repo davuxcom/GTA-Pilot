@@ -17,14 +17,14 @@ namespace GTAPilot.Indicators_v2
 
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
 
-        public double ReadValue(Image<Bgr, byte> frame, ref object[] debugState)
+        public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(frame, out var circle))
+            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data.Frame, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y - 40);
                 circle.Radius = 45;
                 var firstCrop = Math2.CropCircle(circle, 25);
-                var focus = frame.SafeCopy(firstCrop);
+                var focus = data.Frame.SafeCopy(firstCrop);
 
                 var vs_hsv = focus.Convert<Hsv, byte>(); //.PyrUp().PyrDown();
 
@@ -35,7 +35,7 @@ namespace GTAPilot.Indicators_v2
                     circ.Center = circles[0].Center.Add(firstCrop.Location);
                     circ.Radius = 45;
 
-                    focus = frame.SafeCopy(Math2.CropCircle(circ, 15));
+                    focus = data.Frame.SafeCopy(Math2.CropCircle(circ, 15));
                     debugState[0] = focus;
                     vs_hsv = focus.Convert<Hsv, byte>();
 

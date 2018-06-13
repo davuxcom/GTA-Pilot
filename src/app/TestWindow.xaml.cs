@@ -29,18 +29,20 @@ namespace GTAPilot
 
         private void FrameSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            /*
             var inFrame = new Bitmap(_files[(int)FrameSlider.Value]);
             img1.Source = inFrame.ToImageSource();
 
             var frame = new Image<Bgr, byte>(inFrame);
 
             object[] debugState = null;
-            var v = _indicator.ReadValue(frame, ref debugState);
+            var v = _indicator.ReadValue(data, ref debugState);
 
             dynamic debugImg1 = (debugState != null ? debugState[0] : null);
 
             img2.Source = ((Bitmap)debugImg1?.ToBitmap()).ToImageSource();
             val.Text = v.ToString();
+            */
         }
     }
 }
