@@ -5,7 +5,7 @@ namespace GTAPilot
 {
     class DesktopFrameProducer : IFrameProducer
     {
-        public event Action<Bitmap> FrameProduced;
+        public event Action<int, Bitmap> FrameProduced;
 
         private bool _isRunning;
 
@@ -14,6 +14,7 @@ namespace GTAPilot
             _isRunning = true;
             var t = new System.Threading.Thread(() =>
             {
+                int frameId = 0;
                 // CONFIG
                 var desktop = new DesktopDuplication.DesktopDuplicator(0, 2);
                 while (_isRunning)
@@ -25,7 +26,7 @@ namespace GTAPilot
                         continue;
                     }
 
-                    FrameProduced(f.DesktopImage);
+                    FrameProduced(frameId++, f.DesktopImage);
                 }
             });
             t.Priority = System.Threading.ThreadPriority.Highest;

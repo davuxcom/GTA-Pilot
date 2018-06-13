@@ -22,7 +22,7 @@ namespace GTAPilot
             }
         }
 
-        public event Action<Bitmap> FrameProduced;
+        public event Action<int, Bitmap> FrameProduced;
 
         public void Begin()
         {
@@ -32,14 +32,15 @@ namespace GTAPilot
                 {
                     if (_frameSet != null)
                     {
-                        FrameProduced(new Bitmap(_frames[_frameSet[_currentId++]]));
+                        var frameId = _frameSet[_currentId++];
+                        FrameProduced(frameId, new Bitmap(_frames[frameId]));
 
                         if (_currentId >= _frameSet.Length) _currentId = 0;
 
                     }
                     else
                     {
-                        FrameProduced(new Bitmap(_frames[_currentId++]));
+                        FrameProduced(_currentId, new Bitmap(_frames[_currentId++]));
 
                         if (_currentId >= _frames.Length) _currentId = 0;
                     }

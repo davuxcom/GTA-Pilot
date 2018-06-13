@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GTAPilot
 {
@@ -13,12 +9,10 @@ namespace GTAPilot
         public int FrameId { get; set; }
         public DateTime Time { get; set; }
 
-        private static int s_frameId;
-
-        public FrameData(Bitmap frame)
+        public FrameData(int frameId, Bitmap frame)
         {
             Frame = frame;
-            FrameId = s_frameId++;
+            FrameId = frameId;
             Time = DateTime.Now;
         }
     }

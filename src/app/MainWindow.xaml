@@ -95,7 +95,7 @@
                                    Height="200"
                                    Source="{Binding Img}" />
                         </Border>
-                        
+
 
                         <TextBlock Grid.Row="2"
                                    FontSize="30"
@@ -105,9 +105,11 @@
                                 Click="SaveFrameSet_Click"
                                 Content="Save FrameSet"
                                 FontSize="20" />
-                        <TextBlock Grid.Row="3">Tune: </TextBlock>
+                        <TextBlock Grid.Row="3" FontSize="30">Tune:</TextBlock>
                         <TextBlock Grid.Row="3"
+                                   Grid.Column="1"
                                    HorizontalAlignment="Right"
+                                   FontSize="30"
                                    Text="{Binding CachedTuningValue}" />
                     </Grid>
                 </ItemContainerTemplate>

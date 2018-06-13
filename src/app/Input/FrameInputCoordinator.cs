@@ -52,11 +52,11 @@ namespace GTAPilot
             }).Start();
         }
 
-        private void FrameProducer_FrameProduced(System.Drawing.Bitmap frame)
+        private void FrameProducer_FrameProduced(int frameId, System.Drawing.Bitmap frame)
         {
             EnqueuePerf.GotFrame();
 
-            _input.Enqueue(new FrameData(frame));
+            _input.Enqueue(new FrameData(frameId, frame));
         }
     }
 }
