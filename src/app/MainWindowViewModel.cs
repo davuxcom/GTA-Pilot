@@ -1,6 +1,7 @@
 ﻿using GTAPilot.Extensions;
 using GTAPilot.Indicators_v2;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
@@ -14,7 +15,10 @@ namespace GTAPilot
 
         public string Name { get; private set; }
         public double Value => Math.Round(_indicator.Value, 1);
+        public double BadFrameCount => _indicator.BadFrames.Count;
         public ImageSource Img => ((Bitmap)_indicator.Image?.ToBitmap()).ToImageSource();
+
+        public HashSet<int> BadFrames => _indicator.BadFrames;
 
         Indicator _indicator;
 
@@ -28,6 +32,7 @@ namespace GTAPilot
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BadFrameCount)));
         }
     }
 

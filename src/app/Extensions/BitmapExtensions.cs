@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -19,21 +20,29 @@ namespace GTAPilot.Extensions
 
         public static ImageSource ToImageSource(this Bitmap bmp)
         {
-            if (bmp == null) return null;
+            ImageSource bitmapSource = null;
 
-            var hBitmap = bmp.GetHbitmap();
-            ImageSource bitmapSource;
-            try
+            if (bmp == null) return null;
+           // try
             {
-                bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
-                    hBitmap,
-                    IntPtr.Zero,
-                    Int32Rect.Empty,
-                    BitmapSizeOptions.FromEmptyOptions());
+                var hBitmap = bmp.GetHbitmap();
+
+                try
+                {
+                    bitmapSource = Imaging.CreateBitmapSourceFromHBitmap(
+                        hBitmap,
+                        IntPtr.Zero,
+                        Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+                }
+                finally
+                {
+                    Gdi32.DeleteObject(hBitmap);
+                }
             }
-            finally
+        //  catch(Exception ex)
             {
-               // Gdi32.DeleteObject(hBitmap);
+          //      Trace.WriteLine(ex);
             }
             return bitmapSource;
         }

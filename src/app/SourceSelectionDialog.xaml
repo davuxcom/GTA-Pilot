@@ -59,7 +59,7 @@
 
             <StackPanel Orientation="Horizontal">
                 <TextBlock>Frame Set:</TextBlock>
-                <TextBox Name="txtFrameSet" />
+                <TextBox Name="txtFrameSet">c:\save\recording1-roll.txt</TextBox>
             </StackPanel>
 
         </StackPanel>

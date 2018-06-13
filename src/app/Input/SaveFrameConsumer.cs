@@ -21,7 +21,7 @@ namespace GTAPilot
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                Trace.WriteLine(ex);
             }
         }
 

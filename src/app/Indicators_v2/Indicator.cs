@@ -1,4 +1,6 @@
-﻿namespace GTAPilot.Indicators_v2
+﻿using System.Collections.Generic;
+
+namespace GTAPilot.Indicators_v2
 {
     class Indicator
     {
@@ -7,7 +9,7 @@
         public dynamic Image { get; private set; }
 
         ISimpleIndicator _indicator;
-        IndicatorData _nextData;
+        public HashSet<int> BadFrames = new HashSet<int>();
 
         public Indicator(ISimpleIndicator indicator)
         {
@@ -23,6 +25,10 @@
             if (!double.IsNaN(Value))
             {
                 Counter.GotFrame();
+            }
+            else
+            {
+                BadFrames.Add(data.Id);
             }
         }
     }

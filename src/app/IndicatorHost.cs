@@ -13,7 +13,7 @@ namespace GTAPilot
     {
         public Image<Bgr, byte> Frame;
         public DateTime Timestamp;
-        public long Id;
+        public int Id;
     }
 
     class IndicatorHost

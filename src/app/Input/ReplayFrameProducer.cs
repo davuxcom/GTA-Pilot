@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace GTAPilot
@@ -8,11 +9,17 @@ namespace GTAPilot
     class ReplayFrameProducer : IFrameProducer
     {
         string[] _frames;
+        int[] _frameSet;
         int _currentId = 0;
 
-        public ReplayFrameProducer(string dir)
+        public ReplayFrameProducer(string dir, string framesetTxt)
         {
             _frames = Directory.GetFiles(dir);
+
+            if (!string.IsNullOrWhiteSpace(framesetTxt))
+            {
+                _frameSet = File.ReadAllLines(framesetTxt).Select(l => int.Parse(l)).ToArray();
+            }
         }
 
         public event Action<Bitmap> FrameProduced;
@@ -23,11 +30,19 @@ namespace GTAPilot
             {
                 while (true)
                 {
-                    FrameProduced(new Bitmap(_frames[_currentId++]));
+                    if (_frameSet != null)
+                    {
+                        FrameProduced(new Bitmap(_frames[_frameSet[_currentId++]]));
 
-                    if (_currentId >= _frames.Length) _currentId = 0;
+                        if (_currentId >= _frameSet.Length) _currentId = 0;
 
-                    // Thread.Sleep(1000 / 60); // 60fps
+                    }
+                    else
+                    {
+                        FrameProduced(new Bitmap(_frames[_currentId++]));
+
+                        if (_currentId >= _frames.Length) _currentId = 0;
+                    }
                 }
             });
             t.Priority = ThreadPriority.Highest;

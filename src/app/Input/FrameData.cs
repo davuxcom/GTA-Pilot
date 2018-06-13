@@ -10,10 +10,10 @@ namespace GTAPilot
     class FrameData
     {
         public Bitmap Frame { get; set; }
-        public long FrameId { get; set; }
+        public int FrameId { get; set; }
         public DateTime Time { get; set; }
 
-        private static long s_frameId;
+        private static int s_frameId;
 
         public FrameData(Bitmap frame)
         {
