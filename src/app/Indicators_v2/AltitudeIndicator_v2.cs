@@ -5,6 +5,7 @@ using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -14,6 +15,7 @@ namespace GTAPilot.Indicators_v2
     {
         int LastBig = 0;
 
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
 
         public double ReadValue(Image<Bgr, byte> frame, ref object[] debugState)
         {
@@ -34,22 +36,27 @@ namespace GTAPilot.Indicators_v2
                     circ.Radius = 45;
 
                     focus = frame.SafeCopy(Math2.CropCircle(circ, 15));
-
+                    debugState[0] = focus;
                     vs_hsv = focus.Convert<Hsv, byte>();
 
-                    var vs_blackimg = vs_hsv.InRange(new Hsv(0, 0, 80), new Hsv(180, 255, 255));
+                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
+
+                    debugState[1] = vs_blackimg;
+
 
                     int margin = 0;
                     var d = (int)circ.Radius * 2;
                     var r = (int)circ.Radius;
 
-                    Mat vspeedMask = new Mat(vs_blackimg.Size, DepthType.Cv8U, 3);
-                    vspeedMask.SetTo(new MCvScalar(1));
-                    CvInvoke.Circle(vspeedMask, Point.Round(new PointF(r + margin, r + margin)), (int)(r - (r * 0)), new Bgr(Color.White).MCvScalar, -1);
+                  //  Mat vspeedMask = new Mat(vs_blackimg.Size, DepthType.Cv8U, 3);
+                  //  vspeedMask.SetTo(new MCvScalar(1));
+                  //  CvInvoke.Circle(vspeedMask, Point.Round(new PointF(r + margin, r + margin)), (int)(r - (r * 0)), new Bgr(Color.White).MCvScalar, -1);
 
-                    vs_blackimg = vs_blackimg.Copy(vspeedMask.ToImage<Gray, byte>());
+                   // vs_blackimg = vs_blackimg.Copy(vspeedMask.ToImage<Gray, byte>());
 
                     var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
+
+                    debugState[2] = markedup_frame;
 
                     // IntermediateFrameGray = vs_blackimg;
 
@@ -232,6 +239,7 @@ namespace GTAPilot.Indicators_v2
                             var hundreds = Math.Round((small_angle / 360) * 1000);
 
                             CvInvoke.Line(markedup_frame, center_point, other_point, new Bgr(Color.Purple).MCvScalar, 1);
+                            CvInvoke.Line(focus, center_point, other_point, new Bgr(Color.Yellow).MCvScalar, 2);
 
                             // ground
                             //  if (small_angle < 30 && LastBig == 0) hundreds = 0;
@@ -242,11 +250,11 @@ namespace GTAPilot.Indicators_v2
 
 
 
-                            /*
-                            int the_big = 0;
-                            if (hundreds >= 5) the_big = (int)Math.Floor(LastBig);
-                            else the_big = (int)Math.Ceiling(LastBig);
-                            */
+                            
+                          //  int the_big = 0;
+                          //  if (hundreds >= 5) the_big = (int)Math.Floor(LastBig);
+                          //  else the_big = (int)Math.Ceiling(LastBig);
+                          //  */
                             //  ObservedValue = the_big;
                             /*
                             int the_big = -1;
@@ -274,13 +282,13 @@ namespace GTAPilot.Indicators_v2
                                 the_big = (int)Math.Round(LastBig);
                                 // 10
                             }
-
+                            */
 
 
                             //   int the_big = (int)Math.Floor(LastBig);
 
 
-                            */
+                            
 
                             if (hundreds == 1000) hundreds = 0;
 
@@ -305,14 +313,11 @@ namespace GTAPilot.Indicators_v2
 
 
                             // TODO: disabled this change code, logic was pretty soudn though iirc
-                            /*
+                            
                             var max_change = 400;
 
-                            if (Math.Abs(nextValue - LastGoodValueAverage) > max_change)
+                            if (Math.Abs(nextValue - last_value) > max_change)
                             {
-                                if (num_rejected_values < 50)
-                                {
-
 
 
                                     var increasedNextValue = GetNextValue(LastBig + 1);
@@ -329,37 +334,20 @@ namespace GTAPilot.Indicators_v2
                                     }
                                     else
                                     {
-                                        num_rejected_values++;
+                                     //   num_rejected_values++;
                                         //   Trace.WriteLine("rejected altitude value: " + nextValue + " " + increasedNextValue + " " + decresedNextValue);
                                         // ????
-                                        return false;
+                                        return double.NaN;
                                     }
 
-                                }
-                                else
-                                {
-                                    if (big_set)
-                                    {
-                                        //    Trace.WriteLine("ALT RESET");
 
-                                        LineSegment2D big_line = new LineSegment2D(big_center, center_point);
-
-
-
-                                        //    var small_angle = Math2.FixAngle(Math2.angleBetween2Lines(small_line, baseLine), center_point, other_point);
-                                        var big_angle = Math2.FixAngle(Math2.angleBetween2Lines(big_line, baseLine), center_point, big_center);
-
-                                        LastBig = (int)Math.Round((big_angle / 360) * 10, 2);
-                                        ObservedValue = GetNextValue(LastBig);
-                                    }
-                                }
                             }
-                            */
-
-                            var num_rejected_values = 0;
 
 
-                            if (nextValue < 35) return double.NaN;
+                            //  var num_rejected_values = 0;
+
+
+                            //   if (nextValue < 35) return double.NaN;
 
                             /*
                             if (!double.IsNaN(last_angle))
@@ -396,23 +384,16 @@ namespace GTAPilot.Indicators_v2
                             //  num_rejected_values = 0;
 
                             //  Trace.WriteLine("ALT: " + ObservedValue + " " + LastBig + " " + hundreds);
-
-                            debugState = new object[] { markedup_frame };
+                            last_value = nextValue;
                             return nextValue;
-
-
                         }
                     }
-
-
-
                 }
-
             }
             return double.NaN;
         }
 
-
+        double last_value = 0;
 
         // TODO: factor this all out somewhere
         ConcurrentDictionary<int, CvBlobDetector> BlobDetectors = new ConcurrentDictionary<int, CvBlobDetector>();

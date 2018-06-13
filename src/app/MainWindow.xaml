@@ -85,11 +85,17 @@
                                    HorizontalAlignment="Right"
                                    FontSize="30"
                                    Text="{Binding Value}" />
-                        <Image Grid.Row="1"
-                               Grid.ColumnSpan="2"
-                               Width="200"
-                               Height="200"
-                               Source="{Binding Img}" />
+
+                        <Border Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Background="Transparent"
+                                PreviewMouseUp="Border_PreviewMouseUp">
+                            <Image Width="200"
+                                   Height="200"
+                                   Source="{Binding Img}" />
+                        </Border>
+                        
+
                         <TextBlock Grid.Row="2"
                                    FontSize="30"
                                    Text="{Binding BadFrameCount}" />

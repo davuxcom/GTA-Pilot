@@ -15,6 +15,9 @@ namespace GTAPilot.Indicators_v2
         int num_rejected_values = 0;
         DateTime last_time = DateTime.Now;
 
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.03, 100);
+
+
         public double ReadValue(Image<Bgr, byte> frame, ref object[] debugState)
         {
             DateTime this_time = DateTime.Now;
@@ -39,8 +42,15 @@ namespace GTAPilot.Indicators_v2
                     circ.Radius = 50;
 
                     focus = frame.Copy(Math2.CropCircle(circ, 10));
+
+                    debugState[0] = focus;
+
+
                     vs_hsv = focus.Convert<Hsv, byte>();
-                    var vs_blackimg = vs_hsv.InRange(new Hsv(0, 0, 140), new Hsv(180, 255, 255));
+                    // TODO: tune low ?
+                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
+
+                    debugState[1] = vs_blackimg;
 
                     var margin = 4;
                     var d = (int)circ.Radius * 2;
@@ -59,6 +69,8 @@ namespace GTAPilot.Indicators_v2
                             var vspeed_inner_only = vs_blackimg2.Copy(vspeedMask.ToImage<Gray, byte>());
                             {
 
+                                debugState[2] = vspeed_inner_only;
+
                                 var cannyEdges3 = new Mat();
                                 {
                                     CvInvoke.Canny(vspeed_inner_only, cannyEdges3, 10, 100);
@@ -71,6 +83,8 @@ namespace GTAPilot.Indicators_v2
 
                                     var bestLines = new List<Tuple<double, LineSegment2D>>();
                                     var markedup_frame = vspeed_inner_only.Convert<Bgr, byte>();
+
+                                    debugState[3] = markedup_frame;
                                     {
 
                                         foreach (var line in lines)
@@ -101,6 +115,7 @@ namespace GTAPilot.Indicators_v2
                                         foreach (var lineX in bestLines)
                                         {
                                             var line = lineX.Item2;
+                                            CvInvoke.Line(focus, line.P1, line.P2, new Bgr(Color.Yellow).MCvScalar, 2);
                                             CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
 
                                             if (center.Contains(line.P1) || center.Contains(line.P2))
@@ -174,11 +189,10 @@ namespace GTAPilot.Indicators_v2
 
                                                 didFinish = true;
                                                 CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
+                                                CvInvoke.Line(focus, line.P1, line.P2, new Bgr(Color.Yellow).MCvScalar, 2);
                                                 break;
                                             }
                                         }
-
-                                        debugState = new object[] { markedup_frame };
 
                                         return ObservedValue;
                                     }

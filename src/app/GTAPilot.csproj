@@ -90,6 +90,9 @@
     <Compile Include="Indicators_v2\PitchIndicator_v2.cs" />
     <Compile Include="Indicators_v2\RollIndicator_v2.cs" />
     <Compile Include="Indicators_v2\YawIndicator_v2.cs" />
+    <Compile Include="IndicatorWindow.xaml.cs">
+      <DependentUpon>IndicatorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Input\ReplayFrameProducer.cs" />
     <Compile Include="Input\SaveFrameConsumer.cs" />
     <Compile Include="Metrics.cs" />
@@ -102,6 +105,10 @@
     <Compile Include="Timeline.cs" />
     <Compile Include="TUNE.cs" />
     <Page Include="CaptureProgress.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="IndicatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

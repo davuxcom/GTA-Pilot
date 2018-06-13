@@ -15,13 +15,14 @@ namespace GTAPilot.Indicators_v2
         {
             Counter = new FpsCounter();
             _indicator = indicator;
+            Image = new object[] { null, null, null, null };
         }
 
         public void Tick(IndicatorData data)
         {
-            object[] debugState = null;
+            object[] debugState = new object[] { null, null, null, null };
             Value = _indicator.ReadValue(data.Frame, ref debugState);
-            Image = (debugState != null ? debugState[0] : null);
+            Image = debugState;
             if (!double.IsNaN(Value))
             {
                 Counter.GotFrame();

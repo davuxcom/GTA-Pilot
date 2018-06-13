@@ -14,7 +14,7 @@ namespace GTAPilot.Indicators_v2
 {
     class PitchIndicator_v2 : ISimpleIndicator
     {
-        public double ObservedValue { get; private set; }
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
 
         public double ReadValue(Image<Bgr, byte> frame, ref object[] debugState)
         {
@@ -36,9 +36,14 @@ namespace GTAPilot.Indicators_v2
 
                     focus = frame.Copy(Math2.CropCircle(circ, 15));
 
+                    debugState[0] = focus;
+
                     vs_hsv = focus.Convert<Hsv, byte>();
 
-                    var vs_blackimg = vs_hsv.InRange(new Hsv(0, 0, 120), new Hsv(180, 255, 255));
+                    // TODO: Tunelow ?
+                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
+
+                    debugState[1] = vs_blackimg;
 
                     int margin = 10;
 
@@ -51,6 +56,8 @@ namespace GTAPilot.Indicators_v2
 
                     var cannyEdges3 = new Mat();
                     CvInvoke.Canny(vspeed_inner_only, cannyEdges3, 10, 140);
+
+                    debugState[2] = vspeed_inner_only;
 
                     LineSegment2D[] lines = CvInvoke.HoughLinesP(
                        vspeed_inner_only,
@@ -118,10 +125,6 @@ namespace GTAPilot.Indicators_v2
                             {
                                 Trace.WriteLine("rejected pitch: " + dist);
                             }
-
-                            //Trace.WriteLine("PITCH: " + Math.Round(ObservedValue) + " DIST: " + Math.Round(dist));
-
-                            debugState = new object[] { focus };
 
                             return small_angle;
                         }

@@ -30,6 +30,8 @@ namespace GTAPilot.Indicators_v2
                 var FocusRect = Math2.CropCircle(rollIndicatorCicle, 10);
                 var focusFrame = frame.SafeCopy(FocusRect);
 
+                debugState[0] = focusFrame;
+
                 // Isolate the outside ring
                 Mat maskInnerAlt = new Mat(focusFrame.Size, DepthType.Cv8U, 3);
                 maskInnerAlt.SetTo(new MCvScalar(1));
@@ -44,6 +46,9 @@ namespace GTAPilot.Indicators_v2
 
                 // Low is TuningValue
                 var ring_hsv = hsv.InRange(new Hsv(20, 0, 85), new Hsv(180, 255, 255));
+
+                debugState[1] = ring_hsv;
+
                 var ring_distance_transform = new Image<Gray, float>(ring_hsv.Size);
 
                 CvInvoke.DistanceTransform(ring_hsv, ring_distance_transform, null, DistType.L1, 3);
@@ -188,8 +193,7 @@ namespace GTAPilot.Indicators_v2
 
                     angle += 1.5;
 
-                    CvInvoke.Line(focusFrame, boundary_one, boundary_two, new Bgr(Color.Blue).MCvScalar, 2);
-                    debugState = new object[] { focusFrame };
+                    CvInvoke.Line(focusFrame, boundary_one, boundary_two, new Bgr(Color.Yellow).MCvScalar, 2);
 
                     return angle;
                 }

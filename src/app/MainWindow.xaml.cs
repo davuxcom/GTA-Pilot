@@ -119,5 +119,13 @@ namespace GTAPilot
 
             Process.Start(fn);
         }
+
+        private void Border_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var viewModel = (IndicatorViewModel)((FrameworkElement)sender).DataContext;
+
+            var window = new IndicatorWindow(viewModel);
+            window.ShowDialog();
+        }
     }
 }
