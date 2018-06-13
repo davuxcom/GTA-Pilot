@@ -27,8 +27,7 @@ namespace GTAPilot.Indicators_v2
             {
 
                 var FocusRect = Math2.CropCircle(rollIndicatorCicle, 10);
-                FocusRect.Location = FocusRect.Location.Add(MovementRect.Location);
-                var focusFrame = frame.Copy(FocusRect);
+                var focusFrame = frame.SafeCopy(FocusRect);
 
                 // Isolate the outside ring
                 Mat maskInnerAlt = new Mat(focusFrame.Size, DepthType.Cv8U, 3);

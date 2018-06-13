@@ -19,7 +19,7 @@ namespace GTAPilot
 
           //  if (srcSelect.Result == null)
             {
-          //      InputManager = new SystemManager(new ReplayFrameProducer(@"c:\save\recording1"));
+                InputManager = new SystemManager(new ReplayFrameProducer(@"c:\save\recording1"));
             }
          //   else
             {
@@ -27,11 +27,11 @@ namespace GTAPilot
             }
 
 
-            //  var mainWindow = new MainWindow(new MainWindowViewModel(InputManager));
-            //  mainWindow.Show();
+             var mainWindow = new MainWindow(new MainWindowViewModel(InputManager));
+             mainWindow.Show();
 
-            var t = new TestWindow();
-            t.Show();
+          //  var t = new TestWindow();
+        //   t.Show();
         }
     }
 }

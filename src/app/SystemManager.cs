@@ -61,11 +61,11 @@ namespace GTAPilot
         {
             switch(type)
             {
-                case FpsCounterType.Roll: return _indicatorHost.Roll.BestIntermediate?.ToBitmap();
-                case FpsCounterType.Pitch: return _indicatorHost.Pitch.BestIntermediate?.ToBitmap();
-                case FpsCounterType.Airspeed: return _indicatorHost.Airspeed.BestIntermediate?.ToBitmap();
-                case FpsCounterType.Altitude: return _indicatorHost.Altitude.BestIntermediate?.ToBitmap();
-                case FpsCounterType.Yaw: return _indicatorHost.Compass.BestIntermediate?.ToBitmap();
+                case FpsCounterType.Roll: return _indicatorHost.Roll.Image?.ToBitmap();
+                case FpsCounterType.Pitch: return _indicatorHost.Pitch.Image?.ToBitmap();
+                case FpsCounterType.Airspeed: return _indicatorHost.Airspeed.Image?.ToBitmap();
+                case FpsCounterType.Altitude: return _indicatorHost.Altitude.Image?.ToBitmap();
+                case FpsCounterType.Yaw: return _indicatorHost.Compass.Image?.ToBitmap();
             }
             throw new NotImplementedException();
         }

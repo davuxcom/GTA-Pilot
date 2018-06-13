@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:GTAPilot"
         Title="TestWindow"
-        Width="800"
+        Width="1700"
         Height="700">
     <Grid>
         <Grid.RowDefinitions>
@@ -21,8 +21,14 @@
             </Grid.ColumnDefinitions>
 
             <Slider Name="FrameSlider" Orientation="Vertical" />
-            <Image Name="img1" Grid.Column="1" />
-            <Image Name="img2" Grid.Column="2" />
+            <Image Name="img1"
+                   Grid.Column="1"
+                   Width="500"
+                   Height="500" />
+            <Image Name="img2"
+                   Grid.Column="2"
+                   Width="500"
+                   Height="500" />
         </Grid>
 
 

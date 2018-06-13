@@ -33,33 +33,7 @@ namespace GTAPilot
 
         public PointF UpdatedLocation;
         public DateTime UpdateTime;
-
-        public double this[InputType index]
-        {
-            get
-            {
-                switch (index)
-                {
-                    case InputType.Pitch: return Pitch;
-                    case InputType.Roll: return Roll;
-                    case InputType.Yaw: return Heading;
-                    case InputType.Altitude: return Altitude;
-                    case InputType.Speed: return Speed;
-                }
-                return 0;
-            }
-            set
-            {
-                switch ((InputType)index)
-                {
-                    case InputType.Pitch: Pitch = value; break;
-                    case InputType.Roll: Roll = value; break;
-                    case InputType.Yaw: Heading = value; break;
-                    case InputType.Altitude: Altitude = value; break;
-                    case InputType.Speed: Speed = value; break;
-                }
-            }
-        }
+        
     }
 
     class Timeline

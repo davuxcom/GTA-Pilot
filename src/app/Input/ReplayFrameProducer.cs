@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace GTAPilot
 {
     class ReplayFrameProducer : IFrameProducer
     {
-        List<Bitmap> _frames = new List<Bitmap>();
+        string[] _frames;
+        int _currentId = 0;
 
         public ReplayFrameProducer(string dir)
         {
-            foreach(var f in Directory.GetFiles(dir).Take(500))
-            {
-                _frames.Add(new Bitmap(f));
-            }
+            _frames = Directory.GetFiles(dir);
         }
 
         public event Action<Bitmap> FrameProduced;
@@ -25,14 +21,13 @@ namespace GTAPilot
         {
             new Thread(() =>
             {
-                int currentId = 0;
                 while (true)
                 {
-                    FrameProduced(_frames[currentId++]);
+                    FrameProduced(new Bitmap(_frames[_currentId++]));
 
-                    if (currentId >= _frames.Count) currentId = 0;
+                    if (_currentId >= _frames.Length) _currentId = 0;
 
-                    Thread.Sleep(1000 / 60); // 60fps
+                   // Thread.Sleep(1000 / 60); // 60fps
                 }
             }).Start();
         }

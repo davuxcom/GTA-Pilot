@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using GTAPilot.Indicators_v2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,11 +11,11 @@ namespace GTAPilot
 {
     class IndicatorHost
     {
-        public RollIndicator Roll = new RollIndicator();
-        public PitchIndicator Pitch = new PitchIndicator();
-        public SpeedIndicator Airspeed = new SpeedIndicator();
-        public AltitudeIndicator Altitude = new AltitudeIndicator();
-        public CompassIndicator Compass = new CompassIndicator();
+        public Indicator Roll = new Indicator(new RollIndicator_v2());
+        public Indicator Pitch = new Indicator(new PitchIndicator_v2());
+        public Indicator Airspeed = new Indicator(new AirspeedIndicator_v2());
+        public Indicator Altitude = new Indicator(new AltitudeIndicator_v2());
+        public Indicator Compass = new Indicator(new YawIndicator_v2());
 
         internal void HandleFrameArrived(FrameData data)
         {
@@ -24,18 +25,13 @@ namespace GTAPilot
                 Id = data.FrameId,
             };
 
-            var frame = new IndicatorData
-            {
-                Frame = new Image<Bgr, byte>(data.Frame),
-                Id = data.FrameId,
-                Timestamp = data.Time,
-            };
+            var frame = new Image<Bgr, byte>(data.Frame);
 
             Roll.Tick(frame);
-          //  Pitch.Tick(frame);
-          //  Airspeed.Tick(frame);
-          //  Altitude.Tick(frame);
-          //  Compass.Tick(frame);
+            Pitch.Tick(frame);
+            Airspeed.Tick(frame);
+            Altitude.Tick(frame);
+            Compass.Tick(frame);
 
         }
     }

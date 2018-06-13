@@ -78,18 +78,15 @@
     </ApplicationDefinition>
     <Compile Include="Controller.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
+    <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
-    <Compile Include="Indicators\AltitudeIndicator.cs" />
-    <Compile Include="Indicators\CompassIndicator.cs" />
-    <Compile Include="Indicators\Indicator.cs" />
-    <Compile Include="Indicators\InputType.cs" />
-    <Compile Include="Indicators\PitchIndicator.cs" />
-    <Compile Include="Indicators\RollIndicator.cs" />
-    <Compile Include="Indicators\SpeedIndicator.cs" />
     <Compile Include="Indicators_v2\AirspeedIndicator_v2.cs" />
+    <Compile Include="Indicators_v2\AltitudeIndicator_v2.cs" />
+    <Compile Include="Indicators_v2\Indicator.cs" />
     <Compile Include="Indicators_v2\ISimpleIndicator.cs" />
     <Compile Include="Indicators_v2\PitchIndicator_v2.cs" />
     <Compile Include="Indicators_v2\RollIndicator_v2.cs" />
+    <Compile Include="Indicators_v2\YawIndicator_v2.cs" />
     <Compile Include="Input\ReplayFrameProducer.cs" />
     <Compile Include="Input\SaveFrameConsumer.cs" />
     <Compile Include="Metrics.cs" />
