@@ -1,0 +1,139 @@
+﻿<Window x:Class="GTAPilot.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GTAPilot"
+        Title="MainWindow"
+        Width="800"
+        Height="450"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized">
+    <Window.Resources>
+        <Style TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="28" />
+        </Style>
+
+        <Style TargetType="ListViewItem">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <ContentPresenter Content="{TemplateBinding ContentControl.Content}" ContentTemplate="{TemplateBinding ContentControl.ContentTemplate}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ListView ItemsSource="{Binding Counters}">
+            <ListView.ItemTemplate>
+                <ItemContainerTemplate>
+                    <Grid Margin="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+
+                        <TextBlock HorizontalAlignment="Center"
+                                   FontSize="30"
+                                   Text="{Binding FPS}" />
+                        <TextBlock Grid.Row="1"
+                                   HorizontalAlignment="Center"
+                                   FontSize="18"
+                                   Text="{Binding Name}" />
+                    </Grid>
+
+
+                </ItemContainerTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ListView Grid.Column="1" ItemsSource="{Binding Indicators}">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>
+            <ListView.ItemTemplate>
+                <ItemContainerTemplate>
+                    <Grid Margin="6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Grid.Column="0"
+                                   FontSize="30"
+                                   Text="{Binding Name}" />
+                        <TextBlock Grid.Column="1"
+                                   HorizontalAlignment="Right"
+                                   FontSize="30"
+                                   Text="{Binding Value}" />
+
+                        <Border Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Background="Transparent"
+                                PreviewMouseUp="Border_PreviewMouseUp">
+                            <Image Width="200"
+                                   Height="200"
+                                   Source="{Binding Img}" />
+                        </Border>
+
+
+                        <TextBlock Grid.Row="2"
+                                   FontSize="30"
+                                   Text="{Binding BadFrameCount}" />
+                        <Button Grid.Row="2"
+                                Grid.Column="1"
+                                Click="SaveFrameSet_Click"
+                                Content="Save FrameSet"
+                                FontSize="20" />
+                        <TextBlock Grid.Row="3" FontSize="30">Tune:</TextBlock>
+                        <TextBlock Grid.Row="3"
+                                   Grid.Column="1"
+                                   HorizontalAlignment="Right"
+                                   FontSize="30"
+                                   Text="{Binding CachedTuningValue}" />
+
+                        <Border Grid.Row="4"
+                                Grid.ColumnSpan="2"
+                                BorderBrush="Black"
+                                BorderThickness="1">
+                            <local:IndicatorChart Width="200"
+                                                  Height="200"
+                                                  Indicator="{Binding}" />
+                        </Border>
+
+                    </Grid>
+                </ItemContainerTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <Button Click="Button_Click">Map</Button>
+        </StackPanel>
+
+        <ListBox Name="lstLog"
+                 Grid.Row="1"
+                 Grid.Column="1"
+                 FontSize="25" />
+    </Grid>
+</Window>

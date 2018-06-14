@@ -30,7 +30,9 @@ namespace GTAPilot
         public CompassExtendedFrame Extended = new CompassExtendedFrame();
 
         public PointF Location;
+
         internal bool IsComplete;
+
         internal bool LocationComplete;
     }
 
@@ -41,6 +43,7 @@ namespace GTAPilot
         // TODO: static to save allocations but bad
         public static TimelineFrame[] Data = new TimelineFrame[90000];
 
+        // location is los santos runway 3
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);
         public static PointF CurrentLocation;
 
@@ -50,8 +53,12 @@ namespace GTAPilot
         public static double Altitude => Latest(f => f.Altitude);
         public static double Heading => Latest(f => f.Heading);
 
-        public static void StartPositionThread()
+        public static Stopwatch Duration;
+
+        public static void Begin()
         {
+            Duration = Stopwatch.StartNew();
+
             new Thread(() =>
             {
                 int lastDoneFrame = -1;

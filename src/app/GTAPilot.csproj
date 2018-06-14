@@ -76,7 +76,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CaptureProgress.xaml.cs">
+    <Compile Include="IndicatorChart.cs" />
+    <Compile Include="UI\CaptureProgress.xaml.cs">
       <DependentUpon>CaptureProgress.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controller.cs" />
@@ -90,33 +91,33 @@
     <Compile Include="Indicators_v2\PitchIndicator_v2.cs" />
     <Compile Include="Indicators_v2\RollIndicator_v2.cs" />
     <Compile Include="Indicators_v2\YawIndicator_v2.cs" />
-    <Compile Include="IndicatorWindow.xaml.cs">
+    <Compile Include="UI\IndicatorWindow.xaml.cs">
       <DependentUpon>IndicatorWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Input\ReplayFrameProducer.cs" />
     <Compile Include="Input\SaveFrameConsumer.cs" />
-    <Compile Include="MapWindow.xaml.cs">
+    <Compile Include="UI\MapWindow.xaml.cs">
       <DependentUpon>MapWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Metrics.cs" />
-    <Compile Include="SourceSelectionDialog.xaml.cs">
+    <Compile Include="UI\SourceSelectionDialog.xaml.cs">
       <DependentUpon>SourceSelectionDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TestWindow.xaml.cs">
+    <Compile Include="UI\TestWindow.xaml.cs">
       <DependentUpon>TestWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Timeline.cs" />
     <Compile Include="TUNE.cs" />
-    <Compile Include="ZoomBorder.cs" />
-    <Page Include="CaptureProgress.xaml">
+    <Compile Include="UI\ZoomBorder.cs" />
+    <Page Include="UI\CaptureProgress.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="IndicatorWindow.xaml">
+    <Page Include="UI\IndicatorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="UI\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -134,25 +135,25 @@
     <Compile Include="Math2.cs" />
     <Compile Include="PID.cs" />
     <Compile Include="SystemManager.cs" />
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="UI\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="MapWindow.xaml">
+    <Page Include="UI\MapWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="SourceSelectionDialog.xaml">
+    <Page Include="UI\SourceSelectionDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TestWindow.xaml">
+    <Page Include="UI\TestWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainWindowViewModel.cs" />
+    <Compile Include="UI\MainWindowViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

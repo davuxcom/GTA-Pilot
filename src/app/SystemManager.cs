@@ -35,7 +35,7 @@ namespace GTAPilot
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
 
             _coordinator.Begin();
-            Timeline.StartPositionThread();
+            Timeline.Begin();
 
             _control.LockViewMin();
         }
