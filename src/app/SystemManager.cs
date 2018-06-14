@@ -27,10 +27,14 @@ namespace GTAPilot
         FrameInputCoordinator _coordinator;
         public IndicatorHost IndicatorHost;
         FlightController _control = new FlightController();
+        public ModeControlPanel MCP = new ModeControlPanel();
+        FlightDataComputer _computer;
 
         public SystemManager(IFrameProducer producer)
         {
-            IndicatorHost = new IndicatorHost();
+            _computer = new FlightDataComputer(MCP, _control);
+            IndicatorHost = new IndicatorHost(_computer);
+
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
 
@@ -38,6 +42,7 @@ namespace GTAPilot
             Timeline.Begin();
 
             _control.LockViewMin();
+
         }
 
         public SystemManager(IFrameProducer producer, Action<FrameData> consumer)

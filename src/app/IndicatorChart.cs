@@ -32,7 +32,7 @@ namespace GTAPilot
           "Type", typeof(IndicatorChartType), typeof(IndicatorChart), new PropertyMetadata());
 
 
-        int NUM_FRAMES = 120;
+        int NUM_FRAMES = 180;
         private static DispatcherTimer _tickTimer;
 
         public IndicatorChart()

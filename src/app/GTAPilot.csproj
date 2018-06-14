@@ -76,7 +76,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FlightDataComputer.cs" />
     <Compile Include="IndicatorChart.cs" />
+    <Compile Include="ModeControlPanel.cs" />
     <Compile Include="UI\CaptureProgress.xaml.cs">
       <DependentUpon>CaptureProgress.xaml</DependentUpon>
     </Compile>

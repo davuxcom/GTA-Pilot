@@ -95,6 +95,8 @@ namespace GTAPilot
         public ObservableCollection<FpsCounterViewModel> Counters { get; }
         public ObservableCollection<IndicatorViewModel> Indicators { get; }
 
+        public ModeControlPanel MCP => _inputManager.MCP;
+
         SaveFrameConsumer _captureSink;
         SystemManager _inputManager;
 
