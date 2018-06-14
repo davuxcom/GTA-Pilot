@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 
 namespace GTAPilot
 {
@@ -27,6 +28,7 @@ namespace GTAPilot
                     }
 
                     FrameProduced(frameId++, f.DesktopImage);
+                   // Thread.Sleep(10);
                 }
             });
             t.Priority = System.Threading.ThreadPriority.Highest;

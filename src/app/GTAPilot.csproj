@@ -109,7 +109,6 @@
       <DependentUpon>TestWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Timeline.cs" />
-    <Compile Include="TUNE.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
     <Page Include="UI\CaptureProgress.xaml">
       <SubType>Designer</SubType>

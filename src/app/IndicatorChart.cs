@@ -39,7 +39,7 @@ namespace GTAPilot
         {
             if (_tickTimer == null)
             {
-                _tickTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(1000 / 60) };
+                _tickTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(App.FPS) };
                 _tickTimer.Start();
             }
 

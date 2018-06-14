@@ -197,6 +197,7 @@ namespace GTAPilot.Indicators_v2
                                             }
                                         }
 
+                                        if (ObservedValue < 0) return double.NaN;
                                         return ObservedValue;
                                     }
                                 }

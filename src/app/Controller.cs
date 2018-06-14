@@ -5,9 +5,6 @@ namespace GTAPilot
 {
     public class FlightController
     {
-        public bool IsAuto { get; set; }
-        public bool SuspendRudder { get; internal set; }
-
         public void ToggleLandingGear()
         {
             Trace.WriteLine("Toggle landing gear");
@@ -42,8 +39,6 @@ namespace GTAPilot
 
         private void SendMessage(string msg, bool forceSend = false)
         {
-            if (!IsAuto && !forceSend) return;
-
             if (tcp == null)
             {
                 tcp = new TcpClient("127.0.0.1", 3377);
@@ -55,25 +50,6 @@ namespace GTAPilot
 
             s.Write(bytes, 0, bytes.Length);
             s.Flush();
-
-            /*
-
-            Stopwatch w = new Stopwatch();
-            w.Start();
-            using (NamedPipeClientStream pipeClient = new NamedPipeClientStream(".", "xbox", PipeDirection.Out))
-            {
-                pipeClient.Connect(1000);
-                using (StreamWriter sw = new StreamWriter(pipeClient))
-                {
-                    sw.WriteLine(msg);
-                    sw.Flush();
-                    sw.Close();
-                }
-                pipeClient.Close();
-            }
-            w.Stop();
-            //  Trace.WriteLine("%%%%%%%%% " + w.ElapsedMilliseconds);
-            */
         }
 
         internal void PressA()

@@ -4,6 +4,31 @@ using System.Threading;
 
 namespace GTAPilot
 {
+    public class PIDValue
+    {
+        public double P;
+        public double I;
+        public double D;
+    }
+
+    public static class TUNE
+    {
+        public static PIDValue Roll = new PIDValue { P = 2, I = 0, D = 0 };
+        public static PIDValue Pitch = new PIDValue { P = 1, I = 0, D = 0 };
+        public static PIDValue Speed = new PIDValue { P = 50, I = 0, D = 0.5 };
+        public static PIDValue Heading = new PIDValue { P = 1.5, I = 0, D = 0 };
+
+        public static double RollScale = 1;
+        public static double PitchScale = 1;
+
+        public static double Pitch_DeadZone = 8000;
+        public static double Pitch_Max = 14000;
+        public static double Roll_DeadZone = 8000;
+        public static double Roll_Max = 12000;
+
+        public static double RollTrim = 800;
+    }
+
     public delegate double GetDouble();
     public delegate void SetDouble(double value);
 
@@ -130,7 +155,7 @@ namespace GTAPilot
             return value;
         }
 
-        public void Compute(bool log=false)
+        public void Compute(bool log = false)
         {
             if (readPV == null || readSP == null || writeOV == null)
                 return;
@@ -168,7 +193,7 @@ namespace GTAPilot
                 }
 
                 if (dT != 0.0f) dTerm = kd * (err - lastErr) / dT;
-                    //dTerm = kd * (pv - lastPV) / dT;
+                //dTerm = kd * (pv - lastPV) / dT;
             }
 
             lastUpdate = nowTime;

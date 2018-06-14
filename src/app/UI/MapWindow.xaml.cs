@@ -19,7 +19,7 @@ namespace GTAPilot
 
             img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full.png")));
 
-            _timer.Interval = TimeSpan.FromMilliseconds(1000 / 60);
+            _timer.Interval = TimeSpan.FromMilliseconds(App.FPS);
             _timer.Tick += Timer_Tick;
             _timer.Start();
         }

@@ -29,6 +29,14 @@ namespace GTAPilot
             set => UpdateAndNotify(nameof(HeadingHold), value, ref _headingHold);
         }
 
+        private bool _speedHold;
+
+        public bool SpeedHold
+        {
+            get => _speedHold;
+            set => UpdateAndNotify(nameof(SpeedHold), value, ref _speedHold);
+        }
+
         private void UpdateAndNotify(string prop, bool newValue, ref bool storageValue)
         {
             if (newValue != storageValue)

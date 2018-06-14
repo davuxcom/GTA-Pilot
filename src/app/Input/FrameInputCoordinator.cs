@@ -25,7 +25,7 @@ namespace GTAPilot
         {
             _producer.Begin();
 
-            StartWorkerThread();
+          //  StartWorkerThread();
         }
 
         private void StartWorkerThread()
@@ -51,8 +51,8 @@ namespace GTAPilot
         private void FrameProducer_FrameProduced(int frameId, System.Drawing.Bitmap frame)
         {
             EnqueuePerf.GotFrame();
-
-            _input.Enqueue(new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds));
+            _consumer.Invoke(new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds));
+           // _input.Enqueue(new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds));
         }
     }
 }

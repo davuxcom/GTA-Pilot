@@ -157,6 +157,7 @@
             <ToggleButton IsChecked="{Binding MCP.PitchHold, Mode=TwoWay}">PITCH HOLD</ToggleButton>
             <ToggleButton IsChecked="{Binding MCP.BankHold, Mode=TwoWay}">BANK HOLD</ToggleButton>
             <ToggleButton IsChecked="{Binding MCP.HeadingHold, Mode=TwoWay}">HDG HOLD</ToggleButton>
+            <ToggleButton IsChecked="{Binding MCP.SpeedHold, Mode=TwoWay}">IAS HOLD</ToggleButton>
         </StackPanel>
 
         <ListBox Name="lstLog"
