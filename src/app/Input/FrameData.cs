@@ -7,13 +7,13 @@ namespace GTAPilot
     {
         public Bitmap Frame { get; set; }
         public int FrameId { get; set; }
-        public DateTime Time { get; set; }
+        public double Seconds { get; set; }
 
-        public FrameData(int frameId, Bitmap frame)
+        public FrameData(int frameId, Bitmap frame, double seconds)
         {
             Frame = frame;
             FrameId = frameId;
-            Time = DateTime.Now;
+            Seconds = seconds;
         }
     }
 }

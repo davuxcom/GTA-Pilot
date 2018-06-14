@@ -19,5 +19,9 @@ namespace GTAPilot.Extensions
             return new PointF(self.X + other.X, self.Y + other.Y);
         }
 
+        public static PointF Add(this PointF self, PointF other)
+        {
+            return new PointF(self.X + other.X, self.Y + other.Y);
+        }
     }
 }

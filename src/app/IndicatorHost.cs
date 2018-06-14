@@ -3,18 +3,14 @@ using Emgu.CV.Structure;
 using GTAPilot.Indicators_v2;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace GTAPilot
 {
     public class IndicatorData
     {
         public Image<Bgr, byte> Frame;
-        public DateTime Timestamp;
+        public double Seconds;
         public int Id;
     }
 
@@ -85,7 +81,7 @@ namespace GTAPilot
         {
             Timeline.Data[data.FrameId] = new TimelineFrame
             {
-                Time = data.Time,
+                Seconds = data.Seconds,
                 Id = data.FrameId,
             };
 
@@ -95,7 +91,7 @@ namespace GTAPilot
             {
                 Frame = new Image<Bgr, byte>(data.Frame),
                 Id = data.FrameId,
-                Timestamp = data.Time,
+                Seconds = data.Seconds,
             };
 
             Tick1(frame);
@@ -125,6 +121,8 @@ namespace GTAPilot
         void Tick5(IndicatorData data)
         {
             Timeline.Data[data.Id].Heading = Compass.Tick(data);
+
+            Timeline.Data[data.Id].IsComplete = true;
         }
     }
 }

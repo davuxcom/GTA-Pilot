@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 
 namespace GTAPilot
@@ -11,7 +12,7 @@ namespace GTAPilot
 
         IFrameProducer _producer;
         Action<FrameData> _consumer;
-
+        Stopwatch _producingTimer;
         ConcurrentQueue<FrameData> _input = new ConcurrentQueue<FrameData>();
 
         public FrameInputCoordinator(IFrameProducer producer, Action<FrameData> consumer)
@@ -23,13 +24,10 @@ namespace GTAPilot
 
         public void Begin()
         {
+            _producingTimer = Stopwatch.StartNew();
             _producer.Begin();
 
             StartWorkerThread();
-            //StartWorkerThread();
-           // StartWorkerThread();
-           // StartWorkerThread();
-
         }
 
         private void StartWorkerThread()
@@ -56,7 +54,7 @@ namespace GTAPilot
         {
             EnqueuePerf.GotFrame();
 
-            _input.Enqueue(new FrameData(frameId, frame));
+            _input.Enqueue(new FrameData(frameId, frame, _producingTimer.ElapsedTicks / Stopwatch.Frequency));
         }
     }
 }

@@ -49,7 +49,7 @@ namespace GTAPilot
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int FPS => _counter.CalculateFps();
+        public int FPS => _counter.Fps;
         public string Name { get; private set; }
 
         FpsCounter _counter;

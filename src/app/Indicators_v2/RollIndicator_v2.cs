@@ -165,14 +165,14 @@ namespace GTAPilot.Indicators_v2
                     }
                     else
                     {
-                        Trace.WriteLine($"ROLL: boundaries {boundaries.Count}");
+                      //  Trace.WriteLine($"ROLL: boundaries {boundaries.Count}");
                         return double.NaN;
                     }
 
                     var dist = Math2.GetDistance(boundary_one, boundary_two);
                     if (dist < 88 || dist > 140)
                     {
-                        Trace.WriteLine($"ROLL: Dist {dist}");
+                      //  Trace.WriteLine($"ROLL: Dist {dist}");
                         return double.NaN;
                     }
 
@@ -202,12 +202,12 @@ namespace GTAPilot.Indicators_v2
                 }
                 else
                 {
-                    Trace.WriteLine($"ROLL: boundary circles");
+                  //  Trace.WriteLine($"ROLL: boundary circles");
                 }
             }
             else
             {
-                Trace.WriteLine($"ROLL: Main circles");
+              //  Trace.WriteLine($"ROLL: Main circles");
             }
             return double.NaN;
         }

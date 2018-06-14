@@ -53,7 +53,13 @@ namespace GTAPilot.Extensions
                 ret = img.InRange(lower.GetHsv(), higher);
 
                 var ct = ret.CountNonzeroAsPercentage();
-                Trace.WriteLine("ADJUST: " + ct);
+              //  Trace.WriteLine("ADJUST: " + ct);
+
+                if (rev > 100)
+                {
+                    Trace.WriteLine("ERROR: DynLowInRange exceeded 100");
+                    break;
+                }
             }
 
             return ret;
@@ -107,9 +113,9 @@ namespace GTAPilot.Extensions
             }
             else
             {
-                return false; // good enough!
+                return false;
             }
-            return true;
+            return true; // keep trying
         }
 
         public double Hue { get; set; }

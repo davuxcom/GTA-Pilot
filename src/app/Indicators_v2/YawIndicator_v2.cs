@@ -272,7 +272,7 @@ namespace GTAPilot.Indicators_v2
 
                     
                     if (last_frameref != null &&
-                       (my_frameref.Time - last_frameref.Time).TotalMilliseconds < 1000)
+                       (my_frameref.Seconds - last_frameref.Seconds) < 1000)
                     {
 
                         if (str != "N" &&
