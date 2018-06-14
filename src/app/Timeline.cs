@@ -27,6 +27,12 @@ namespace GTAPilot
         public double Pitch = double.NaN;
         public double Altitude = double.NaN;
 
+        public double SvcHeading = double.NaN;
+        public double SvcSpeed = double.NaN;
+        public double SvcRoll = double.NaN;
+        public double SvcPitch = double.NaN;
+        public double SvcAltitude = double.NaN;
+
         public CompassExtendedFrame Extended = new CompassExtendedFrame();
 
         public PointF Location;

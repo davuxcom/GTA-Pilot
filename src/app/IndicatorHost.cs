@@ -101,26 +101,31 @@ namespace GTAPilot
         void Tick1(IndicatorData data)
         {
             Timeline.Data[data.Id].Roll = Roll.Tick(data);
+            Timeline.Data[data.Id].SvcRoll = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
         }
 
         void Tick2(IndicatorData data)
         {
             Timeline.Data[data.Id].Pitch = Pitch.Tick(data);
+            Timeline.Data[data.Id].SvcPitch = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
         }
 
         void Tick3(IndicatorData data)
         {
             Timeline.Data[data.Id].Speed = Airspeed.Tick(data);
+            Timeline.Data[data.Id].SvcSpeed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
         }
 
         void Tick4(IndicatorData data)
         {
             Timeline.Data[data.Id].Altitude = Altitude.Tick(data);
+            Timeline.Data[data.Id].SvcAltitude = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
         }
 
         void Tick5(IndicatorData data)
         {
             Timeline.Data[data.Id].Heading = Compass.Tick(data);
+            Timeline.Data[data.Id].SvcHeading = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
 
             Timeline.Data[data.Id].IsComplete = true;
         }
