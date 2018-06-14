@@ -5,7 +5,9 @@
         Title="MapWindow"
         Width="800"
         Height="450">
-    <Grid>
+    <local:ZoomBorder x:Name="border"
+                      Background="Gray"
+                      ClipToBounds="True">
         <Viewbox>
             <Grid>
                 <Image Name="img"
@@ -17,5 +19,5 @@
                         Height="6000" />
             </Grid>
         </Viewbox>
-    </Grid>
+    </local:ZoomBorder>
 </Window>

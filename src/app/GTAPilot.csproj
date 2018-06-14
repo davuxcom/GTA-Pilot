@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="Timeline.cs" />
     <Compile Include="TUNE.cs" />
+    <Compile Include="ZoomBorder.cs" />
     <Page Include="CaptureProgress.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
