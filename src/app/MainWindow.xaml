@@ -116,6 +116,10 @@
             </ListView.ItemTemplate>
         </ListView>
 
+        <StackPanel Grid.Row="1" Orientation="Vertical">
+            <Button Click="Button_Click">Map</Button>
+        </StackPanel>
+
         <ListBox Name="lstLog"
                  Grid.Row="1"
                  Grid.Column="1"

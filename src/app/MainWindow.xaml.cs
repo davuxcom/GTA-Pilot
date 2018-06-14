@@ -126,5 +126,11 @@ namespace GTAPilot
             var window = new IndicatorWindow(viewModel);
             window.ShowDialog();
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var m = new MapWindow();
+            m.ShowDialog();
+        }
     }
 }

@@ -31,6 +31,7 @@ namespace GTAPilot
 
         public PointF Location;
         internal bool IsComplete;
+        internal bool LocationComplete;
     }
 
     class Timeline
@@ -110,6 +111,7 @@ namespace GTAPilot
             var newFrame = Data[id];
             if (id == 0)
             {
+                newFrame.LocationComplete = true;
                 newFrame.Location = StartLocation;
             }
             else
@@ -123,15 +125,16 @@ namespace GTAPilot
                     {
                         var dx = ComputePositionChange(oldFrame, newFrame);
                         newFrame.Location = oldFrame.Location.Add(dx);
+                        newFrame.LocationComplete = true;
                         CurrentLocation = newFrame.Location;
 
-                        Trace.WriteLine($"GPS: {id} {newFrame.Location}");
                         return;
                     }
                 }
 
                 oldFrame = LatestFrame((f) => f.Location == default(PointF) ? double.NaN : 0, id - 1);
                 newFrame.Location = oldFrame.Location;
+                newFrame.LocationComplete = true;
                 CurrentLocation = newFrame.Location;
             }
             
@@ -157,7 +160,7 @@ namespace GTAPilot
             }
 
             return new PointF((float)(Math.Sin(Math2.ToRad(heading)) * (scale * MetersPerSecond * timeDelta)),
-                              (float)(Math.Cos(Math2.ToRad(heading)) * (scale * MetersPerSecond * timeDelta)));
+                              (float)(Math.Cos(Math2.ToRad(heading)) * (scale * MetersPerSecond * timeDelta * -1)));
         }
     }
 }
