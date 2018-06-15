@@ -104,7 +104,7 @@ namespace GTAPilot
             return double.NaN;
         }
 
-        private static TimelineFrame LatestFrame(Func<TimelineFrame, double> finder, int endId)
+        public static TimelineFrame LatestFrame(Func<TimelineFrame, double> finder, int endId)
         {
             for (var i = endId; i >= 0; i--)
             {
