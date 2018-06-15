@@ -53,28 +53,17 @@ namespace GTAPilot
             };
         }
 
-        void Handle_Roll(double power)
+        double Handle_Roll(double power)
         {
             power -= short.MaxValue;
 
-            if (double.IsNaN(power)) return;
-
             var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
-
             power = RemoveDeadZone(power, FlightComputerConfig.Roll_DeadZone, FlightComputerConfig.Roll_Max);
-           // power = GetScaledValue(power, 1);
-
-            if (!double.IsNaN(DesiredRoll))
-            {
-                _control.SetRoll(power);
-
-
-                //  _panel.Roll.OutputValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = pp });
-                //  _panel.Roll.SetpointValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = DesiredRoll });
-            }
+            _control.SetRoll(power);
+            return power;
         }
 
-        void Handle_Pitch(double power)
+        double Handle_Pitch(double power)
         {
             power -= short.MaxValue;
             power *= -1;
@@ -82,39 +71,16 @@ namespace GTAPilot
             var rollAngle = Math.Abs(Timeline.Roll);
             if (rollAngle > 18)
             {
-                // var add = rollAngle * TUNE.RollTrim;
-
-                // Trace.WriteLine("Power change; " + add);
                 power += FlightComputerConfig.RollTrim;
             }
 
-            /*
-            double max = short.MaxValue;
-            bool isAggressive = _panel.Computer.Nav.CurrentMode == FlightNavigator.FlightMode.Takeoff_Rotate ||
-                    _panel.Computer.Nav.CurrentMode == FlightNavigator.FlightMode.Landing_Final;
-            if (!isAggressive)
-            {
-                max = TUNE.Pitch_Max;
-            }
-            */
             double max = FlightComputerConfig.Pitch_Max;
             var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
 
             power = RemoveDeadZone(power, FlightComputerConfig.Pitch_DeadZone, max);
-           // power = GetScaledValue(power, FlightComputerConfig.PitchScale);
 
-
-
-            if (!double.IsNaN(DesiredPitch))
-            {
-                //   _panel.Pitch.OutputValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = pp });
-                //   _panel.Pitch.SetpointValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = DesiredPitch });
-            }
-
-            if (!double.IsNaN(DesiredPitch))
-            {
-                _control.SetPitch(power);
-            }
+            _control.SetPitch(power);
+            return power;
         }
 
         double Handle_Get_Compass()
@@ -169,7 +135,7 @@ namespace GTAPilot
             return (int)Math.Round(ret);
         }
 
-        void Handle_Compass(double power)
+        double Handle_Compass(double power)
         {
             var v = Math.Round(power);
             double vx = 0;
@@ -178,62 +144,22 @@ namespace GTAPilot
             {
                 v -= 50;
                 vx = v;
-                /*
-                if (v < 8)
-                {
-                    v = 1;
-                    vx = 1;
-                }
-                else v -= 10;
-
-                if (v > 20) v = 20;
-                */
-
-                if (!double.IsNaN(DesiredHeading))
-                {
-                    _control.SetLeftRudder(v);
-                }
+                _control.SetLeftRudder(v);
             }
             else if (v < 50)
             {
                 v = 50 - v;
                 vx = v * -1;
 
-                /*
-                if (v < 8)
-                {
-                    v = 1;
-                    vx = -1;
-                }
-                else v -= 10;
-
-                if (v > 20) v = 20;
-                */
-
-                if (!double.IsNaN(DesiredHeading))
-                {
-                    _control.SetRightRudder(v);
-                }
+                _control.SetRightRudder(v);
             }
-
-            if (!double.IsNaN(DesiredHeading))
-            {
-                // _panel.Compass.OutputValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = vx });
-                //  _panel.Compass.SetpointValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = 0 });
-            }
+            return v;
         }
 
-        public void Handle_Throttle(double throttle)
+        double Handle_Throttle(double throttle)
         {
-            if (!double.IsNaN(DesiredSpeed))
-            {
-                _control.SetThrottle(throttle);
-            }
-
-            // _panel.Speed.OutputValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = pp });
-            //  _panel.Speed.SetpointValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = DesiredSpeed });
-
-            //    ActualThrottle = pp;
+            _control.SetThrottle(throttle);
+            return throttle;
         }
 
         double RemoveDeadZone(double power, double deadzone, double max)
@@ -310,7 +236,7 @@ namespace GTAPilot
         {
             if (_mcp.BankHold)
             {
-                Handle_Roll(_roll_pid.Compute(Timeline.Roll + FlightComputerConfig.Roll.PV_Skew,
+                Timeline.Data[id].Roll.OutputValue = Handle_Roll(_roll_pid.Compute(Timeline.Roll + FlightComputerConfig.Roll.PV_Skew,
                     double.IsNaN(DesiredRoll) ? FlightComputerConfig.Roll.PV.Mid : DesiredRoll + FlightComputerConfig.Roll.PV.Mid,
                     ComputeDTForFrameId(id, (f) => f.Roll.Value)));
                 Timeline.Data[id].Roll.SetpointValue = DesiredRoll;
@@ -325,7 +251,7 @@ namespace GTAPilot
         {
             if (_mcp.PitchHold)
             {
-                Handle_Pitch(_pitch_pid.Compute(Timeline.Pitch + FlightComputerConfig.Pitch.PV_Skew,
+                Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(_pitch_pid.Compute(Timeline.Pitch + FlightComputerConfig.Pitch.PV_Skew,
                     double.IsNaN(DesiredPitch) ? FlightComputerConfig.Pitch.PV.Mid : DesiredPitch + FlightComputerConfig.Pitch.PV.Mid,
                     ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
                 Timeline.Data[id].Pitch.SetpointValue = DesiredPitch;
@@ -337,7 +263,7 @@ namespace GTAPilot
         {
             if (_mcp.SpeedHold)
             {
-                Handle_Throttle(_airspeed_pid.Compute(Timeline.Speed + FlightComputerConfig.Speed.PV_Skew,
+                Timeline.Data[id].Speed.OutputValue = Handle_Throttle(_airspeed_pid.Compute(Timeline.Speed + FlightComputerConfig.Speed.PV_Skew,
                     double.IsNaN(DesiredSpeed) ? FlightComputerConfig.Speed.PV.Mid : DesiredSpeed + FlightComputerConfig.Speed.PV.Mid,
                     ComputeDTForFrameId(id, (f) => f.Speed.Value)));
                 Timeline.Data[id].Speed.SetpointValue = DesiredSpeed;
@@ -352,7 +278,7 @@ namespace GTAPilot
         {
             if (_mcp.HeadingHold)
             {
-                Handle_Compass(_heading_pid.Compute(Timeline.Heading + FlightComputerConfig.Yaw.PV_Skew,
+                Timeline.Data[id].Heading.OutputValue = Handle_Compass(_heading_pid.Compute(Timeline.Heading + FlightComputerConfig.Yaw.PV_Skew,
                     Handle_Get_Compass(),
                     ComputeDTForFrameId(id, (f) => f.Heading.Value)));
                 Timeline.Data[id].Heading.SetpointValue = DesiredHeading;

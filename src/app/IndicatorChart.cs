@@ -10,7 +10,7 @@ namespace GTAPilot
 
     public enum IndicatorChartType
     {
-        Value, Delay
+        Value, Delay, Output
     }
 
     public class IndicatorChart : Canvas
@@ -32,7 +32,7 @@ namespace GTAPilot
           "Type", typeof(IndicatorChartType), typeof(IndicatorChart), new PropertyMetadata());
 
 
-        int NUM_FRAMES = 180;
+        int NUM_FRAMES = 200 / 4;
         private static DispatcherTimer _tickTimer;
 
         public IndicatorChart()
@@ -54,7 +54,7 @@ namespace GTAPilot
             for (var i = 0; i < NUM_FRAMES; i++)
             {
                 var l = new Line();
-                l.Stroke = Brushes.Blue;
+                l.Stroke = Brushes.Gray;
                 l.StrokeThickness = 2;
                 Children.Add(l);
             }
@@ -62,52 +62,44 @@ namespace GTAPilot
             _tickTimer.Tick += TickTimer_Tick;
         }
 
+        private TimelineValue GetTimelineValueForIndicator(TimelineFrame frame)
+        {
+            switch (Indicator.Type)
+            {
+                case IndicatorType.Roll: return frame.Roll;
+                case IndicatorType.Pitch: return frame.Pitch;
+                case IndicatorType.Speed: return frame.Speed;
+                case IndicatorType.Altitude: return frame.Altitude;
+                case IndicatorType.Yaw: return frame.Heading;
+                default: throw new NotImplementedException();
+            }
+        }
+
         private double GetValueForIndicator(TimelineFrame frame)
         {
             if (Type == IndicatorChartType.Delay)
             {
-                switch (Indicator.Type)
-                {
-                    case IndicatorType.Roll: return frame.Roll.SecondsWhenComputed;
-                    case IndicatorType.Pitch: return frame.Pitch.SecondsWhenComputed;
-                    case IndicatorType.Speed: return frame.Speed.SecondsWhenComputed;
-                    case IndicatorType.Altitude: return frame.Altitude.SecondsWhenComputed;
-                    case IndicatorType.Yaw: return frame.Heading.SecondsWhenComputed;
-                    default: throw new NotImplementedException();
-                }
+                return GetTimelineValueForIndicator(frame).SecondsWhenComputed;
             }
-            else
+            else if (Type == IndicatorChartType.Value)
             {
-                switch (Indicator.Type)
-                {
-                    case IndicatorType.Roll: return frame.Roll.Value;
-                    case IndicatorType.Pitch: return frame.Pitch.Value;
-                    case IndicatorType.Speed: return frame.Speed.Value;
-                    case IndicatorType.Altitude: return frame.Altitude.Value;
-                    case IndicatorType.Yaw: return frame.Heading.Value;
-                    default: throw new NotImplementedException();
-                }
+                return GetTimelineValueForIndicator(frame).Value;
             }
+            else if (Type == IndicatorChartType.Output)
+            {
+                return GetTimelineValueForIndicator(frame).OutputValue;
+            }
+            throw new NotImplementedException();
         }
 
         private double GetSetPointForIndicator(TimelineFrame frame)
         {
-            if (Type == IndicatorChartType.Delay)
+            if (Type == IndicatorChartType.Value)
             {
-                return 0;
+                return GetTimelineValueForIndicator(frame).SetpointValue;
             }
-            else
-            {
-                switch (Indicator.Type)
-                {
-                    case IndicatorType.Roll: return frame.Roll.SetpointValue;
-                    case IndicatorType.Pitch: return frame.Pitch.SetpointValue;
-                    case IndicatorType.Speed: return frame.Speed.SetpointValue;
-                    case IndicatorType.Altitude: return frame.Altitude.SetpointValue;
-                    case IndicatorType.Yaw: return frame.Heading.SetpointValue;
-                    default: throw new NotImplementedException();
-                }
-            }
+
+            return double.NaN;
         }
 
         private double[] GetRangeForIndicator()
@@ -116,7 +108,7 @@ namespace GTAPilot
             {
                 return new double[] { 0, 1 }; // seconds
             }
-            else
+            else if (Type == IndicatorChartType.Value)
             {
                 switch (Indicator.Type)
                 {
@@ -128,6 +120,19 @@ namespace GTAPilot
                     default: throw new NotImplementedException();
                 }
             }
+            else if (Type == IndicatorChartType.Output)
+            {
+                switch (Indicator.Type)
+                {
+                    case IndicatorType.Roll: return new double[] { FlightComputerConfig.Roll.OV.Min, FlightComputerConfig.Roll.OV.Max };
+                    case IndicatorType.Pitch: return new double[] { FlightComputerConfig.Pitch.OV.Min, FlightComputerConfig.Pitch.OV.Max };
+                    case IndicatorType.Speed: return new double[] { FlightComputerConfig.Speed.OV.Min, FlightComputerConfig.Speed.OV.Max };
+                    case IndicatorType.Altitude: return new double[] { -1, 1 };
+                    case IndicatorType.Yaw: return new double[] { FlightComputerConfig.Yaw.OV.Min, FlightComputerConfig.Yaw.OV.Max };
+                    default: throw new NotImplementedException();
+                }
+            }
+            throw new NotImplementedException();
         }
 
         private void TickTimer_Tick(object sender, EventArgs e)

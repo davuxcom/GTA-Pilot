@@ -91,6 +91,7 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
                         <TextBlock Grid.Column="0"
@@ -144,6 +145,16 @@
                                                   Height="200"
                                                   Indicator="{Binding}"
                                                   Type="Delay" />
+                        </Border>
+
+                        <Border Grid.Row="6"
+                                Grid.ColumnSpan="2"
+                                BorderBrush="Black"
+                                BorderThickness="1">
+                            <local:IndicatorChart Width="200"
+                                                  Height="200"
+                                                  Indicator="{Binding}"
+                                                  Type="Output" />
                         </Border>
 
                     </Grid>
