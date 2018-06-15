@@ -46,6 +46,14 @@ namespace GTAPilot
             for (var i = 0; i < NUM_FRAMES; i++)
             {
                 var l = new Line();
+                l.Stroke = Brushes.Magenta;
+                l.StrokeThickness = 2;
+                Children.Add(l);
+            }
+
+            for (var i = 0; i < NUM_FRAMES; i++)
+            {
+                var l = new Line();
                 l.Stroke = Brushes.Blue;
                 l.StrokeThickness = 2;
                 Children.Add(l);
@@ -60,11 +68,11 @@ namespace GTAPilot
             {
                 switch (Indicator.Type)
                 {
-                    case IndicatorType.Roll: return frame.SvcRoll;
-                    case IndicatorType.Pitch: return frame.SvcPitch;
-                    case IndicatorType.Speed: return frame.SvcSpeed;
-                    case IndicatorType.Altitude: return frame.SvcAltitude;
-                    case IndicatorType.Yaw: return frame.SvcHeading;
+                    case IndicatorType.Roll: return frame.Roll.SecondsWhenComputed;
+                    case IndicatorType.Pitch: return frame.Pitch.SecondsWhenComputed;
+                    case IndicatorType.Speed: return frame.Speed.SecondsWhenComputed;
+                    case IndicatorType.Altitude: return frame.Altitude.SecondsWhenComputed;
+                    case IndicatorType.Yaw: return frame.Heading.SecondsWhenComputed;
                     default: throw new NotImplementedException();
                 }
             }
@@ -72,11 +80,31 @@ namespace GTAPilot
             {
                 switch (Indicator.Type)
                 {
-                    case IndicatorType.Roll: return frame.Roll;
-                    case IndicatorType.Pitch: return frame.Pitch;
-                    case IndicatorType.Speed: return frame.Speed;
-                    case IndicatorType.Altitude: return frame.Altitude;
-                    case IndicatorType.Yaw: return frame.Heading;
+                    case IndicatorType.Roll: return frame.Roll.Value;
+                    case IndicatorType.Pitch: return frame.Pitch.Value;
+                    case IndicatorType.Speed: return frame.Speed.Value;
+                    case IndicatorType.Altitude: return frame.Altitude.Value;
+                    case IndicatorType.Yaw: return frame.Heading.Value;
+                    default: throw new NotImplementedException();
+                }
+            }
+        }
+
+        private double GetSetPointForIndicator(TimelineFrame frame)
+        {
+            if (Type == IndicatorChartType.Delay)
+            {
+                return 0;
+            }
+            else
+            {
+                switch (Indicator.Type)
+                {
+                    case IndicatorType.Roll: return frame.Roll.SetpointValue;
+                    case IndicatorType.Pitch: return frame.Pitch.SetpointValue;
+                    case IndicatorType.Speed: return frame.Speed.SetpointValue;
+                    case IndicatorType.Altitude: return frame.Altitude.SetpointValue;
+                    case IndicatorType.Yaw: return frame.Heading.SetpointValue;
                     default: throw new NotImplementedException();
                 }
             }
@@ -109,7 +137,7 @@ namespace GTAPilot
                 double current_x = Width;
                 double x_size = Width / NUM_FRAMES;
 
-                int childIndex = 0;
+                int childIndex = NUM_FRAMES;
                 TimelineFrame last = null;
                 for (var i = Timeline.LastFrameId; i >= 0 && i > Timeline.LastFrameId - NUM_FRAMES; i--)
                 {
@@ -121,6 +149,7 @@ namespace GTAPilot
                     else
                     {
                         var l = (Line)Children[childIndex];
+                        var s = (Line)Children[childIndex - NUM_FRAMES];
 
                         if (!double.IsNaN(GetValueForIndicator(current)) && !double.IsNaN(GetValueForIndicator(last)))
                         {
@@ -128,10 +157,24 @@ namespace GTAPilot
                             l.X2 = current_x - x_size;
                             l.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(current));
                             l.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(last));
+
+                            s.X1 = l.X1;
+                            s.X2 = l.X2;
+
+                            if (!double.IsNaN(GetSetPointForIndicator(current)) && !double.IsNaN(GetSetPointForIndicator(last)))
+                            {
+                                s.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(current));
+                                s.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(last));
+                            }
+                            else
+                            {
+                                s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
+                            }
                         }
                         else
                         {
                             l.X1 = l.X2 = l.Y1 = l.Y2 = 0;
+                            s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
                         }
                         current_x = current_x - x_size;
                         childIndex++;

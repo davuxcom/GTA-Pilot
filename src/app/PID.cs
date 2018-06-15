@@ -1,4 +1,6 @@
-﻿namespace GTAPilot
+﻿using System;
+
+namespace GTAPilot
 {
     public class PID
     {
@@ -81,6 +83,12 @@
             outReal = ScaleValue(outReal, -1.0f, 1.0f, OV.Min, OV.Max);
 
             return outReal;
+        }
+
+        public void ClearError()
+        {
+            errSum = 0;
+            lastErr = 0;
         }
     }
 }

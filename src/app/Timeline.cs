@@ -16,22 +16,25 @@ namespace GTAPilot
         public double RollBias = double.NaN;
     }
 
+    public class TimelineValue
+    {
+        public double Value = double.NaN;
+        public double SecondsWhenComputed = double.NaN;
+
+        public double OutputValue = double.NaN;
+        public double SetpointValue = double.NaN;
+    }
+
     public class TimelineFrame
     {
         public long Id;
         public double Seconds;
 
-        public double Heading = double.NaN;
-        public double Speed = double.NaN;
-        public double Roll = double.NaN;
-        public double Pitch = double.NaN;
-        public double Altitude = double.NaN;
-
-        public double SvcHeading = double.NaN;
-        public double SvcSpeed = double.NaN;
-        public double SvcRoll = double.NaN;
-        public double SvcPitch = double.NaN;
-        public double SvcAltitude = double.NaN;
+        public TimelineValue Heading = new TimelineValue();
+        public TimelineValue Speed = new TimelineValue();
+        public TimelineValue Roll = new TimelineValue();
+        public TimelineValue Pitch = new TimelineValue();
+        public TimelineValue Altitude = new TimelineValue();
 
         public CompassExtendedFrame Extended = new CompassExtendedFrame();
 
@@ -53,11 +56,11 @@ namespace GTAPilot
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);
         public static PointF CurrentLocation;
 
-        public static double Roll => Latest(f => f.Roll);
-        public static double Pitch => Latest(f => f.Pitch);
-        public static double Speed => Latest(f => f.Speed);
-        public static double Altitude => Latest(f => f.Altitude);
-        public static double Heading => Latest(f => f.Heading);
+        public static double Roll => Latest(f => f.Roll.Value);
+        public static double Pitch => Latest(f => f.Pitch.Value);
+        public static double Speed => Latest(f => f.Speed.Value);
+        public static double Altitude => Latest(f => f.Altitude.Value);
+        public static double Heading => Latest(f => f.Heading.Value);
 
         public static Stopwatch Duration;
 
@@ -130,10 +133,10 @@ namespace GTAPilot
             else
             {
                 TimelineFrame oldFrame;
-                if (!double.IsNaN(newFrame.Heading) && !double.IsNaN(newFrame.Speed))
+                if (!double.IsNaN(newFrame.Heading.Value) && !double.IsNaN(newFrame.Speed.Value))
                 {
                     // Find a frame with valid speed and heading
-                    oldFrame = LatestFrame((f) => f.Heading + f.Speed, id - 1);
+                    oldFrame = LatestFrame((f) => f.Heading.Value + f.Speed.Value, id - 1);
                     if (oldFrame != null && oldFrame != newFrame)
                     {
                         var dx = ComputePositionChange(oldFrame, newFrame);
@@ -157,14 +160,14 @@ namespace GTAPilot
         {
             var timeDelta = newFrame.Seconds - oldFrame.Seconds;
 
-            var speed = newFrame.Speed;
+            var speed = newFrame.Speed.Value;
 
             var knotsPerHour = speed;
             var KnotsPerSecondToMetersPerSecond = 0.51444444444;
             var MetersPerSecond = knotsPerHour * KnotsPerSecondToMetersPerSecond;
             var scale = 1 / 3.32;
 
-            double heading = newFrame.Heading;
+            double heading = newFrame.Heading.Value;
 
             if (!double.IsNaN(newFrame.Extended.Bias) &&
                 !double.IsNaN(newFrame.Extended.RollBias))

@@ -102,38 +102,42 @@ namespace GTAPilot
 
         void Tick1(IndicatorData data)
         {
-            Timeline.Data[data.Id].Roll = Roll.Tick(data);
-            Timeline.Data[data.Id].SvcRoll = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+            Timeline.Data[data.Id].Roll.Value = Roll.Tick(data);
             _computer.OnRollDataSampled(data.Id);
+            Timeline.Data[data.Id].Roll.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+
         }
 
         void Tick2(IndicatorData data)
         {
-            Timeline.Data[data.Id].Pitch = Pitch.Tick(data);
-            Timeline.Data[data.Id].SvcPitch = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+            Timeline.Data[data.Id].Pitch.Value = Pitch.Tick(data);
             _computer.OnPitchDataSampled(data.Id);
+            Timeline.Data[data.Id].Pitch.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+
         }
 
         void Tick3(IndicatorData data)
         {
-            Timeline.Data[data.Id].Speed = Airspeed.Tick(data);
-            Timeline.Data[data.Id].SvcSpeed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+            Timeline.Data[data.Id].Speed.Value = Airspeed.Tick(data);
             _computer.OnSpeedDataSampled(data.Id);
+            Timeline.Data[data.Id].Speed.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+
         }
 
         void Tick4(IndicatorData data)
         {
-            Timeline.Data[data.Id].Altitude = Altitude.Tick(data);
-            Timeline.Data[data.Id].SvcAltitude = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+            Timeline.Data[data.Id].Altitude.Value = Altitude.Tick(data);
             _computer.OnAltidudeDataSampled(data.Id);
+            Timeline.Data[data.Id].Altitude.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+
         }
 
         void Tick5(IndicatorData data)
         {
-            Timeline.Data[data.Id].Heading = Compass.Tick(data);
-            Timeline.Data[data.Id].SvcHeading = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+            Timeline.Data[data.Id].Heading.Value = Compass.Tick(data);
 
             _computer.OnCompassDataSampled(data.Id);
+            Timeline.Data[data.Id].Heading.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
 
             Timeline.Data[data.Id].IsComplete = true;
         }

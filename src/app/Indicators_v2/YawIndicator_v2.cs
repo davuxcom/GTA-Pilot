@@ -196,7 +196,7 @@ namespace GTAPilot.Indicators_v2
             for (var i = frameId - 1; i >= 0; i--)
             {
                 var f = Timeline.Data[i];
-                if (!double.IsNaN(f.Heading))
+                if (!double.IsNaN(f.Heading.Value))
                 {
                     last_frameref = f;
                     break;
