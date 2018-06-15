@@ -32,7 +32,7 @@ namespace GTAPilot
           "Type", typeof(IndicatorChartType), typeof(IndicatorChart), new PropertyMetadata());
 
 
-        int NUM_FRAMES = 200 / 4;
+        int NUM_FRAMES = 200 / 2; // even with Width, hack
         private static DispatcherTimer _tickTimer;
 
         public IndicatorChart()
@@ -47,15 +47,14 @@ namespace GTAPilot
             {
                 var l = new Line();
                 l.Stroke = Brushes.Magenta;
-                l.StrokeThickness = 2;
+                l.StrokeThickness = 1;
                 Children.Add(l);
             }
 
             for (var i = 0; i < NUM_FRAMES; i++)
             {
                 var l = new Line();
-                l.Stroke = Brushes.Gray;
-                l.StrokeThickness = 2;
+                l.StrokeThickness = 1;
                 Children.Add(l);
             }
 
@@ -158,28 +157,44 @@ namespace GTAPilot
 
                         if (!double.IsNaN(GetValueForIndicator(current)) && !double.IsNaN(GetValueForIndicator(last)))
                         {
+                            l.Stroke = Brushes.Blue;
+
                             l.X1 = current_x;
                             l.X2 = current_x - x_size;
-                            l.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(current));
-                            l.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(last));
+                            l.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(current));
+                            l.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(last));
 
-                            s.X1 = l.X1;
-                            s.X2 = l.X2;
+                            if (Type == IndicatorChartType.Value)
+                            {
+                                s.X1 = l.X1;
+                                s.X2 = l.X2;
 
-                            if (!double.IsNaN(GetSetPointForIndicator(current)) && !double.IsNaN(GetSetPointForIndicator(last)))
-                            {
-                                s.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(current));
-                                s.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(last));
-                            }
-                            else
-                            {
-                                s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
+                                if (!double.IsNaN(GetSetPointForIndicator(current)) && !double.IsNaN(GetSetPointForIndicator(last)))
+                                {
+                                    s.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(current));
+                                    s.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(last));
+                                }
+                                else
+                                {
+                                    s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
+                                }
                             }
                         }
                         else
                         {
-                            l.X1 = l.X2 = l.Y1 = l.Y2 = 0;
-                            s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
+                            if (Type == IndicatorChartType.Value)
+                            {
+                                s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
+                            }
+
+                            if (Type != IndicatorChartType.Output)
+                            {
+                                l.Stroke = Brushes.Gray;
+                                l.X1 = current_x;
+                                l.X2 = current_x;
+                                l.Y1 = 0;
+                                l.Y2 = Height;
+                            }
                         }
                         current_x = current_x - x_size;
                         childIndex++;

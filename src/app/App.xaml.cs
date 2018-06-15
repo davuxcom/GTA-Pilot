@@ -4,7 +4,7 @@ namespace GTAPilot
 {
     public partial class App : Application
     {
-        public static int FPS = 1000 / 10;
+        public static int FPS = 1000 / 30;
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
