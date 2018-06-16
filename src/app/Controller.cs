@@ -5,6 +5,11 @@ namespace GTAPilot
 {
     public class FlightController
     {
+        internal FlightController(FridaController fridaController)
+        {
+
+        }
+
         public void ToggleLandingGear()
         {
             Trace.WriteLine("Toggle landing gear");

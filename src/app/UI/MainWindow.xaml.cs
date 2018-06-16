@@ -45,7 +45,6 @@ namespace GTAPilot
 
                 if (isAutoScroll)
                 {
-                    
                     lstLog.SelectedIndex = lstLog.Items.Count - 1;
 
                     if (VisualTreeHelper.GetChildrenCount(lstLog) > 0)
@@ -68,16 +67,20 @@ namespace GTAPilot
             var dlg = new SourceSelectionDialog();
             dlg.ShowDialog();
 
+            FridaController fridaController;
             SystemManager mgr;
             if (dlg.Result == SourceType.Live)
             {
                 // TODO: pipe through screen textbox
-                mgr = new SystemManager(new DesktopFrameProducer());
+                fridaController = new FridaController();
+                mgr = new SystemManager(new DesktopFrameProducer(), fridaController);
             }
             else if (dlg.Result == SourceType.Capture)
             {
+                // TODO: pipe through screen textbox
                 _captureSink = new SaveFrameConsumer(dlg.txtCaptureLocation.Text);
-                mgr = new SystemManager(new DesktopFrameProducer(), _captureSink.HandleFrameArrived);
+                fridaController = new FridaController();
+                mgr = new SystemManager(new DesktopFrameProducer(), _captureSink.HandleFrameArrived, fridaController);
             }
             else if (dlg.Result == SourceType.Playback)
             {
@@ -85,7 +88,7 @@ namespace GTAPilot
             }
             else throw new NotImplementedException();
 
-            _viewModel = new MainWindowViewModel(mgr, _captureSink);
+            _viewModel = new MainWindowViewModel(mgr, _captureSink, fridaController);
             DataContext = _viewModel;
 
             _fpsTimer.Interval = TimeSpan.FromMilliseconds(App.FPS);
@@ -131,21 +134,6 @@ namespace GTAPilot
         {
             var m = new MapWindow();
             m.ShowDialog();
-        }
-
-        private void ToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ToggleButton_Click_1(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ToggleButton_Click_2(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

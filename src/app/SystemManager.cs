@@ -30,7 +30,7 @@ namespace GTAPilot
         public ModeControlPanel MCP = new ModeControlPanel();
         FlightDataComputer _computer;
 
-        public SystemManager(IFrameProducer producer)
+        public SystemManager(IFrameProducer producer, FridaController fridaController)
         {
             _computer = new FlightDataComputer(MCP, _control);
             IndicatorHost = new IndicatorHost(_computer);
@@ -38,20 +38,24 @@ namespace GTAPilot
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
 
-            _coordinator.Begin();
-            Timeline.Begin();
-
+            _control = new FlightController(fridaController);
             _control.LockViewMin();
 
+            _coordinator.Begin();
+            Timeline.Begin();
         }
 
-        public SystemManager(IFrameProducer producer, Action<FrameData> consumer)
+        public SystemManager(IFrameProducer producer, Action<FrameData> consumer, FridaController fridaController)
         {
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, consumer);
+
+            _control = new FlightController(fridaController);
+            _control.LockViewMin();
+
             _coordinator.Begin();
 
-            _control.LockViewMin();
+
         }
 
         internal FpsCounter GetCounter(FpsCounterType type)

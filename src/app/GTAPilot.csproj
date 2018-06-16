@@ -45,6 +45,9 @@
     <Reference Include="Emgu.CV.World">
       <HintPath>..\..\lib\CV\Emgu.CV.World.dll</HintPath>
     </Reference>
+    <Reference Include="Frida">
+      <HintPath>..\..\lib\Frida.dll</HintPath>
+    </Reference>
     <Reference Include="SharpDX">
       <HintPath>$(SharpDXPackageBinDir)\SharpDX.dll</HintPath>
     </Reference>
@@ -94,6 +97,7 @@
     <Compile Include="Indicators_v2\PitchIndicator_v2.cs" />
     <Compile Include="Indicators_v2\RollIndicator_v2.cs" />
     <Compile Include="Indicators_v2\YawIndicator_v2.cs" />
+    <Compile Include="UI\FridaController.cs" />
     <Compile Include="UI\IndicatorWindow.xaml.cs">
       <DependentUpon>IndicatorWindow.xaml</DependentUpon>
     </Compile>
