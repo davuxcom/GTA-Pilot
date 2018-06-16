@@ -135,5 +135,13 @@ namespace GTAPilot
             var m = new MapWindow();
             m.ShowDialog();
         }
+
+        private void TextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var txt = (TextBox)sender;
+            var iTxt = int.Parse(txt.Text);
+
+            txt.Text = (iTxt + Math.Sign(e.Delta)).ToString();
+        }
     }
 }

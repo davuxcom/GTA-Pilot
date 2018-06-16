@@ -12,6 +12,7 @@ namespace GTAPilot
         double DesiredRoll;
         double DesiredHeading;
         double DesiredSpeed;
+        double DesiredAltitude;
 
         public PID _pitch_pid;
         public PID _roll_pid;
@@ -57,25 +58,52 @@ namespace GTAPilot
         {
             switch (e.PropertyName)
             {
-                case nameof(_mcp.PitchHold) when (_mcp.PitchHold):
+                case nameof(_mcp.VSHold) when (_mcp.VSHold):
                     DesiredPitch = 3;
+                    _mcp.VS = (int)DesiredPitch;
+                    _mcp.AltitudeHold = false;
                     _pitch_pid.ClearError();
                     Trace.WriteLine($"A/P: Pitch: {DesiredPitch}");
                     break;
                 case nameof(_mcp.BankHold) when (_mcp.BankHold):
                     DesiredRoll = 0;
+                    
                     _roll_pid.ClearError();
                     Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
                     break;
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
                     DesiredHeading = Timeline.Heading;
+                    _mcp.HDG = (int)DesiredHeading;
                     _heading_pid.ClearError();
+                    _mcp.HeadingHold = false;
                     Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
                 case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
                     DesiredSpeed = Timeline.Speed;
+                    _mcp.IAS = (int)DesiredSpeed;
                     _airspeed_pid.ClearError();
                     Trace.WriteLine($"A/P: Speed: {DesiredSpeed}");
+                    break;
+
+                case nameof(_mcp.AltitudeHold) when (_mcp.AltitudeHold):
+                    DesiredAltitude = Timeline.Altitude;
+                    _mcp.ALT = (int)DesiredAltitude;
+                    _mcp.VSHold = false;
+
+                    Trace.WriteLine($"A/P: Altitude: {DesiredAltitude}");
+                    break;
+
+                case nameof(_mcp.  HDG):
+                    DesiredHeading = _mcp.HDG;
+                    break;
+                case nameof(_mcp.VS):
+                    DesiredPitch = _mcp.VS;
+                    break;
+                case nameof(_mcp.ALT):
+                    DesiredAltitude = _mcp.ALT;
+                    break;
+                case nameof(_mcp.IAS):
+                    DesiredSpeed = _mcp.IAS;
                     break;
             }
         }
@@ -203,14 +231,26 @@ namespace GTAPilot
             }
             else if (_mcp.HeadingHold)
             {
-
+                // TODO: HDG turns
             }
         }
 
         internal void OnPitchDataSampled(int id)
         {
-            if (_mcp.PitchHold)
+            if (_mcp.VSHold || _mcp.AltitudeHold)
             {
+                if (_mcp.AltitudeHold)
+                {
+                    var dx = Timeline.Altitude - DesiredAltitude;
+
+                    var desiredPitch = dx / 100;
+
+                    if (desiredPitch > 10) desiredPitch = 10;
+                    if (desiredPitch < -10) desiredPitch = -10;
+
+                    DesiredPitch = dx;
+                }
+
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
                     Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(_pitch_pid.Compute(Timeline.Pitch + FlightComputerConfig.Pitch.PV_Skew,
@@ -245,8 +285,7 @@ namespace GTAPilot
             {
                 if (!double.IsNaN(Timeline.Data[id].Heading.Value))
                 {
-                    Timeline.Data[id].Heading.OutputValue = Handle_Compass(_heading_pid.Compute(Timeline.Heading + FlightComputerConfig.Yaw.PV_Skew,
-                    Handle_Get_Compass(),
+                    Timeline.Data[id].Heading.OutputValue = Handle_Compass(_heading_pid.Compute(Handle_Get_Compass(), DesiredHeading,
                     ComputeDTForFrameId(id, (f) => f.Heading.Value)));
                 }
                 Timeline.Data[id].Heading.SetpointValue = DesiredHeading;

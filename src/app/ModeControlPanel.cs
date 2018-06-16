@@ -7,10 +7,10 @@ namespace GTAPilot
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool _pitchHold;
-        public bool PitchHold
+        public bool VSHold
         {
             get => _pitchHold;
-            set => UpdateAndNotify(nameof(PitchHold), value, ref _pitchHold);
+            set => UpdateAndNotify(nameof(VSHold), value, ref _pitchHold);
         }
 
         private bool _bankHold;
@@ -37,9 +37,45 @@ namespace GTAPilot
             set => UpdateAndNotify(nameof(SpeedHold), value, ref _speedHold);
         }
 
-        private void UpdateAndNotify(string prop, bool newValue, ref bool storageValue)
+        private bool _altitudeHold;
+        public bool AltitudeHold
         {
-            if (newValue != storageValue)
+            get => _altitudeHold;
+            set => UpdateAndNotify(nameof(AltitudeHold), value, ref _altitudeHold);
+        }
+
+        private int _vs;
+        public int VS
+        {
+            get => _vs;
+            set => UpdateAndNotify(nameof(VS), value, ref _vs);
+        }
+
+
+        private int _ias;
+        public int IAS
+        {
+            get => _ias;
+            set => UpdateAndNotify(nameof(IAS), value, ref _ias);
+        }
+
+        private int _alt;
+        public int ALT
+        {
+            get => _alt;
+            set => UpdateAndNotify(nameof(ALT), value, ref _alt);
+        }
+
+        private int _hdg;
+        public int HDG
+        {
+            get => _hdg;
+            set => UpdateAndNotify(nameof(HDG), value, ref _hdg);
+        }
+
+        private void UpdateAndNotify<T>(string prop, T newValue, ref T storageValue)
+        {
+            if (!newValue.Equals(storageValue))
             {
                 storageValue = newValue;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
