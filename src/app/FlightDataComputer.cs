@@ -247,14 +247,14 @@ namespace GTAPilot
             {
                 if (_mcp.AltitudeHold)
                 {
-                    var dx = Timeline.Altitude - DesiredAltitude;
+                    var dx = DesiredAltitude - Timeline.Altitude;
 
-                    var desiredPitch = dx / 100;
+                    var desiredPitch = dx / 10;
 
                     if (desiredPitch > 10) desiredPitch = 10;
                     if (desiredPitch < -10) desiredPitch = -10;
 
-                    DesiredPitch = dx;
+                    DesiredPitch = desiredPitch;
                 }
 
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
@@ -274,7 +274,7 @@ namespace GTAPilot
                 if (!double.IsNaN(Timeline.Data[id].Speed.Value))
                 {
                     Timeline.Data[id].Speed.OutputValue = Handle_Throttle(_airspeed_pid.Compute(Timeline.Speed + FlightComputerConfig.Speed.PV_Skew,
-                    double.IsNaN(DesiredSpeed) ? FlightComputerConfig.Speed.PV.Mid : DesiredSpeed + FlightComputerConfig.Speed.PV.Mid,
+                    DesiredSpeed,
                     ComputeDTForFrameId(id, (f) => f.Speed.Value)));
                 }
                 Timeline.Data[id].Speed.SetpointValue = DesiredSpeed;
@@ -283,6 +283,10 @@ namespace GTAPilot
 
         internal void OnAltidudeDataSampled(int id)
         {
+            if (_mcp.AltitudeHold)
+            {
+                Timeline.Data[id].Heading.SetpointValue = DesiredAltitude;
+            }
         }
 
         internal void OnCompassDataSampled(int id)
