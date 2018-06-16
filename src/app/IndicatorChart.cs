@@ -115,7 +115,7 @@ namespace GTAPilot
                     case IndicatorType.Pitch: return new double[] { -90, 90 };
                     case IndicatorType.Speed: return new double[] { 0, 180 };
                     case IndicatorType.Altitude: return new double[] { 0, 8500 };
-                    case IndicatorType.Yaw: return new double[] { 1, 360 };
+                    case IndicatorType.Yaw: return new double[] { 0, 360 };
                     default: throw new NotImplementedException();
                 }
             }
@@ -127,7 +127,7 @@ namespace GTAPilot
                     case IndicatorType.Pitch: return new double[] { FlightComputerConfig.Pitch.OV.Min, FlightComputerConfig.Pitch.OV.Max };
                     case IndicatorType.Speed: return new double[] { FlightComputerConfig.Speed.OV.Min, FlightComputerConfig.Speed.OV.Max };
                     case IndicatorType.Altitude: return new double[] { -1, 1 };
-                    case IndicatorType.Yaw: return new double[] { FlightComputerConfig.Yaw.OV.Min, FlightComputerConfig.Yaw.OV.Max };
+                    case IndicatorType.Yaw: return new double[] { -1, 1 };
                     default: throw new NotImplementedException();
                 }
             }
@@ -158,6 +158,19 @@ namespace GTAPilot
                         if (!double.IsNaN(GetValueForIndicator(current)) && !double.IsNaN(GetValueForIndicator(last)))
                         {
                             l.Stroke = Brushes.Blue;
+
+                            if (Type == IndicatorChartType.Delay)
+                            {
+                                if (GetValueForIndicator(current) > 0.2)
+                                {
+                                    l.Stroke = Brushes.Red;
+                                }
+                                else
+                                {
+                                    l.Stroke = Brushes.Green;
+                                }
+                            }
+
 
                             l.X1 = current_x;
                             l.X2 = current_x - x_size;

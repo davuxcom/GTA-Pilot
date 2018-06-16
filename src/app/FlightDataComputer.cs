@@ -75,7 +75,7 @@ namespace GTAPilot
                     DesiredHeading = Timeline.Heading;
                     _mcp.HDG = (int)DesiredHeading;
                     _heading_pid.ClearError();
-                    _mcp.HeadingHold = false;
+                   // _mcp.BankHold = false;
                     Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
                 case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
@@ -118,10 +118,10 @@ namespace GTAPilot
         {
             power -= short.MaxValue;
 
-            var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
-            power = RemoveDeadZone(power, FlightComputerConfig.Roll_DeadZone, FlightComputerConfig.Roll_Max);
+          //  var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
+          //  power = RemoveDeadZone(power, FlightComputerConfig.Roll_DeadZone, FlightComputerConfig.Roll_Max);
             _control.SetRoll(power);
-            return power;
+            return power + short.MaxValue;
         }
 
         double Handle_Pitch(double power)
@@ -129,19 +129,19 @@ namespace GTAPilot
             power -= short.MaxValue;
             power *= -1;
 
-            var rollAngle = Math.Abs(Timeline.Roll);
-            if (rollAngle > 18)
-            {
-                power += FlightComputerConfig.RollTrim;
-            }
+           // var rollAngle = Math.Abs(Timeline.Roll);
+           // if (rollAngle > 18)
+          //  {
+          //      power += FlightComputerConfig.RollTrim;
+          //  }
 
-            double max = FlightComputerConfig.Pitch_Max;
-            var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
+          //  double max = FlightComputerConfig.Pitch_Max;
+           // var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
 
-            power = RemoveDeadZone(power, FlightComputerConfig.Pitch_DeadZone, max);
+          //  power = RemoveDeadZone(power, FlightComputerConfig.Pitch_DeadZone, max);
 
             _control.SetPitch(power);
-            return power;
+            return power + short.MaxValue;
         }
 
         double Handle_Get_Compass()
@@ -206,6 +206,7 @@ namespace GTAPilot
                 v -= 50;
                 vx = v;
                 _control.SetLeftRudder(v);
+                return 1;
             }
             else if (v < 50)
             {
@@ -213,8 +214,9 @@ namespace GTAPilot
                 vx = v * -1;
 
                 _control.SetRightRudder(v);
+                return -1;
             }
-            return v;
+            return 0;
         }
 
         double Handle_Throttle(double throttle)
