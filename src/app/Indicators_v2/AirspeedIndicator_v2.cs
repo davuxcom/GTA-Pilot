@@ -4,6 +4,7 @@ using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -18,7 +19,7 @@ namespace GTAPilot.Indicators_v2
         int num_rejected_values = 0;
         DateTime last_time = DateTime.Now;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.04, 100);
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
 
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
@@ -50,8 +51,8 @@ namespace GTAPilot.Indicators_v2
 
 
                     vs_hsv = focus.Convert<Hsv, byte>();
-                    // TODO: tune low ?
-                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
+
+                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255)).PyrUp().PyrDown();
 
                     debugState[1] = vs_blackimg;
 
@@ -62,32 +63,32 @@ namespace GTAPilot.Indicators_v2
                     var circCenter = new PointF(focus.Width / 2, focus.Height / 2);
 
 
-                    var vs_blackimg2 = vs_blackimg.Copy(new Rectangle((int)circCenter.X - r - margin, (int)circCenter.Y - r - margin, d + margin * 2, d + margin * 2));
+                    //   var vs_blackimg2 = vs_blackimg.Copy(new Rectangle((int)circCenter.X - r - margin, (int)circCenter.Y - r - margin, d + margin * 2, d + margin * 2));
                     {
-                        Mat vspeedMask = new Mat(vs_blackimg2.Size, DepthType.Cv8U, 3);
+                        //  Mat vspeedMask = new Mat(vs_blackimg.Size, DepthType.Cv8U, 3);
                         {
-                            vspeedMask.SetTo(new MCvScalar(1));
-                            CvInvoke.Circle(vspeedMask, Point.Round(new PointF(r + margin, r + margin)), (int)(r - (r * 0)), new Bgr(Color.White).MCvScalar, -1);
-
-                            var vspeed_inner_only = vs_blackimg2.Copy(vspeedMask.ToImage<Gray, byte>());
+                            //  vspeedMask.SetTo(new MCvScalar(1));
+                            //  CvInvoke.Circle(vspeedMask, Point.Round(new PointF(r + margin, r + margin)), (int)(r - (r * 0)), new Bgr(Color.White).MCvScalar, -1);
+                            //
+                            //   var vspeed_inner_only = vs_blackimg.Copy(vspeedMask.ToImage<Gray, byte>());
                             {
 
-                                debugState[2] = vspeed_inner_only;
+                                //    debugState[2] = vspeed_inner_only;
 
                                 var cannyEdges3 = new Mat();
                                 {
-                                    CvInvoke.Canny(vspeed_inner_only, cannyEdges3, 10, 100);
+                                    CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 100);
                                     var lines = CvInvoke.HoughLinesP(cannyEdges3, 1, Math.PI / 45.0, 4, 14, 4).OrderByDescending(p => p.Length).ToList();
 
                                     var center_size = 25;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
-                                    var center_box_point = new Point((focus.Width / 2) - (center_size / 2), (focus.Height / 2) - (center_size / 2) + 4);
+                                    var center_box_point = new Point((focus.Width / 2) - (center_size / 2), (focus.Height / 2) - (center_size / 2));
                                     Rectangle center = new Rectangle(center_box_point, new Size(center_size, center_size));
 
                                     var bestLines = new List<Tuple<double, LineSegment2D>>();
-                                    var markedup_frame = vspeed_inner_only.Convert<Bgr, byte>();
+                                    var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
 
-                                    debugState[3] = markedup_frame;
+                                    debugState[2] = markedup_frame;
                                     {
 
                                         foreach (var line in lines)
@@ -136,10 +137,22 @@ namespace GTAPilot.Indicators_v2
                                                 LineSegment2D final_line = new LineSegment2D(center_point, other_point);
                                                 LineSegment2D baseLine = new LineSegment2D(new Point((focus.Width / 2), 0), new Point((focus.Width / 2), (focus.Height / 2)));
 
+                                                CvInvoke.Line(markedup_frame, baseLine.P1, baseLine.P2, new Bgr(Color.Purple).MCvScalar, 1);
+                                                CvInvoke.Line(markedup_frame, final_line.P1, final_line.P2, new Bgr(Color.Orange).MCvScalar, 1);
+
+
                                                 var v_angle = Math2.angleBetween2Lines(line, baseLine);
+
                                                 v_angle = v_angle * (180 / Math.PI);
                                                 var v_angle_o = v_angle;
-                                                if (v_angle >= 180 && v_angle <= 270 && v_angle > 0)
+
+                                                if (v_angle == 180)
+                                                {
+                                                    var is_bottom = other_point.Y >= center_point.Y && other_point.X <= center_point.X;
+                                                    if (!is_bottom) v_angle = 180;
+                                                    else v_angle = 0;
+                                                }
+                                                else if (v_angle >= 180 && v_angle <= 270 && v_angle > 0)
                                                 {
                                                     var is_bottom = other_point.Y >= center_point.Y && other_point.X <= center_point.X;
                                                     if (is_bottom)
@@ -175,6 +188,8 @@ namespace GTAPilot.Indicators_v2
                                                 // 0-360 degrees
                                                 // 0-180 knots
 
+                                              //  Trace.WriteLine("SPEED: " + v_angle);
+
                                                 var knots = (v_angle / 2);
                                                 if (knots > 175) knots = 0;
 
@@ -183,8 +198,11 @@ namespace GTAPilot.Indicators_v2
                                                 var change = Math.Abs(ObservedValue - last_value);
                                                 if (change > 40 && num_rejected_values < 10)
                                                 {
+
                                                     num_rejected_values++;
+                                                 //   Trace.WriteLine("SPEED: reject");
                                                     return double.NaN;
+
                                                 }
 
                                                 last_value = ObservedValue;
@@ -197,13 +215,22 @@ namespace GTAPilot.Indicators_v2
                                             }
                                         }
 
-                                        if (ObservedValue < 0) return double.NaN;
+                                        if (ObservedValue < 0)
+                                        {
+                                          //  Trace.WriteLine("SPEED: -1 " + bestLines.Count);
+                                            return double.NaN;
+                                        }
                                         return ObservedValue;
+
                                     }
                                 }
                             }
                         }
                     }
+                }
+                else
+                {
+                    //    Trace.WriteLine("SPEED: no circles(2)");
                 }
             }
             return double.NaN;
