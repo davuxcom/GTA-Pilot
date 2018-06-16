@@ -103,11 +103,11 @@ namespace GTAPilot.Extensions
         {
             var diff = Count - count;
 
-            if (diff > 0.02)
+            if (diff > 0.01)
             {
                 CachedValue -= 1;
             }
-            else if (diff < -0.02)
+            else if (diff < -0.01)
             {
                 CachedValue += 1;
             }
