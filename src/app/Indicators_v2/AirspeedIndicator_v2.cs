@@ -38,17 +38,14 @@ namespace GTAPilot.Indicators_v2
                 var vs_hsv = focus.Convert<Hsv, byte>();
 
                 var circles = CvInvoke.HoughCircles(vs_hsv[2], HoughType.Gradient, 2.0, 20, 10, 180, 45, 55);
-
                 if (circles.Length == 1)
                 {
                     var circ = circles[0];
                     circ.Center = circles[0].Center.Add(firstCrop.Location);
                     circ.Radius = 50;
-
                     focus = data.Frame.Copy(Math2.CropCircle(circ, 10));
 
                     debugState[0] = focus;
-
 
                     vs_hsv = focus.Convert<Hsv, byte>();
 
@@ -80,7 +77,7 @@ namespace GTAPilot.Indicators_v2
                                     CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 100);
                                     var lines = CvInvoke.HoughLinesP(cannyEdges3, 1, Math.PI / 45.0, 4, 14, 4).OrderByDescending(p => p.Length).ToList();
 
-                                    var center_size = 25;
+                                    var center_size = 40;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
                                     var center_box_point = new Point((focus.Width / 2) - (center_size / 2), (focus.Height / 2) - (center_size / 2));
                                     Rectangle center = new Rectangle(center_box_point, new Size(center_size, center_size));
@@ -148,8 +145,8 @@ namespace GTAPilot.Indicators_v2
 
                                                 if (v_angle == 180)
                                                 {
-                                                    var is_bottom = other_point.Y >= center_point.Y && other_point.X <= center_point.X;
-                                                    if (!is_bottom) v_angle = 180;
+                                                    var is_bottom = other_point.Y >= center_point.Y;
+                                                    if (is_bottom) v_angle = 180;
                                                     else v_angle = 0;
                                                 }
                                                 else if (v_angle >= 180 && v_angle <= 270 && v_angle > 0)
@@ -200,7 +197,7 @@ namespace GTAPilot.Indicators_v2
                                                 {
 
                                                     num_rejected_values++;
-                                                 //   Trace.WriteLine("SPEED: reject");
+                                                   // Trace.WriteLine("SPEED: reject");
                                                     return double.NaN;
 
                                                 }

@@ -43,7 +43,7 @@ namespace GTAPilot.Indicators_v2
                     debugState[0] = focus;
                     vs_hsv = focus.Convert<Hsv, byte>();
 
-                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
+                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255)).PyrUp().PyrDown();
 
                     debugState[1] = vs_blackimg;
 
@@ -83,7 +83,7 @@ namespace GTAPilot.Indicators_v2
 
                         //  CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
 
-                        var center_size = 25;
+                        var center_size = 40;
                         var center_point = new Point((focus.Width / 2) - 4, (focus.Height / 2) + 4);
                         var center_box_point = new Point((focus.Width / 2) - (center_size / 2), 4 + (focus.Height / 2) - (center_size / 2));
                         Rectangle center = new Rectangle(center_box_point, new Size(center_size, center_size));
