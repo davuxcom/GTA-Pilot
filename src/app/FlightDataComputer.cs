@@ -53,6 +53,33 @@ namespace GTAPilot
             };
         }
 
+        private void MCP_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case nameof(_mcp.PitchHold) when (_mcp.PitchHold):
+                    DesiredPitch = Timeline.Pitch;
+                    _pitch_pid.ClearError();
+                    Trace.WriteLine($"A/P: Pitch: {Timeline.Pitch}");
+                    break;
+                case nameof(_mcp.BankHold) when (_mcp.BankHold):
+                    DesiredRoll = Timeline.Roll;
+                    _roll_pid.ClearError();
+                    Trace.WriteLine($"A/P: Roll: {Timeline.Roll}");
+                    break;
+                case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
+                    DesiredHeading = Timeline.Heading;
+                    _heading_pid.ClearError();
+                    Trace.WriteLine($"A/P: Heading: {Timeline.Heading}");
+                    break;
+                case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
+                    DesiredSpeed = Timeline.Speed;
+                    _airspeed_pid.ClearError();
+                    Trace.WriteLine($"A/P: Speed: {Timeline.Speed}");
+                    break;
+            }
+        }
+
         double Handle_Roll(double power)
         {
             power -= short.MaxValue;
@@ -162,6 +189,82 @@ namespace GTAPilot
             return throttle;
         }
 
+        internal void OnRollDataSampled(int id)
+        {
+            if (_mcp.BankHold)
+            {
+                if (!double.IsNaN(Timeline.Data[id].Roll.Value))
+                {
+                    Timeline.Data[id].Roll.OutputValue = Handle_Roll(_roll_pid.Compute(Timeline.Roll + FlightComputerConfig.Roll.PV_Skew,
+                        double.IsNaN(DesiredRoll) ? FlightComputerConfig.Roll.PV.Mid : DesiredRoll + FlightComputerConfig.Roll.PV.Mid,
+                        ComputeDTForFrameId(id, (f) => f.Roll.Value)));
+                }
+                Timeline.Data[id].Roll.SetpointValue = DesiredRoll;
+            }
+            else if (_mcp.HeadingHold)
+            {
+
+            }
+        }
+
+        internal void OnPitchDataSampled(int id)
+        {
+            if (_mcp.PitchHold)
+            {
+                if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
+                {
+                    Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(_pitch_pid.Compute(Timeline.Pitch + FlightComputerConfig.Pitch.PV_Skew,
+                    double.IsNaN(DesiredPitch) ? FlightComputerConfig.Pitch.PV.Mid : DesiredPitch + FlightComputerConfig.Pitch.PV.Mid,
+                    ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
+                }
+                Timeline.Data[id].Pitch.SetpointValue = DesiredPitch;
+            }
+        }
+
+        internal void OnSpeedDataSampled(int id)
+        {
+            if (_mcp.SpeedHold)
+            {
+                if (!double.IsNaN(Timeline.Data[id].Speed.Value))
+                {
+                    Timeline.Data[id].Speed.OutputValue = Handle_Throttle(_airspeed_pid.Compute(Timeline.Speed + FlightComputerConfig.Speed.PV_Skew,
+                    double.IsNaN(DesiredSpeed) ? FlightComputerConfig.Speed.PV.Mid : DesiredSpeed + FlightComputerConfig.Speed.PV.Mid,
+                    ComputeDTForFrameId(id, (f) => f.Speed.Value)));
+                }
+                Timeline.Data[id].Speed.SetpointValue = DesiredSpeed;
+            }
+        }
+
+        internal void OnAltidudeDataSampled(int id)
+        {
+        }
+
+        internal void OnCompassDataSampled(int id)
+        {
+            if (_mcp.HeadingHold)
+            {
+                if (!double.IsNaN(Timeline.Data[id].Heading.Value))
+                {
+                    Timeline.Data[id].Heading.OutputValue = Handle_Compass(_heading_pid.Compute(Timeline.Heading + FlightComputerConfig.Yaw.PV_Skew,
+                    Handle_Get_Compass(),
+                    ComputeDTForFrameId(id, (f) => f.Heading.Value)));
+                }
+                Timeline.Data[id].Heading.SetpointValue = DesiredHeading;
+            }
+        }
+
+        private double ComputeDTForFrameId(int id, Func<TimelineFrame, double> finder)
+        {
+            double dT = 0;
+
+            var lastGoodFrame = Timeline.LatestFrame(finder, id);
+            if (lastGoodFrame != null)
+            {
+                dT = Timeline.Data[id].Seconds - lastGoodFrame.Seconds;
+            }
+            return dT;
+        }
+
         double RemoveDeadZone(double power, double deadzone, double max)
         {
             if (power > 0)
@@ -191,98 +294,6 @@ namespace GTAPilot
         double GetScaledValue(double value, double scale, double pow)
         {
             return Math.Pow(value / scale, pow) * scale;
-        }
-
-        private void MCP_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(_mcp.PitchHold) when (_mcp.PitchHold):
-                    DesiredPitch = Timeline.Pitch;
-                    _pitch_pid.ClearError();
-                    Trace.WriteLine($"A/P: Pitch: {Timeline.Pitch}");
-                    break;
-                case nameof(_mcp.BankHold) when (_mcp.BankHold):
-                    DesiredRoll = Timeline.Roll;
-                    _roll_pid.ClearError();
-                    Trace.WriteLine($"A/P: Roll: {Timeline.Roll}");
-                    break;
-                case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
-                    DesiredHeading = Timeline.Heading;
-                    _heading_pid.ClearError();
-                    Trace.WriteLine($"A/P: Heading: {Timeline.Heading}");
-                    break;
-                case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
-                    DesiredSpeed = Timeline.Speed;
-                    _airspeed_pid.ClearError();
-                    Trace.WriteLine($"A/P: Speed: {Timeline.Speed}");
-                    break;
-            }
-        }
-
-        private double ComputeDTForFrameId(int id, Func<TimelineFrame, double> finder)
-        {
-            double dT = 0;
-
-            var lastGoodFrame = Timeline.LatestFrame(finder, id);
-            if (lastGoodFrame != null)
-            {
-                dT = Timeline.Data[id].Seconds - lastGoodFrame.Seconds;
-            }
-            return dT;
-        }
-
-        internal void OnRollDataSampled(int id)
-        {
-            if (_mcp.BankHold)
-            {
-                Timeline.Data[id].Roll.OutputValue = Handle_Roll(_roll_pid.Compute(Timeline.Roll + FlightComputerConfig.Roll.PV_Skew,
-                    double.IsNaN(DesiredRoll) ? FlightComputerConfig.Roll.PV.Mid : DesiredRoll + FlightComputerConfig.Roll.PV.Mid,
-                    ComputeDTForFrameId(id, (f) => f.Roll.Value)));
-                Timeline.Data[id].Roll.SetpointValue = DesiredRoll;
-            }
-            else if (_mcp.HeadingHold)
-            {
-
-            }
-        }
-
-        internal void OnPitchDataSampled(int id)
-        {
-            if (_mcp.PitchHold)
-            {
-                Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(_pitch_pid.Compute(Timeline.Pitch + FlightComputerConfig.Pitch.PV_Skew,
-                    double.IsNaN(DesiredPitch) ? FlightComputerConfig.Pitch.PV.Mid : DesiredPitch + FlightComputerConfig.Pitch.PV.Mid,
-                    ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
-                Timeline.Data[id].Pitch.SetpointValue = DesiredPitch;
-
-            }
-        }
-
-        internal void OnSpeedDataSampled(int id)
-        {
-            if (_mcp.SpeedHold)
-            {
-                Timeline.Data[id].Speed.OutputValue = Handle_Throttle(_airspeed_pid.Compute(Timeline.Speed + FlightComputerConfig.Speed.PV_Skew,
-                    double.IsNaN(DesiredSpeed) ? FlightComputerConfig.Speed.PV.Mid : DesiredSpeed + FlightComputerConfig.Speed.PV.Mid,
-                    ComputeDTForFrameId(id, (f) => f.Speed.Value)));
-                Timeline.Data[id].Speed.SetpointValue = DesiredSpeed;
-            }
-        }
-
-        internal void OnAltidudeDataSampled(int id)
-        {
-        }
-
-        internal void OnCompassDataSampled(int id)
-        {
-            if (_mcp.HeadingHold)
-            {
-                Timeline.Data[id].Heading.OutputValue = Handle_Compass(_heading_pid.Compute(Timeline.Heading + FlightComputerConfig.Yaw.PV_Skew,
-                    Handle_Get_Compass(),
-                    ComputeDTForFrameId(id, (f) => f.Heading.Value)));
-                Timeline.Data[id].Heading.SetpointValue = DesiredHeading;
-            }
         }
     }
 }
