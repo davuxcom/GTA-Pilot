@@ -58,24 +58,24 @@ namespace GTAPilot
             switch (e.PropertyName)
             {
                 case nameof(_mcp.PitchHold) when (_mcp.PitchHold):
-                    DesiredPitch = Timeline.Pitch;
+                    DesiredPitch = 3;
                     _pitch_pid.ClearError();
-                    Trace.WriteLine($"A/P: Pitch: {Timeline.Pitch}");
+                    Trace.WriteLine($"A/P: Pitch: {DesiredPitch}");
                     break;
                 case nameof(_mcp.BankHold) when (_mcp.BankHold):
-                    DesiredRoll = Timeline.Roll;
+                    DesiredRoll = 0;
                     _roll_pid.ClearError();
-                    Trace.WriteLine($"A/P: Roll: {Timeline.Roll}");
+                    Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
                     break;
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
                     DesiredHeading = Timeline.Heading;
                     _heading_pid.ClearError();
-                    Trace.WriteLine($"A/P: Heading: {Timeline.Heading}");
+                    Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
                 case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
                     DesiredSpeed = Timeline.Speed;
                     _airspeed_pid.ClearError();
-                    Trace.WriteLine($"A/P: Speed: {Timeline.Speed}");
+                    Trace.WriteLine($"A/P: Speed: {DesiredSpeed}");
                     break;
             }
         }

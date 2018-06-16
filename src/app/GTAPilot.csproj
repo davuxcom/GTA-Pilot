@@ -97,7 +97,7 @@
     <Compile Include="Indicators_v2\PitchIndicator_v2.cs" />
     <Compile Include="Indicators_v2\RollIndicator_v2.cs" />
     <Compile Include="Indicators_v2\YawIndicator_v2.cs" />
-    <Compile Include="UI\FridaController.cs" />
+    <Compile Include="FridaController.cs" />
     <Compile Include="UI\IndicatorWindow.xaml.cs">
       <DependentUpon>IndicatorWindow.xaml</DependentUpon>
     </Compile>
@@ -186,7 +186,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\XboxApp.js" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\SharpDX.2.6.3\build\SharpDX.targets" Condition="Exists('packages\SharpDX.2.6.3\build\SharpDX.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

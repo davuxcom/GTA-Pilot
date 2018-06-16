@@ -99,9 +99,11 @@ namespace GTAPilot
 
         SaveFrameConsumer _captureSink;
         SystemManager _inputManager;
+        FridaController _controller;
 
-        public MainWindowViewModel(SystemManager inputManager, SaveFrameConsumer captureSink)
+        public MainWindowViewModel(SystemManager inputManager, SaveFrameConsumer captureSink, FridaController controller)
         {
+            _controller = controller;
             _captureSink = captureSink;
             _inputManager = inputManager;
 

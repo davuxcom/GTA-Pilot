@@ -26,20 +26,23 @@ namespace GTAPilot
         IFrameProducer _producer;
         FrameInputCoordinator _coordinator;
         public IndicatorHost IndicatorHost;
-        FlightController _control = new FlightController();
+        FlightController _control;
         public ModeControlPanel MCP = new ModeControlPanel();
         FlightDataComputer _computer;
 
         public SystemManager(IFrameProducer producer, FridaController fridaController)
         {
-            _computer = new FlightDataComputer(MCP, _control);
-            IndicatorHost = new IndicatorHost(_computer);
-
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
 
-            _control = new FlightController(fridaController);
-            _control.LockViewMin();
+            if (fridaController != null)
+            {
+                _control = new FlightController(fridaController);
+                fridaController.PropertyChanged += FridaController_PropertyChanged;
+            }
+
+            _computer = new FlightDataComputer(MCP, _control);
+            IndicatorHost = new IndicatorHost(_computer);
 
             _coordinator.Begin();
             Timeline.Begin();
@@ -50,12 +53,23 @@ namespace GTAPilot
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, consumer);
 
-            _control = new FlightController(fridaController);
-            _control.LockViewMin();
+            if (fridaController != null)
+            {
+                _control = new FlightController(fridaController);
+                fridaController.PropertyChanged += FridaController_PropertyChanged;
+            }
 
             _coordinator.Begin();
+            Timeline.Begin();
+        }
 
-
+        private void FridaController_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            // crappy, won't work for reconnect
+            if (e.PropertyName == "IsConnected")
+            {
+                _control.LockViewMin();
+            }
         }
 
         internal FpsCounter GetCounter(FpsCounterType type)

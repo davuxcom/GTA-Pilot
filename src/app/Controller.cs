@@ -5,9 +5,17 @@ namespace GTAPilot
 {
     public class FlightController
     {
+        FridaController _controller;
         internal FlightController(FridaController fridaController)
         {
+            _controller = fridaController;
 
+            fridaController.OnMessage += FridaController_OnMessage;
+        }
+
+        private void FridaController_OnMessage(string obj)
+        {
+            // TODO handle control input data.
         }
 
         public void ToggleLandingGear()
@@ -44,6 +52,9 @@ namespace GTAPilot
 
         private void SendMessage(string msg, bool forceSend = false)
         {
+            _controller.SendMessage(msg);
+
+            /*
             if (tcp == null)
             {
                 tcp = new TcpClient("127.0.0.1", 3377);
@@ -55,6 +66,7 @@ namespace GTAPilot
 
             s.Write(bytes, 0, bytes.Length);
             s.Flush();
+            */
         }
 
         internal void PressA()

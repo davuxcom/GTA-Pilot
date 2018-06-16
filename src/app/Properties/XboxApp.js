@@ -64,15 +64,16 @@ function ResetAll()
     shoulder_right_set = 0;
 }
 
+// NOTE: When using frida node.js bindings, recv takes a string, on C# it's an object
 function recv_proc(packetStr) {
 	try
 	{
-	//console.log("RCV: " + packetStr);
-    
-	var packet = JSON.parse(packetStr);
+
+        var packet = packetStr; // JSON.parse(packetStr);
 	
    // console.log("RCV " + JSON.stringify(packet));
-    
+	//console.log("RCV: " + packetStr);
+
     if (packet.thumblx)
     {
         thumblx_set = parseInt(packet.thumblx_ticks);
@@ -170,7 +171,8 @@ function timeout() {
 
 timeout();
 
-console.log("READY");
+//console.log("READY");
+console.log("ready");
 
 function GetAbi() { return 'win64'; }
 
@@ -247,7 +249,6 @@ var Struct = function (structInfo) {
     this.base_ptr = Memory.alloc(base_ptr_size);
     Object.defineProperty(this, "Size", { get: function () { return base_ptr_size; } });
 }
-
 
 
 console.log("XInputUAP.dll: " + Kernel32.LoadLibrary(Memory.allocUtf16String("XInputUAP.dll")));

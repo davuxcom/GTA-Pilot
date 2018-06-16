@@ -67,7 +67,7 @@ namespace GTAPilot
             var dlg = new SourceSelectionDialog();
             dlg.ShowDialog();
 
-            FridaController fridaController;
+            FridaController fridaController = null;
             SystemManager mgr;
             if (dlg.Result == SourceType.Live)
             {
@@ -84,7 +84,7 @@ namespace GTAPilot
             }
             else if (dlg.Result == SourceType.Playback)
             {
-                mgr = new SystemManager(new ReplayFrameProducer(dlg.txtRecording.Text, dlg.txtFrameSet.Text));
+                mgr = new SystemManager(new ReplayFrameProducer(dlg.txtRecording.Text, dlg.txtFrameSet.Text), null);
             }
             else throw new NotImplementedException();
 
