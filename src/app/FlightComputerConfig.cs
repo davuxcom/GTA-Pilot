@@ -17,8 +17,8 @@ namespace GTAPilot
         {
             Gain = new PID.Gain
             {
-                P = 1,
-                I = 1,
+                P = 2,
+                I = 0.2,
                 D = 0
             },
             PV = new PID.Range { Min = 0, Max = 200},
@@ -30,8 +30,8 @@ namespace GTAPilot
         {
             Gain = new PID.Gain
             {
-                P = 2,
-                I = 1,
+                P = 1.8,
+                I = 0,
                 D = 0
             },
             PV = new PID.Range { Min = 0, Max = 100 },

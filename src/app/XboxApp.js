@@ -135,12 +135,12 @@ var NextStateValue = {
 
 // Inputs missing from DefaultTicks will have their ticks set to their value.
 var DefaultTicks = {
-    RIGHT_TRIGGER: 20,
-    LEFT_TRIGGER: 20,
+    RIGHT_TRIGGER: 12,
+    LEFT_TRIGGER: 12,
     RIGHT_THUMB_X: 5000000, // View
     RIGHT_THUMB_Y: 5000000, // View
-    LEFT_THUMB_X: 20,
-    LEFT_THUMB_Y: 20
+    LEFT_THUMB_X: 12,
+    LEFT_THUMB_Y: 12
 }
 
 Kernel32.LoadLibrary(Memory.allocUtf16String("XInputUAP.dll"));

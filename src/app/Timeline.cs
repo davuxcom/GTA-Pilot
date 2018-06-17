@@ -29,7 +29,7 @@ namespace GTAPilot
 
     public class TimelineFrame
     {
-        public long Id;
+        public int Id;
         public double Seconds;
 
         public TimelineValue Heading = new TimelineValue();
@@ -52,7 +52,8 @@ namespace GTAPilot
     {
         public static int LastFrameId;
 
-        public static TimelineFrame[] Data = new TimelineFrame[90000];
+        // TODO: static to save allocations but bad
+        public static TimelineFrame[] Data = new TimelineFrame[250000];
 
         // location is los santos runway 3
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);
@@ -65,7 +66,6 @@ namespace GTAPilot
         public static double Heading => Latest(f => f.Heading.Value);
 
         public static Stopwatch Duration;
-
 
         public static void Begin()
         {

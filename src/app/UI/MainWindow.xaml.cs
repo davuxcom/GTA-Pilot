@@ -67,6 +67,7 @@ namespace GTAPilot
             Topmost = false;
 
             var dlg = new SourceSelectionDialog();
+            dlg.Owner = this;
             dlg.ShowDialog();
 
             FridaController fridaController = null;
@@ -101,6 +102,7 @@ namespace GTAPilot
             {
                 var progress = new CaptureProgress();
 
+                progress.Owner = this;
                 progress.ShowDialog();
 
                 mgr.StopCapture();
@@ -138,6 +140,7 @@ namespace GTAPilot
             var viewModel = (IndicatorViewModel)((FrameworkElement)sender).DataContext;
 
             var window = new IndicatorWindow(viewModel);
+            window.Owner = this;
             window.ShowDialog();
         }
 

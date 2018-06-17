@@ -131,6 +131,9 @@ namespace GTAPilot
             power -= short.MaxValue;
             power *= -1;
 
+            if (power > 0) power = Math.Min(power, 10000);
+            if (power < 0) power = Math.Max(power, -10000);
+
             _control.SetPitch(power);
             return power + short.MaxValue;
         }
@@ -215,17 +218,20 @@ namespace GTAPilot
                 if (!double.IsNaN(val))
                 {
                     var diff = Math2.DiffAngles(val, DesiredHeading);
-                    if (Math.Abs(diff) > 2)
+                    var aDiff = Math.Abs(diff);
+                    if (aDiff > 2)
                     {
+                        aDiff = Math.Min(aDiff, 20) / 4;
+
                         if (diff < 0)
                         {
-                            _control.SetRightRudder(Math.Abs(diff) / 2);
-                            Timeline.Data[id].Heading.OutputValue = -1 * Math.Abs(diff);
+                            _control.SetRightRudder(aDiff);
+                            Timeline.Data[id].Heading.OutputValue = -1 * aDiff;
                         }
                         else
                         {
-                            _control.SetLeftRudder(Math.Abs(diff) / 2);
-                            Timeline.Data[id].Heading.OutputValue = Math.Abs(diff);
+                            _control.SetLeftRudder(aDiff);
+                            Timeline.Data[id].Heading.OutputValue = aDiff;
                         }
                     }
                 }
