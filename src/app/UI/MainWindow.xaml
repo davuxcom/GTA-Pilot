@@ -84,7 +84,7 @@
             <TextBox Text="{Binding MCP.IAS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton IsChecked="{Binding MCP.SpeedHold, Mode=TwoWay}">IAS HOLD</ToggleButton>
 
-            <TextBox Tag="100" Text="{Binding MCP.ALT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Tag="ALT" Text="{Binding MCP.ALT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton IsChecked="{Binding MCP.AltitudeHold, Mode=TwoWay}">ALT HOLD</ToggleButton>
 
             <TextBox Text="{Binding MCP.VS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
@@ -105,11 +105,7 @@
             </ListView.ItemsPanel>
             <ListView.ItemTemplate>
                 <ItemContainerTemplate>
-                    <Grid Margin="6">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -120,16 +116,19 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Column="0"
-                                   FontSize="30"
-                                   Text="{Binding Name}" />
-                        <TextBlock Grid.Column="1"
-                                   HorizontalAlignment="Right"
-                                   FontSize="30"
+                        <TextBlock FontSize="30"
                                    Text="{Binding Value}" />
 
-                        <Border Grid.Row="1"
-                                Grid.ColumnSpan="2"
+                        <TextBlock Grid.Row="2"
+                                   FontSize="30"
+                                   Text="{Binding BadFrameCount}" />
+
+                        <TextBlock Grid.Row="2"
+                                  HorizontalAlignment="Right"
+                                   FontSize="30"
+                                   Text="{Binding CachedTuningValue}" />
+
+                        <Border Grid.Row="3"
                                 Background="Transparent"
                                 PreviewMouseUp="Border_PreviewMouseUp">
                             <Image Width="200"
@@ -138,47 +137,28 @@
                         </Border>
 
 
-                        <TextBlock Grid.Row="2"
-                                   FontSize="30"
-                                   Text="{Binding BadFrameCount}" />
-                        <Button Grid.Row="2"
-                                Grid.Column="1"
-                                Click="SaveFrameSet_Click"
-                                Content="Save FrameSet"
-                                FontSize="20" />
-                        <TextBlock Grid.Row="3" FontSize="30">Tune:</TextBlock>
-                        <TextBlock Grid.Row="3"
-                                   Grid.Column="1"
-                                   HorizontalAlignment="Right"
-                                   FontSize="30"
-                                   Text="{Binding CachedTuningValue}" />
+
 
                         <Border Grid.Row="4"
-                                Grid.ColumnSpan="2"
-                                BorderBrush="Black"
-                                BorderThickness="1">
+                               Margin="1">
                             <local:IndicatorChart Width="200"
-                                                  Height="200"
+                                                  Height="100"
                                                   Indicator="{Binding}"
                                                   Type="Value" />
                         </Border>
 
                         <Border Grid.Row="5"
-                                Grid.ColumnSpan="2"
-                                BorderBrush="Black"
-                                BorderThickness="1">
+                                Margin="1">
                             <local:IndicatorChart Width="200"
-                                                  Height="200"
+                                                  Height="100"
                                                   Indicator="{Binding}"
                                                   Type="Delay" />
                         </Border>
 
                         <Border Grid.Row="6"
-                                Grid.ColumnSpan="2"
-                                BorderBrush="Black"
-                                BorderThickness="1">
+                                Margin="1">
                             <local:IndicatorChart Width="200"
-                                                  Height="200"
+                                                  Height="100"
                                                   Indicator="{Binding}"
                                                   Type="InputOutput" />
                         </Border>
@@ -197,17 +177,17 @@
 
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>P:</TextBlock>
-                    <TextBox Text="{Binding VSPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Tag="PID" Text="{Binding VSPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>I:</TextBlock>
-                    <TextBox Text="{Binding VSPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Tag="PID" Text="{Binding VSPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>D:</TextBlock>
-                    <TextBox Text="{Binding VSPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Tag="PID" Text="{Binding VSPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
             </StackPanel>
 
@@ -217,17 +197,17 @@
 
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>P:</TextBlock>
-                    <TextBox Text="{Binding RollPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Tag="PID" Text="{Binding RollPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>I:</TextBlock>
-                    <TextBox Text="{Binding RollPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Tag="PID" Text="{Binding RollPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>D:</TextBlock>
-                    <TextBox Text="{Binding RollPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox Tag="PID" Text="{Binding RollPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
 
             </StackPanel>

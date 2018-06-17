@@ -32,12 +32,27 @@ namespace GTAPilot
           "Type", typeof(IndicatorChartType), typeof(IndicatorChart), new PropertyMetadata());
 
 
-        int NUM_FRAMES = 200 / 2; // even with Width, hack
+        int NUM_FRAMES = 200 / 2 + 1; // even with Width, hack
         private static DispatcherTimer _tickTimer;
         private Line zeroLine;
+        private Line topLine;
+        private Line bottomLine;
+        private TextBlock topText = new TextBlock { FontSize = 12 };
+        private TextBlock bottomText = new TextBlock { FontSize = 12};
+
+        int SKIP_LINES = 5;
 
         public IndicatorChart()
         {
+
+
+
+            if (_tickTimer == null)
+            {
+                _tickTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(App.FPS) };
+                _tickTimer.Start();
+            }
+
             {
                 var l = new Line();
                 l.StrokeThickness = 1;
@@ -46,12 +61,24 @@ namespace GTAPilot
                 zeroLine = l;
             }
 
-
-            if (_tickTimer == null)
             {
-                _tickTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(App.FPS) };
-                _tickTimer.Start();
+                var l = new Line();
+                l.StrokeThickness = 1;
+                l.Stroke = Brushes.DarkGray;
+                Children.Add(l);
+                topLine = l;
             }
+
+            {
+                var l = new Line();
+                l.StrokeThickness = 1;
+                l.Stroke = Brushes.DarkGray;
+                Children.Add(l);
+                bottomLine = l;
+            }
+
+            Children.Add(topText);
+            Children.Add(bottomText);
 
             for (var i = 0; i < NUM_FRAMES; i++)
             {
@@ -67,6 +94,8 @@ namespace GTAPilot
                 l.StrokeThickness = 1;
                 Children.Add(l);
             }
+
+
 
 
             _tickTimer.Tick += TickTimer_Tick;
@@ -154,15 +183,34 @@ namespace GTAPilot
         {
             if (Indicator != null)
             {
-                double current_x = Width;
-                double x_size = Width / NUM_FRAMES;
+                double current_x = Width - 1;
+                double x_size = 2; // Width / NUM_FRAMES;
 
                 zeroLine.X1 = 0;
                 zeroLine.X2 = Width;
                 zeroLine.Y1 = Height / 2;
                 zeroLine.Y2 = Height / 2;
 
-                int childIndex = NUM_FRAMES;
+                topLine.X1 = 0;
+                topLine.X2 = Width;
+                topLine.Y1 = 0;
+                topLine.Y2 = 0;
+
+                bottomLine.X1 = 0;
+                bottomLine.X2 = Width;
+                bottomLine.Y1 = Height;
+                bottomLine.Y2 = Height;
+
+                bottomText.Text = "" + GetRangeForIndicator()[0];
+                topText.Text = "" + GetRangeForIndicator()[1];
+
+                Canvas.SetTop(topText, 4);
+                Canvas.SetLeft(topText, 4);
+
+                Canvas.SetTop(bottomText, Height - 20);
+                Canvas.SetLeft(bottomText, 4);
+
+                int childIndex = SKIP_LINES + NUM_FRAMES;
                 TimelineFrame last = null;
                 for (var i = Timeline.LastFrameId; i >= 0 && i > Timeline.LastFrameId - NUM_FRAMES; i--)
                 {

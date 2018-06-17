@@ -15,8 +15,6 @@ namespace GTAPilot
         {
             public double Min;
             public double Max;
-
-            public double Mid => Min + ((Max - Min) / 2);
         }
 
         public Gain Gains;

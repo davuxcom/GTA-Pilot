@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -159,15 +160,47 @@ namespace GTAPilot
         private void TextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
             var txt = (TextBox)sender;
-            var iTxt = int.Parse(txt.Text);
-            bool isHDG = (string)txt.Tag == "HDG";
-            var next = (iTxt + Math.Sign(e.Delta));
-            if (isHDG)
-            {
-                if (next > 360) next = 0;
-                if (next < 1) next = 360;
-            }
+            bool isPID = (string)txt.Tag == "PID";
 
+            double next = 0;
+            if (isPID)
+            {
+                var vl = double.Parse(txt.Text);
+
+                if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    next = (vl + Math.Sign(e.Delta) * 0.001);
+                }
+                else
+                {
+                    next = (vl + Math.Sign(e.Delta) * 0.01);
+                }
+            }
+            else
+            {
+                var iTxt = int.Parse(txt.Text);
+                bool isHDG = (string)txt.Tag == "HDG";
+                bool isALT = (string)txt.Tag == "ALT";
+
+                var v = isALT ? 100 : 1;
+
+                next = (iTxt + Math.Sign(e.Delta) * v);
+
+                if (isALT)
+                {
+                    next = next / 100;
+                    next = Math.Round(next);
+                    next = next * 100;
+                }
+
+                if (isHDG)
+                {
+                    if (next > 360) next = 0;
+                    if (next < 1) next = 360;
+                }
+
+                
+            }
             txt.Text = next.ToString();
         }
     }

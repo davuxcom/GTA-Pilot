@@ -118,24 +118,15 @@ namespace GTAPilot
 
         double Handle_Roll(double power)
         {
-            power -= short.MaxValue;
-
-            //  var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
-            //  power = RemoveDeadZone(power, FlightComputerConfig.Roll_DeadZone, FlightComputerConfig.Roll_Max);
             _control.SetRoll(power);
-            return power + short.MaxValue;
+            return power;
         }
 
         double Handle_Pitch(double power)
         {
-            power -= short.MaxValue;
-            power *= -1;
-
-            if (power > 0) power = Math.Min(power, 10000);
-            if (power < 0) power = Math.Max(power, -10000);
-
+            power = -1 * power;
             _control.SetPitch(power);
-            return power + short.MaxValue;
+            return power;
         }
 
         double Handle_Throttle(double throttle)
@@ -150,9 +141,8 @@ namespace GTAPilot
             {
                 if (!double.IsNaN(Timeline.Data[id].Roll.Value))
                 {
-                    Timeline.Data[id].Roll.OutputValue = Handle_Roll(_roll_pid.Compute(Timeline.Roll + FlightComputerConfig.Roll.PV_Skew,
-                        double.IsNaN(DesiredRoll) ? FlightComputerConfig.Roll.PV.Mid : DesiredRoll + FlightComputerConfig.Roll.PV.Mid,
-                        ComputeDTForFrameId(id, (f) => f.Roll.Value)));
+                    Timeline.Data[id].Roll.OutputValue = Handle_Roll(
+                        _roll_pid.Compute(Timeline.Roll, DesiredRoll, ComputeDTForFrameId(id, (f) => f.Roll.Value)));
                 }
                 Timeline.Data[id].Roll.SetpointValue = DesiredRoll;
             }
@@ -180,9 +170,8 @@ namespace GTAPilot
 
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
-                    Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(_pitch_pid.Compute(Timeline.Pitch + FlightComputerConfig.Pitch.PV_Skew,
-                    double.IsNaN(DesiredPitch) ? FlightComputerConfig.Pitch.PV.Mid : DesiredPitch + FlightComputerConfig.Pitch.PV.Mid,
-                    ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
+                    Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(
+                        _pitch_pid.Compute(Timeline.Pitch, DesiredPitch, ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
                 }
                 Timeline.Data[id].Pitch.SetpointValue = DesiredPitch;
             }
@@ -194,9 +183,8 @@ namespace GTAPilot
             {
                 if (!double.IsNaN(Timeline.Data[id].Speed.Value))
                 {
-                    Timeline.Data[id].Speed.OutputValue = Handle_Throttle(_airspeed_pid.Compute(Timeline.Speed + FlightComputerConfig.Speed.PV_Skew,
-                    DesiredSpeed,
-                    ComputeDTForFrameId(id, (f) => f.Speed.Value)));
+                    Timeline.Data[id].Speed.OutputValue = Handle_Throttle(
+                        _airspeed_pid.Compute(Timeline.Speed, DesiredSpeed, ComputeDTForFrameId(id, (f) => f.Speed.Value)));
                 }
                 Timeline.Data[id].Speed.SetpointValue = DesiredSpeed;
             }

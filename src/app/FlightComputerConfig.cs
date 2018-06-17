@@ -4,10 +4,8 @@ namespace GTAPilot
 {
     class PIDConfig
     {
-        public double PV_Skew;
         public PID.Range PV;
         public PID.Range OV;
-
         public PID.Gain Gain;
     }
 
@@ -17,26 +15,24 @@ namespace GTAPilot
         {
             Gain = new PID.Gain
             {
-                P = 2,
-                I = 0.2,
+                P = 1.1,
+                I = 0.05,
                 D = 0
             },
-            PV = new PID.Range { Min = 0, Max = 200},
-            OV = new PID.Range { Min = 0, Max = UInt16.MaxValue - 1 },
-            PV_Skew = 100,
+            PV = new PID.Range { Min = -45, Max = 45},
+            OV = new PID.Range { Min = short.MinValue, Max = short.MaxValue },
         };
 
         public static PIDConfig Pitch = new PIDConfig
         {
             Gain = new PID.Gain
             {
-                P = 1.8,
-                I = 0,
+                P = 1.4,
+                I = 0.4,
                 D = 0
             },
-            PV = new PID.Range { Min = 0, Max = 100 },
-            OV = new PID.Range { Min = 0, Max = UInt16.MaxValue - 1 },
-            PV_Skew = 50,
+            PV = new PID.Range { Min = -90, Max = 90 },
+            OV = new PID.Range { Min = short.MinValue, Max = short.MaxValue },
         };
         public static PIDConfig Speed = new PIDConfig
         {
@@ -48,7 +44,6 @@ namespace GTAPilot
             },
             PV = new PID.Range { Min = 0, Max = 175 },
             OV = new PID.Range { Min = 0, Max = 255 },
-            PV_Skew = 0,
         };
     }
 }
