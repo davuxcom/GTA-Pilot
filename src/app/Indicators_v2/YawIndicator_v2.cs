@@ -18,12 +18,12 @@ namespace GTAPilot.Indicators_v2
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Heading;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.03, 100);
 
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data.Frame, out var circle))
+            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 1050, circle.Center.Y - 20);
                 circle.Radius = 70;

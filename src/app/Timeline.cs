@@ -1,4 +1,5 @@
-﻿using GTAPilot.Extensions;
+﻿using Emgu.CV.Structure;
+using GTAPilot.Extensions;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -44,14 +45,14 @@ namespace GTAPilot
         internal bool IsComplete;
 
         internal bool LocationComplete;
+        internal CircleF RollHint;
     }
 
     class Timeline
     {
         public static int LastFrameId;
 
-        // TODO: static to save allocations but bad
-        public static TimelineFrame[] Data = new TimelineFrame[90000];
+        public static TimelineFrame[] Data = new TimelineFrame[int.MaxValue / 2];
 
         // location is los santos runway 3
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);
@@ -64,6 +65,7 @@ namespace GTAPilot
         public static double Heading => Latest(f => f.Heading.Value);
 
         public static Stopwatch Duration;
+
 
         public static void Begin()
         {

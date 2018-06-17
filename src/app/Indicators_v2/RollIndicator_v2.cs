@@ -27,7 +27,7 @@ namespace GTAPilot.Indicators_v2
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (TryFindRollCircleInFullFrame(data.Frame, out CircleF rollIndicatorCicle))
+            if (TryFindRollCircleInFullFrame(data, out CircleF rollIndicatorCicle))
             {
 
                 var FocusRect = Math2.CropCircle(rollIndicatorCicle, 10);
@@ -181,7 +181,7 @@ namespace GTAPilot.Indicators_v2
                         angle *= -1;
                     }
 
-                    angle += 1.5;
+                  //  angle += 1.5;
 
                     CvInvoke.Line(focusFrame, boundary_one, boundary_two, new Bgr(Color.Yellow).MCvScalar, 2);
 
@@ -199,12 +199,18 @@ namespace GTAPilot.Indicators_v2
             return double.NaN;
         }
 
-        public static bool TryFindRollCircleInFullFrame(Image<Bgr, byte> frame, out CircleF ret)
+        public static bool TryFindRollCircleInFullFrame(IndicatorData data, out CircleF ret)
         {
             ret = default(CircleF);
 
+            if (!Timeline.Data[data.Id].RollHint.Equals(ret))
+            {
+                ret = Timeline.Data[data.Id].RollHint;
+                return true;
+            }
+
             // Crop and blur
-            var cropped_frame = frame.Copy(MovementRect).PyrUp().PyrDown();
+            var cropped_frame = data.Frame.Copy(MovementRect).PyrUp().PyrDown();
 
             var MovementFrameGray = new Mat();
             CvInvoke.CvtColor(cropped_frame, MovementFrameGray, ColorConversion.Bgr2Gray);
@@ -222,6 +228,7 @@ namespace GTAPilot.Indicators_v2
             rollIndicatorCicle.Radius = 64;
             rollIndicatorCicle.Center = rollIndicatorCicle.Center.Add(MovementRect.Location);
             ret = rollIndicatorCicle;
+            Timeline.Data[data.Id].RollHint = ret;
             return true;
         }
     }

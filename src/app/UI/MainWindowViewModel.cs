@@ -96,6 +96,8 @@ namespace GTAPilot
         public ObservableCollection<IndicatorViewModel> Indicators { get; }
 
         public ModeControlPanel MCP => _inputManager.MCP;
+        public PID.Gain RollPID => FlightComputerConfig.Roll.Gain;
+        public PID.Gain VSPID => FlightComputerConfig.Pitch.Gain;
 
         SaveFrameConsumer _captureSink;
         SystemManager _inputManager;

@@ -34,9 +34,19 @@ namespace GTAPilot
 
         int NUM_FRAMES = 200 / 2; // even with Width, hack
         private static DispatcherTimer _tickTimer;
+        private Line zeroLine;
 
         public IndicatorChart()
         {
+            {
+                var l = new Line();
+                l.StrokeThickness = 1;
+                l.Stroke = Brushes.DarkGray;
+                Children.Add(l);
+                zeroLine = l;
+            }
+
+
             if (_tickTimer == null)
             {
                 _tickTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(App.FPS) };
@@ -57,6 +67,7 @@ namespace GTAPilot
                 l.StrokeThickness = 1;
                 Children.Add(l);
             }
+
 
             _tickTimer.Tick += TickTimer_Tick;
         }
@@ -116,7 +127,7 @@ namespace GTAPilot
             {
                 switch (Indicator.Type)
                 {
-                    case IndicatorType.Roll: return new double[] { -30, 30 };
+                    case IndicatorType.Roll: return new double[] { -45, 45 };
                     case IndicatorType.Pitch: return new double[] { -90, 90 };
                     case IndicatorType.Speed: return new double[] { 0, 180 };
                     case IndicatorType.Altitude: return new double[] { 0, 8500 };
@@ -145,6 +156,11 @@ namespace GTAPilot
             {
                 double current_x = Width;
                 double x_size = Width / NUM_FRAMES;
+
+                zeroLine.X1 = 0;
+                zeroLine.X2 = Width;
+                zeroLine.Y1 = Height / 2;
+                zeroLine.Y2 = Height / 2;
 
                 int childIndex = NUM_FRAMES;
                 TimelineFrame last = null;

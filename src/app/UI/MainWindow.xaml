@@ -15,6 +15,8 @@
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="FontSize" Value="28" />
             <Setter Property="Margin" Value="6" />
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
             <EventSetter Event="MouseWheel" Handler="TextBox_MouseWheel" />
         </Style>
 
@@ -82,12 +84,13 @@
             <TextBox Text="{Binding MCP.IAS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton IsChecked="{Binding MCP.SpeedHold, Mode=TwoWay}">IAS HOLD</ToggleButton>
 
-            <TextBox Text="{Binding MCP.ALT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Tag="100" Text="{Binding MCP.ALT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton IsChecked="{Binding MCP.AltitudeHold, Mode=TwoWay}">ALT HOLD</ToggleButton>
 
             <TextBox Text="{Binding MCP.VS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton IsChecked="{Binding MCP.VSHold, Mode=TwoWay}">VS</ToggleButton>
 
+            <TextBox Text="{Binding MCP.Bank, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton IsChecked="{Binding MCP.BankHold, Mode=TwoWay}">WINGS LEVEL</ToggleButton>
 
 
@@ -185,11 +188,56 @@
             </ListView.ItemTemplate>
         </ListView>
 
+        <DockPanel Grid.Row="1"
+                   Grid.Column="1"
+                   LastChildFill="True">
+
+            <StackPanel DockPanel.Dock="Left" Orientation="Vertical">
+                <TextBlock>VS:</TextBlock>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>P:</TextBlock>
+                    <TextBox Text="{Binding VSPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>I:</TextBlock>
+                    <TextBox Text="{Binding VSPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>D:</TextBlock>
+                    <TextBox Text="{Binding VSPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+            </StackPanel>
+
+            <StackPanel DockPanel.Dock="Left" Orientation="Vertical">
+
+                <TextBlock>Roll:</TextBlock>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>P:</TextBlock>
+                    <TextBox Text="{Binding RollPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>I:</TextBlock>
+                    <TextBox Text="{Binding RollPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>D:</TextBlock>
+                    <TextBox Text="{Binding RollPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                </StackPanel>
+
+            </StackPanel>
+
+            <ListBox Name="lstLog"
+                     Grid.Row="1"
+                     Grid.Column="1"
+                     FontSize="25" />
+        </DockPanel>
 
 
-        <ListBox Name="lstLog"
-                 Grid.Row="1"
-                 Grid.Column="1"
-                 FontSize="25" />
     </Grid>
 </Window>

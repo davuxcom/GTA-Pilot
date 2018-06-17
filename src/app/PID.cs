@@ -6,9 +6,9 @@ namespace GTAPilot
     {
         public class Gain
         {
-            public double P;
-            public double I;
-            public double D;
+            public double P { get; set; }
+            public double I { get; set; }
+            public double D { get; set; }
         }
 
         public class Range

@@ -51,7 +51,12 @@ namespace GTAPilot
             set => UpdateAndNotify(nameof(VS), value, ref _vs);
         }
 
-
+        private int _bank;
+        public int Bank
+        {
+            get => _bank;
+            set => UpdateAndNotify(nameof(Bank), value, ref _bank);
+        }
         private int _ias;
         public int IAS
         {

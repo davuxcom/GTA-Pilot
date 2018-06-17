@@ -69,6 +69,7 @@ namespace GTAPilot
                     if (_mcp.BankHold)
                     {
                         DesiredRoll = 0;
+                        _mcp.Bank = 0;
                         _roll_pid.ClearError();
                         Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
                     }
@@ -117,6 +118,9 @@ namespace GTAPilot
                     break;
                 case nameof(_mcp.IAS):
                     DesiredSpeed = _mcp.IAS;
+                    break;
+                case nameof(_mcp.Bank):
+                    DesiredRoll = _mcp.Bank;
                     break;
             }
         }

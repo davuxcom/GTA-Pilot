@@ -28,7 +28,7 @@ namespace GTAPilot.Indicators_v2
             DateTime this_last_time = last_time;
             double this_last_value = last_value;
 
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data.Frame, out var circle))
+            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y + 70);
                 circle.Radius = 55;
@@ -94,16 +94,18 @@ namespace GTAPilot.Indicators_v2
                                             if (center.Contains(line.P1) || center.Contains(line.P2))
                                             {
                                                 Point other_point;
-
+                                                Point self_point;
                                                 if (center.Contains(line.P1))
                                                 {
                                                     other_point = line.P2;
+                                                    self_point = line.P1;
                                                 }
                                                 else
                                                 {
                                                     other_point = line.P1;
+                                                    self_point = line.P2;
                                                 }
-                                                bestLines.Add(new Tuple<double, LineSegment2D>(Math2.GetDistance(other_point, center_point), line));
+                                                bestLines.Add(new Tuple<double, LineSegment2D>(Math2.GetDistance(other_point, self_point), line));
                                             }
                                         }
                                         bestLines = bestLines.OrderByDescending(l => l.Item1).ToList();
@@ -132,8 +134,8 @@ namespace GTAPilot.Indicators_v2
                                                 LineSegment2D final_line = new LineSegment2D(center_point, other_point);
                                                 LineSegment2D baseLine = new LineSegment2D(new Point((focus.Width / 2), 0), new Point((focus.Width / 2), (focus.Height / 2)));
 
-                                                CvInvoke.Line(markedup_frame, baseLine.P1, baseLine.P2, new Bgr(Color.Purple).MCvScalar, 1);
-                                                CvInvoke.Line(markedup_frame, final_line.P1, final_line.P2, new Bgr(Color.Orange).MCvScalar, 1);
+                                               // CvInvoke.Line(markedup_frame, baseLine.P1, baseLine.P2, new Bgr(Color.Purple).MCvScalar, 1);
+                                               // CvInvoke.Line(markedup_frame, final_line.P1, final_line.P2, new Bgr(Color.Orange).MCvScalar, 1);
 
 
                                                 var v_angle = Math2.angleBetween2Lines(line, baseLine);
@@ -187,6 +189,10 @@ namespace GTAPilot.Indicators_v2
 
                                                 var knots = (v_angle / 2);
                                                 if (knots > 175) knots = 0;
+                                                if (knots < 0)
+                                                {
+                                                    knots = 0;
+                                                }
 
                                                 ObservedValue = knots;
 

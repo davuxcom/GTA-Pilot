@@ -22,7 +22,7 @@ namespace GTAPilot.Indicators_v2
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data.Frame, out var circle))
+            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y - 40);
                 circle.Radius = 45;
