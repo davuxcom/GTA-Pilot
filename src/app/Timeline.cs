@@ -112,7 +112,7 @@ namespace GTAPilot
 
         public static TimelineFrame LatestFrame(Func<TimelineFrame, double> finder, int endId)
         {
-            for (var i = endId; i >= 0; i--)
+            for (var i = endId - 1; i >= 0; i--)
             {
                 if (Data[i] != null)
                 {
@@ -151,7 +151,7 @@ namespace GTAPilot
                     }
                 }
 
-                oldFrame = LatestFrame((f) => f.Location == default(PointF) ? double.NaN : 0, id - 1);
+                oldFrame = LatestFrame((f) => f.Location == default(PointF) ? double.NaN : 0, id);
                 newFrame.Location = oldFrame.Location;
                 newFrame.LocationComplete = true;
                 CurrentLocation = newFrame.Location;

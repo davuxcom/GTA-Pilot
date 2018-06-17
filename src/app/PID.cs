@@ -23,10 +23,8 @@ namespace GTAPilot
         public Range PV;
         public Range OV;
 
-        // Running Values
-        double lastPV;
-        double lastErr;
-        double errSum;
+        double error_prior;
+        double integral;
 
         private double ScaleValue(double value, double valuemin, double valuemax, double scalemin, double scalemax)
         {
@@ -50,45 +48,21 @@ namespace GTAPilot
             sp = Clamp(sp, PV.Min, PV.Max);
             sp = ScaleValue(sp, PV.Min, PV.Max, -1.0f, 1.0f);
 
-            double err = sp - pv; // Error in percent.
+            var error = sp - pv;
+            integral = integral + (error * dT);
+            var derivative = (error - error_prior) / dT;
+            var output = Gains.P * error + Gains.I * integral + Gains.D * derivative;
+            error_prior = error;
 
-            double pTerm = err * Gains.P;
-            double iTerm = 0.0f;
-            double dTerm = 0.0f;
-
-            double partialSum = 0.0f;
-
-            if (dT > 0)
-            {
-                // Compute the integral if we have to...
-                if (pv >= PV.Min && pv <= PV.Max)
-                {
-                    partialSum = errSum + dT * err;
-                    iTerm = Gains.I * partialSum;
-                }
-
-                if (dT != 0.0f) dTerm = Gains.D * (err - lastErr) / dT;
-                // Fixed from the initial version:
-                //dTerm = kd * (pv - lastPV) / dT;
-            }
-
-            errSum = partialSum;
-            lastPV = pv;
-            lastErr = err;
-
-            // Now we have to scale the output value to match the requested scale
-            double outReal = pTerm + iTerm + dTerm;
-
-            outReal = Clamp(outReal, -1.0f, 1.0f);
-            outReal = ScaleValue(outReal, -1.0f, 1.0f, OV.Min, OV.Max);
-
-            return outReal;
+            output = Clamp(output, -1.0f, 1.0f);
+            output = ScaleValue(output, -1.0f, 1.0f, OV.Min, OV.Max);
+            return output;
         }
 
         public void ClearError()
         {
-            errSum = 0;
-            lastErr = 0;
+            integral = 0;
+            error_prior = 0;
         }
     }
 }
