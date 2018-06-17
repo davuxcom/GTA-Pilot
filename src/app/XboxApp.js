@@ -175,7 +175,7 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
               //  controllerStateData.Buttons = 0;
                 for (var btn in XInputButtons) {
                     if (NextState[btn]) {
-                        controllerStateData.Buttons |= btn
+                        controllerStateData.Buttons |= XInputButtons[btn]
                         NextState[btn]--;
                     }
                 }
@@ -197,7 +197,7 @@ function recv_one_message(packet) {
     try {
         for (var input in NextState) {
             if (packet[input]) {
-                NextState[input] = DefaultTicks[input] ? DefaultTicks[input] : packet[input];
+                NextState[input] = DefaultTicks[input] ? DefaultTicks[input] : parseInt(packet[input], 10);
                 NextStateValue[input] = parseInt(packet[input], 10);
             }
         }

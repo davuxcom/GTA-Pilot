@@ -157,8 +157,15 @@ namespace GTAPilot
         {
             var txt = (TextBox)sender;
             var iTxt = int.Parse(txt.Text);
+            bool isHDG = (string)txt.Tag == "HDG";
+            var next = (iTxt + Math.Sign(e.Delta));
+            if (isHDG)
+            {
+                if (next > 360) next = 0;
+                if (next < 1) next = 360;
+            }
 
-            txt.Text = (iTxt + Math.Sign(e.Delta)).ToString();
+            txt.Text = next.ToString();
         }
     }
 }

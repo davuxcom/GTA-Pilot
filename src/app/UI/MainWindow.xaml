@@ -78,7 +78,7 @@
 
             <Button Click="Button_Click">Map</Button>
 
-            <TextBox Text="{Binding MCP.HDG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Tag="HDG" Text="{Binding MCP.HDG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton IsChecked="{Binding MCP.HeadingHold, Mode=TwoWay}">HDG HOLD</ToggleButton>
 
             <TextBox Text="{Binding MCP.IAS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

@@ -17,8 +17,8 @@ namespace GTAPilot
         {
             Gain = new PID.Gain
             {
-                P = 6,
-                I = 2,
+                P = 1,
+                I = 1,
                 D = 0
             },
             PV = new PID.Range { Min = 0, Max = 200},
@@ -30,8 +30,8 @@ namespace GTAPilot
         {
             Gain = new PID.Gain
             {
-                P = 1.8,
-                I = 0.8,
+                P = 2,
+                I = 1,
                 D = 0
             },
             PV = new PID.Range { Min = 0, Max = 100 },
@@ -49,17 +49,6 @@ namespace GTAPilot
             PV = new PID.Range { Min = 0, Max = 175 },
             OV = new PID.Range { Min = 0, Max = 255 },
             PV_Skew = 0,
-        };
-        public static PIDConfig Yaw = new PIDConfig
-        {
-            Gain = new PID.Gain
-            {
-                P = 1.5,
-                I = 0,
-                D = 0
-            },
-            PV = new PID.Range { Min = 0, Max = 360 * 2 },
-            OV = new PID.Range { Min = 0, Max = 100 },
         };
     }
 }

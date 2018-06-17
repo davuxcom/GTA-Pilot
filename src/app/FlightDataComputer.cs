@@ -17,7 +17,6 @@ namespace GTAPilot
         public PID _pitch_pid;
         public PID _roll_pid;
         public PID _airspeed_pid;
-        public PID _heading_pid;
 
         public FlightDataComputer(ModeControlPanel mcp, FlightController control)
         {
@@ -37,13 +36,6 @@ namespace GTAPilot
                 Gains = FlightComputerConfig.Pitch.Gain,
                 PV = FlightComputerConfig.Pitch.PV,
                 OV = FlightComputerConfig.Pitch.OV,
-            };
-
-            _heading_pid = new PID
-            {
-                Gains = FlightComputerConfig.Yaw.Gain,
-                PV = FlightComputerConfig.Yaw.PV,
-                OV = FlightComputerConfig.Yaw.OV,
             };
 
             _airspeed_pid = new PID
@@ -82,7 +74,6 @@ namespace GTAPilot
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
                     DesiredHeading = Timeline.Heading;
                     _mcp.HDG = (int)DesiredHeading;
-                    _heading_pid.ClearError();
                     // _mcp.BankHold = false;
                     Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
@@ -140,94 +131,8 @@ namespace GTAPilot
             power -= short.MaxValue;
             power *= -1;
 
-            // var rollAngle = Math.Abs(Timeline.Roll);
-            // if (rollAngle > 18)
-            //  {
-            //      power += FlightComputerConfig.RollTrim;
-            //  }
-
-            //  double max = FlightComputerConfig.Pitch_Max;
-            // var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
-
-            //  power = RemoveDeadZone(power, FlightComputerConfig.Pitch_DeadZone, max);
-
             _control.SetPitch(power);
             return power + short.MaxValue;
-        }
-
-        double Handle_Get_Compass()
-        {
-
-            var val = Math.Round(Timeline.Heading);
-            var target = DesiredHeading;
-
-            if (val == target) return 360;
-
-            double right_turn = 0;
-            double left_turn = 0;
-
-            var a = val;
-            var b = target;
-            var diff = ((a - b + 180 + 360) % 360) - 180;
-
-            if (diff < 0)
-            {
-                right_turn = diff;
-                left_turn = 360 - diff;
-            }
-            else
-            {
-                left_turn = diff;
-                right_turn = 360 - diff;
-            }
-
-            double ret_normal = 0;
-            double ret = 0;
-            if (right_turn < left_turn)
-            {
-                ret_normal = Math.Abs(right_turn);
-                ret = 360 + Math.Abs(right_turn);
-            }
-            else
-            {
-                ret_normal = -1 * Math.Abs(left_turn);
-                ret = 360 - Math.Abs(left_turn);
-            }
-
-            // if (!double.IsNaN(DesiredHeading))
-            {
-                // _panel.Compass.InputValues.Add(new Indicator.IndicatorValueData { Tick = _panel.Ticks, Value = ret_normal });
-            }
-
-            if (double.IsNaN(DesiredHeading))
-            {
-                return 360;
-            }
-
-            return (int)Math.Round(ret);
-        }
-
-        double Handle_Compass(double power)
-        {
-            var v = Math.Round(power);
-            double vx = 0;
-
-            if (v > 50)
-            {
-                v -= 50;
-                vx = v;
-                _control.SetLeftRudder(v);
-                return 1;
-            }
-            else if (v < 50)
-            {
-                v = 50 - v;
-                vx = v * -1;
-
-                _control.SetRightRudder(v);
-                return -1;
-            }
-            return 0;
         }
 
         double Handle_Throttle(double throttle)
@@ -306,10 +211,23 @@ namespace GTAPilot
         {
             if (_mcp.HeadingHold)
             {
-                if (!double.IsNaN(Timeline.Data[id].Heading.Value))
+                var val = Timeline.Data[id].Heading.Value;
+                if (!double.IsNaN(val))
                 {
-                    Timeline.Data[id].Heading.OutputValue = Handle_Compass(_heading_pid.Compute(Handle_Get_Compass(), DesiredHeading,
-                    ComputeDTForFrameId(id, (f) => f.Heading.Value)));
+                    var diff = Math2.DiffAngles(val, DesiredHeading);
+                    if (Math.Abs(diff) > 2)
+                    {
+                        if (diff < 0)
+                        {
+                            _control.SetRightRudder(Math.Abs(diff) / 2);
+                            Timeline.Data[id].Heading.OutputValue = -1 * Math.Abs(diff);
+                        }
+                        else
+                        {
+                            _control.SetLeftRudder(Math.Abs(diff) / 2);
+                            Timeline.Data[id].Heading.OutputValue = Math.Abs(diff);
+                        }
+                    }
                 }
                 Timeline.Data[id].Heading.SetpointValue = DesiredHeading;
             }
@@ -325,37 +243,6 @@ namespace GTAPilot
                 dT = Timeline.Data[id].Seconds - lastGoodFrame.Seconds;
             }
             return dT;
-        }
-
-        double RemoveDeadZone(double power, double deadzone, double max)
-        {
-            if (power > 0)
-            {
-                power = Math2.MapValue(0, short.MaxValue, deadzone, max, power);
-            }
-            else if (power < 0)
-            {
-                power = Math2.MapValue(-1 * short.MaxValue, 0, -1 * max, -1 * deadzone, power);
-            }
-            return power;
-        }
-
-        double GetScaledValue(double value, double scaleValue)
-        {
-            if (value > 0)
-            {
-                value = GetScaledValue(value, short.MaxValue, scaleValue);
-            }
-            else if (value < 0)
-            {
-                value = -1 * GetScaledValue(Math.Abs(value), short.MaxValue, scaleValue);
-            }
-            return value;
-        }
-
-        double GetScaledValue(double value, double scale, double pow)
-        {
-            return Math.Pow(value / scale, pow) * scale;
         }
     }
 }

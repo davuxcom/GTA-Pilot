@@ -143,7 +143,7 @@ namespace GTAPilot
                     case IndicatorType.Pitch: return new double[] { FlightComputerConfig.Pitch.OV.Min, FlightComputerConfig.Pitch.OV.Max };
                     case IndicatorType.Speed: return new double[] { FlightComputerConfig.Speed.OV.Min, FlightComputerConfig.Speed.OV.Max };
                     case IndicatorType.Altitude: return new double[] { -1, 1 };
-                    case IndicatorType.Yaw: return new double[] { -1, 1 };
+                    case IndicatorType.Yaw: return new double[] { -20, 20 };
                     default: throw new NotImplementedException();
                 }
             }

@@ -52,7 +52,7 @@ namespace GTAPilot
     {
         public static int LastFrameId;
 
-        public static TimelineFrame[] Data = new TimelineFrame[int.MaxValue / 2];
+        public static TimelineFrame[] Data = new TimelineFrame[90000];
 
         // location is los santos runway 3
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);
