@@ -9,39 +9,39 @@ namespace GTAPilot
 {
     public class FlightController
     {
+        [Flags]
+        public enum XInputButtons : int
+        {
+            DPAD_UP = 0x0001,
+            DPAD_DOWN = 0x0002,
+            DPAD_LEFT = 0x0004,
+            DPAD_RIGHT = 0x0008,
+            START = 0x0010,
+            BACK = 0x0020,
+            LEFT_THUMB = 0x0040,
+            RIGHT_THUMB = 0x0080,
+            LEFT_SHOULDER = 0x0100,
+            RIGHT_SHOULDER = 0x0200,
+            A = 0x1000,
+            B = 0x2000,
+            X = 0x4000,
+            Y = 0x8000,
+        };
+
         [DataContract]
         public class ControllerMessage
         {
-            /*
-            [DataMember]public int DPAD_UP { get; set; }
-            [DataMember]public int DPAD_DOWN { get; set; }
-            [DataMember]public int DPAD_LEFT { get; set; }
-            [DataMember]public int DPAD_RIGHT { get; set; }
-            [DataMember]public int START { get; set; }
-            [DataMember]public int BACK { get; set; }
-            [DataMember]public int LEFT_THUMB { get; set; }
-            [DataMember]public int RIGHT_THUMB { get; set; }
-            [DataMember]public int LEFT_SHOULDER { get; set; }
-            [DataMember]public int RIGHT_SHOULDER { get; set; }
-            [DataMember]public int A { get; set; }
-            [DataMember]public int B { get; set; }
-            [DataMember]public int X { get; set; }
-            [DataMember]public int Y { get; set; }
-            */
-
-            [DataMember] public int Buttons { get; set; }
-            [DataMember]public int RIGHT_TRIGGER { get; set; }
-            [DataMember]public int LEFT_TRIGGER { get; set; }
-            [DataMember]public int RIGHT_THUMB_X { get; set; }
-            [DataMember]public int RIGHT_THUMB_Y { get; set; }
-            [DataMember]public int LEFT_THUMB_X { get; set; }
-            [DataMember]public int LEFT_THUMB_Y { get; set; }
+            [DataMember] public XInputButtons Buttons { get; set; }
+            [DataMember] public int RIGHT_TRIGGER { get; set; }
+            [DataMember] public int LEFT_TRIGGER { get; set; }
+            [DataMember] public int RIGHT_THUMB_X { get; set; }
+            [DataMember] public int RIGHT_THUMB_Y { get; set; }
+            [DataMember] public int LEFT_THUMB_X { get; set; }
+            [DataMember] public int LEFT_THUMB_Y { get; set; }
         }
 
-
         private DataContractJsonSerializer _deserializer = new DataContractJsonSerializer(typeof(ControllerMessage));
-
-        FridaController _controller;
+        private FridaController _controller;
 
         internal FlightController(FridaController fridaController)
         {
@@ -59,12 +59,12 @@ namespace GTAPilot
                 ms.Position = 0;
                 var msg = (ControllerMessage)_deserializer.ReadObject(ms);
 
-                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Roll, msg.LEFT_THUMB_X + ushort.MaxValue/2);
-                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Pitch, msg.LEFT_THUMB_Y + ushort.MaxValue/2);
+                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Roll, msg.LEFT_THUMB_X + ushort.MaxValue / 2);
+                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Pitch, msg.LEFT_THUMB_Y + ushort.MaxValue / 2);
                 SetValueAndHistory(frameId, (id) => Timeline.Data[id].Speed, msg.RIGHT_TRIGGER);
             }
         }
-        
+
         private void SetValueAndHistory(int frameId, Func<int, TimelineValue> getFrame, double value)
         {
             var thisFrame = getFrame(frameId);
@@ -84,7 +84,7 @@ namespace GTAPilot
 
         public void LockViewMin()
         {
-            SendMessage("{\"RIGHT_THUMB_Y\":\"-17700\",\"RIGHT_THUMB_X\":\"1\"}");
+            SendMessage("{\"RIGHT_THUMB_Y\":\"-17700\",\"RIGHT_THUMB_X\":\"0\"}");
         }
 
         public void ResetFlaps()
@@ -138,14 +138,12 @@ namespace GTAPilot
 
         public void SetLeftRudder(double ticks)
         {
-            SendMessage("{\"LEFT_SHOULDER\":\"" + ticks + "\"}");
-            SendMessage("{\"RIGHT_SHOULDER\":\"0\"}");
+            SendMessage("{\"LEFT_SHOULDER\":\"" + ticks + "\", \"RIGHT_SHOULDER\":\"0\"}");
         }
 
         public void SetRightRudder(double ticks)
         {
-            SendMessage("{\"RIGHT_SHOULDER\":\"" + ticks + "\"}");
-            SendMessage("{\"LEFT_SHOULDER\":\"0\"}");
+            SendMessage("{\"RIGHT_SHOULDER\":\"" + ticks + "\", \"LEFT_SHOULDER\":\"0\"}");
         }
     }
 }

@@ -31,6 +31,8 @@ namespace GTAPilot
         public event Action<string> OnMessage;
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public FpsCounter Counter = new FpsCounter();
+
         public bool IsConnected { get; private set; }
 
         private Dispatcher _fridaDispatcher;
@@ -110,7 +112,11 @@ namespace GTAPilot
 
         public void SendMessage(string message)
         {
-            _fridaDispatcher.BeginInvoke((Action)(() => _script.Post(message)));
+            _fridaDispatcher.BeginInvoke((Action)(() =>
+            {
+                _script.Post(message);
+                Counter.GotFrame();
+            }));
         }
 
         private void TraceLine(string msg)

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -142,8 +143,14 @@ namespace GTAPilot
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var m = new MapWindow();
-            m.ShowDialog();
+            var t = new Thread(() =>
+            {
+                var m = new MapWindow();
+                m.Show();
+                System.Windows.Threading.Dispatcher.Run();
+            });
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
 
         private void TextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

@@ -61,12 +61,5 @@ namespace GTAPilot
             PV = new PID.Range { Min = 0, Max = 360 * 2 },
             OV = new PID.Range { Min = 0, Max = 100 },
         };
-
-        public static double Pitch_DeadZone = 8000;
-        public static double Pitch_Max = 14000;
-        public static double Roll_DeadZone = 8000;
-        public static double Roll_Max = 12000;
-
-        public static double RollTrim = 800;
     }
 }

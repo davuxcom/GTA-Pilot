@@ -69,7 +69,7 @@ namespace GTAPilot.Indicators_v2
                     Point last = new Point(0, 0);
                     int found_count = 0;
 
-                    for (float t = 0; t < 2 * Math.PI; t += 0.05f)
+                    for (double t = Math.PI / 2; t < Math.PI * 3; t += 0.05f)
                     {
                         var cX_ = (int)(radius * Math.Cos(t) + cir.Center.X);
                         var cY_ = (int)(radius * Math.Sin(t) + cir.Center.Y);
@@ -112,6 +112,7 @@ namespace GTAPilot.Indicators_v2
                              check(cX_, cY_ - pos))
                         {
                             found_count++;
+                            //CvInvoke.Circle(focusFrame, new Point(cX_, cY_), 1, new Bgr(Color.Green).MCvScalar, 1);
 
                             if (state == NOTFOUND)
                             {
@@ -121,6 +122,7 @@ namespace GTAPilot.Indicators_v2
                         }
                         else
                         {
+                            //CvInvoke.Circle(focusFrame, new Point(cX_, cY_), 1, new Bgr(Color.Red).MCvScalar, 1);
                             found_count = 0;
                             if (state == FOUND)
                             {
@@ -145,23 +147,8 @@ namespace GTAPilot.Indicators_v2
                     }
                     else if (boundaries.Count > 2)
                     {
-                        int highest = 0;
-                        for (int i = 0; i < boundaries.Count; ++i)
-                        {
-                            if (boundaries[i].count > highest)
-                            {
-                                if (i == 0)
-                                {
-                                    boundary_one = boundaries[0].point;
-                                    boundary_two = boundaries[boundaries.Count - 1].point;
-                                }
-                                else
-                                {
-                                    boundary_one = boundaries[i].point;
-                                    boundary_two = boundaries[i - 1].point;
-                                }
-                            }
-                        }
+                        boundary_one = boundaries.First(b => b.state == FOUND).point;
+                        boundary_two = boundaries.Last(b => b.state == NOTFOUND).point;
                     }
                     else
                     {

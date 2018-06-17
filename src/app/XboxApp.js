@@ -133,7 +133,6 @@ var NextStateValue = {
     LEFT_THUMB_Y: 0
 }
 
-
 // Inputs missing from DefaultTicks will have their ticks set to their value.
 var DefaultTicks = {
     RIGHT_TRIGGER: 20,
@@ -169,13 +168,11 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
             SavedState[input] = controllerStateData[input];
         }
 
-        if (ticks % 10 == 0) {
-            console.log("CONT: " + controllerStateData.LEFT_THUMB_X);
-        }
+        //send(JSON.stringify(SavedState));
 
         for (var input in SavedState) {
             if (input == "Buttons") {
-                controllerStateData.Buttons = 0;
+              //  controllerStateData.Buttons = 0;
                 for (var btn in XInputButtons) {
                     if (NextState[btn]) {
                         controllerStateData.Buttons |= btn
@@ -210,14 +207,6 @@ function recv_one_message(packet) {
     recv(recv_one_message);
 }
 
-function sendInputToApp() {
-    setTimeout(function () {
-        send(JSON.stringify(SavedState));
-
-        sendInputToApp();
-    }, 1000 / 60);
-}
-
 function printInputFpsEachMinute() {
     setTimeout(function () {
         console.log("Input calls per second: " + (ticks / 60));
@@ -229,5 +218,4 @@ function printInputFpsEachMinute() {
 
 recv(recv_one_message);
 printInputFpsEachMinute();
-sendInputToApp();
 console.log("READY");

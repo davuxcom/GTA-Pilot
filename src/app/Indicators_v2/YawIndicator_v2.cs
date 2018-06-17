@@ -18,7 +18,7 @@ namespace GTAPilot.Indicators_v2
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Heading;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.04, 100);
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
 
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
