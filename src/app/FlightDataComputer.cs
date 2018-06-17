@@ -66,16 +66,23 @@ namespace GTAPilot
                     Trace.WriteLine($"A/P: Pitch: {DesiredPitch}");
                     break;
                 case nameof(_mcp.BankHold) when (_mcp.BankHold):
-                    DesiredRoll = 0;
-                    
-                    _roll_pid.ClearError();
-                    Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
+                    if (_mcp.BankHold)
+                    {
+                        DesiredRoll = 0;
+                        _roll_pid.ClearError();
+                        Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
+                    }
+                    else
+                    {
+                        DesiredRoll = double.NaN;
+                    }
+
                     break;
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
                     DesiredHeading = Timeline.Heading;
                     _mcp.HDG = (int)DesiredHeading;
                     _heading_pid.ClearError();
-                   // _mcp.BankHold = false;
+                    // _mcp.BankHold = false;
                     Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
                 case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
@@ -93,7 +100,7 @@ namespace GTAPilot
                     Trace.WriteLine($"A/P: Altitude: {DesiredAltitude}");
                     break;
 
-                case nameof(_mcp.  HDG):
+                case nameof(_mcp.HDG):
 
                     if (_mcp.HDG < 0)
                     {
@@ -118,8 +125,8 @@ namespace GTAPilot
         {
             power -= short.MaxValue;
 
-          //  var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
-          //  power = RemoveDeadZone(power, FlightComputerConfig.Roll_DeadZone, FlightComputerConfig.Roll_Max);
+            //  var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
+            //  power = RemoveDeadZone(power, FlightComputerConfig.Roll_DeadZone, FlightComputerConfig.Roll_Max);
             _control.SetRoll(power);
             return power + short.MaxValue;
         }
@@ -129,16 +136,16 @@ namespace GTAPilot
             power -= short.MaxValue;
             power *= -1;
 
-           // var rollAngle = Math.Abs(Timeline.Roll);
-           // if (rollAngle > 18)
-          //  {
-          //      power += FlightComputerConfig.RollTrim;
-          //  }
+            // var rollAngle = Math.Abs(Timeline.Roll);
+            // if (rollAngle > 18)
+            //  {
+            //      power += FlightComputerConfig.RollTrim;
+            //  }
 
-          //  double max = FlightComputerConfig.Pitch_Max;
-           // var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
+            //  double max = FlightComputerConfig.Pitch_Max;
+            // var pp = Math.Round((double)((power) / (short.MaxValue)) * 100, 2);
 
-          //  power = RemoveDeadZone(power, FlightComputerConfig.Pitch_DeadZone, max);
+            //  power = RemoveDeadZone(power, FlightComputerConfig.Pitch_DeadZone, max);
 
             _control.SetPitch(power);
             return power + short.MaxValue;

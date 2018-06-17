@@ -22,6 +22,7 @@ namespace GTAPilot
         public double SecondsWhenComputed = double.NaN;
 
         public double OutputValue = double.NaN;
+        public double InputValue = double.NaN;
         public double SetpointValue = double.NaN;
     }
 

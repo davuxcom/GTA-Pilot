@@ -4,12 +4,9 @@ using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
 using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
-using System.Threading;
 using Device = SharpDX.Direct3D11.Device;
 using MapFlags = SharpDX.Direct3D11.MapFlags;
 using Rectangle = SharpDX.Rectangle;
@@ -81,21 +78,6 @@ namespace DesktopDuplication
         public bool RectanglesCoalesced { get; internal set; }
     }
 }
-
-namespace DesktopDuplication
-{
-    internal class PointerInfo
-    {
-        public byte[] PtrShapeBuffer;
-        public OutputDuplicatePointerShapeInformation ShapeInfo;
-        public SharpDX.Point Position;
-        public bool Visible;
-        public int BufferSize;
-        public int WhoUpdatedPositionLast;
-        public long LastTimeStamp;
-    }
-}
-
 
 namespace DesktopDuplication
 {

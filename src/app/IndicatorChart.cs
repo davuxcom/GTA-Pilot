@@ -10,7 +10,7 @@ namespace GTAPilot
 
     public enum IndicatorChartType
     {
-        Value, Delay, Output
+        Value, Delay, InputOutput
     }
 
     public class IndicatorChart : Canvas
@@ -84,7 +84,7 @@ namespace GTAPilot
             {
                 return GetTimelineValueForIndicator(frame).Value;
             }
-            else if (Type == IndicatorChartType.Output)
+            else if (Type == IndicatorChartType.InputOutput)
             {
                 return GetTimelineValueForIndicator(frame).OutputValue;
             }
@@ -97,6 +97,11 @@ namespace GTAPilot
             {
                 return GetTimelineValueForIndicator(frame).SetpointValue;
             }
+            else if (Type == IndicatorChartType.InputOutput)
+            {
+                return GetTimelineValueForIndicator(frame).InputValue;
+            }
+
 
             return double.NaN;
         }
@@ -119,7 +124,7 @@ namespace GTAPilot
                     default: throw new NotImplementedException();
                 }
             }
-            else if (Type == IndicatorChartType.Output)
+            else if (Type == IndicatorChartType.InputOutput)
             {
                 switch (Indicator.Type)
                 {
@@ -177,21 +182,7 @@ namespace GTAPilot
                             l.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(current));
                             l.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetValueForIndicator(last));
 
-                            if (Type == IndicatorChartType.Value)
-                            {
-                                s.X1 = l.X1;
-                                s.X2 = l.X2;
 
-                                if (!double.IsNaN(GetSetPointForIndicator(current)) && !double.IsNaN(GetSetPointForIndicator(last)))
-                                {
-                                    s.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(current));
-                                    s.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(last));
-                                }
-                                else
-                                {
-                                    s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
-                                }
-                            }
                         }
                         else
                         {
@@ -200,7 +191,7 @@ namespace GTAPilot
                                 s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
                             }
 
-                            if (Type != IndicatorChartType.Output)
+                            if (Type != IndicatorChartType.InputOutput)
                             {
                                 l.Stroke = Brushes.Gray;
                                 l.X1 = current_x;
@@ -208,7 +199,28 @@ namespace GTAPilot
                                 l.Y1 = 0;
                                 l.Y2 = Height;
                             }
+                            else
+                            {
+                                l.X1 = l.X2 = l.Y1 = l.Y2 = 0;
+                            }
                         }
+
+                        if (Type == IndicatorChartType.Value || Type == IndicatorChartType.InputOutput)
+                        {
+                            s.X1 = current_x;
+                            s.X2 = current_x - x_size;
+
+                            if (!double.IsNaN(GetSetPointForIndicator(current)) && !double.IsNaN(GetSetPointForIndicator(last)))
+                            {
+                                s.Y1 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(current));
+                                s.Y2 = Math2.MapValue(GetRangeForIndicator()[0], GetRangeForIndicator()[1], Height, 0, GetSetPointForIndicator(last));
+                            }
+                            else
+                            {
+                                s.X1 = s.X2 = s.Y1 = s.Y2 = 0;
+                            }
+                        }
+
                         current_x = current_x - x_size;
                         childIndex++;
                         last = current;

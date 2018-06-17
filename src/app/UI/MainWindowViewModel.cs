@@ -88,9 +88,9 @@ namespace GTAPilot
         }
     }
 
-    class MainWindowViewModel : INotifyPropertyChanged
+    class MainWindowViewModel //: INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+       // public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<FpsCounterViewModel> Counters { get; }
         public ObservableCollection<IndicatorViewModel> Indicators { get; }
@@ -111,7 +111,7 @@ namespace GTAPilot
             Indicators = new ObservableCollection<IndicatorViewModel>();
 
             Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Enqueue), "Capture"));
-            Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Dequeue), "Dispatch"));
+           // Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Dequeue), "Dispatch"));
 
             if (_captureSink != null)
             {

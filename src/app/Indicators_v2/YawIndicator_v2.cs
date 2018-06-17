@@ -184,8 +184,6 @@ namespace GTAPilot.Indicators_v2
             return double.NaN;
         }
 
-        static int cid = 0;
-
         double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame)
         {
             

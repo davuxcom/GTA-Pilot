@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -72,14 +73,14 @@ namespace GTAPilot
             if (dlg.Result == SourceType.Live)
             {
                 // TODO: pipe through screen textbox
-                fridaController = new FridaController();
+                fridaController = new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
                 mgr = new SystemManager(new DesktopFrameProducer(), fridaController);
             }
             else if (dlg.Result == SourceType.Capture)
             {
                 // TODO: pipe through screen textbox
                 _captureSink = new SaveFrameConsumer(dlg.txtCaptureLocation.Text);
-                fridaController = new FridaController();
+                fridaController = new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
                 mgr = new SystemManager(new DesktopFrameProducer(), _captureSink.HandleFrameArrived, fridaController);
             }
             else if (dlg.Result == SourceType.Playback)
@@ -102,6 +103,15 @@ namespace GTAPilot
                 progress.ShowDialog();
 
                 mgr.StopCapture();
+            }
+        }
+
+        private string GetScriptContent()
+        {
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GTAPilot.XboxApp.js"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
             }
         }
 

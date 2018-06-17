@@ -53,7 +53,6 @@ namespace GTAPilot.Indicators_v2
 
                     debugState[1] = vs_blackimg;
 
-                    var margin = 4;
                     var d = (int)circ.Radius * 2;
                     var r = (int)circ.Radius;
 
@@ -111,7 +110,6 @@ namespace GTAPilot.Indicators_v2
 
                                         CvInvoke.Rectangle(markedup_frame, center, new Bgr(Color.Yellow).MCvScalar, 1);
 
-                                        bool didFinish = false;
                                         double ObservedValue = -1;
                                         foreach (var lineX in bestLines)
                                         {
@@ -205,7 +203,6 @@ namespace GTAPilot.Indicators_v2
                                                 last_value = ObservedValue;
                                                 num_rejected_values = 0;
 
-                                                didFinish = true;
                                                 CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
                                                 CvInvoke.Line(focus, line.P1, line.P2, new Bgr(Color.Yellow).MCvScalar, 2);
                                                 break;

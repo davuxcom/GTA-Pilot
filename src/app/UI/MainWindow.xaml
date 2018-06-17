@@ -177,7 +177,7 @@
                             <local:IndicatorChart Width="200"
                                                   Height="200"
                                                   Indicator="{Binding}"
-                                                  Type="Output" />
+                                                  Type="InputOutput" />
                         </Border>
 
                     </Grid>

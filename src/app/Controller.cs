@@ -1,11 +1,48 @@
-﻿using System.Diagnostics;
-using System.Net.Sockets;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Text;
 
 namespace GTAPilot
 {
     public class FlightController
     {
+        [DataContract]
+        public class ControllerMessage
+        {
+            /*
+            [DataMember]public int DPAD_UP { get; set; }
+            [DataMember]public int DPAD_DOWN { get; set; }
+            [DataMember]public int DPAD_LEFT { get; set; }
+            [DataMember]public int DPAD_RIGHT { get; set; }
+            [DataMember]public int START { get; set; }
+            [DataMember]public int BACK { get; set; }
+            [DataMember]public int LEFT_THUMB { get; set; }
+            [DataMember]public int RIGHT_THUMB { get; set; }
+            [DataMember]public int LEFT_SHOULDER { get; set; }
+            [DataMember]public int RIGHT_SHOULDER { get; set; }
+            [DataMember]public int A { get; set; }
+            [DataMember]public int B { get; set; }
+            [DataMember]public int X { get; set; }
+            [DataMember]public int Y { get; set; }
+            */
+
+            [DataMember] public int Buttons { get; set; }
+            [DataMember]public int RIGHT_TRIGGER { get; set; }
+            [DataMember]public int LEFT_TRIGGER { get; set; }
+            [DataMember]public int RIGHT_THUMB_X { get; set; }
+            [DataMember]public int RIGHT_THUMB_Y { get; set; }
+            [DataMember]public int LEFT_THUMB_X { get; set; }
+            [DataMember]public int LEFT_THUMB_Y { get; set; }
+        }
+
+
+        private DataContractJsonSerializer _deserializer = new DataContractJsonSerializer(typeof(ControllerMessage));
+
         FridaController _controller;
+
         internal FlightController(FridaController fridaController)
         {
             _controller = fridaController;
@@ -13,120 +50,102 @@ namespace GTAPilot
             fridaController.OnMessage += FridaController_OnMessage;
         }
 
-        private void FridaController_OnMessage(string obj)
+        private void FridaController_OnMessage(string payload)
         {
-            // TODO handle control input data.
+            var frameId = Timeline.LastFrameId;
+
+            using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
+            {
+                ms.Position = 0;
+                var msg = (ControllerMessage)_deserializer.ReadObject(ms);
+
+                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Roll, msg.LEFT_THUMB_X + ushort.MaxValue/2);
+                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Pitch, msg.LEFT_THUMB_Y + ushort.MaxValue/2);
+                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Speed, msg.RIGHT_TRIGGER);
+            }
+        }
+        
+        private void SetValueAndHistory(int frameId, Func<int, TimelineValue> getFrame, double value)
+        {
+            var thisFrame = getFrame(frameId);
+
+            do
+            {
+                thisFrame.InputValue = value;
+                thisFrame = getFrame(--frameId);
+            } while (frameId > 1 && double.IsNaN(thisFrame.InputValue));
         }
 
         public void ToggleLandingGear()
         {
             Trace.WriteLine("Toggle landing gear");
-            SendMessage("{\"lthumb\":\"0\"}");
+            SendMessage("{\"LEFT_THUMB\":\"0\"}");
         }
 
         public void LockViewMin()
         {
-            SendMessage("{\"thumbry\":\"-17700\",\"thumbry_ticks\":\"5000000\",\"thumbrx\":\"0\",\"thumbrx_ticks\":\"5000000\"}", true);
-            // SendMessage("{\"thumbry\":\"-32000\",\"thumbry_ticks\":\"5000000\",\"thumbrx\":\"0\",\"thumbrx_ticks\":\"5000000\"}", true);
-            // SendMessage("{\"thumbry\":\"-32000\",\"thumbry_ticks\":\"5000000\",\"thumbrx\":\"0\",\"thumbrx_ticks\":\"5000000\"}", true);
-        }
-
-        public void LockViewFull()
-        {
-            SendMessage("{\"thumbry\":\"-32000\",\"thumbry_ticks\":\"5000000\",\"thumbrx\":\"0\",\"thumbrx_ticks\":\"5000000\"}", true);
-            // SendMessage("{\"thumbry\":\"-32000\",\"thumbry_ticks\":\"5000000\",\"thumbrx\":\"0\",\"thumbrx_ticks\":\"5000000\"}", true);
-        }
-
-        public void ReleaseView()
-        {
-            SendMessage("{\"thumbry\":\"0\",\"thumbry_ticks\":\"1\",\"thumbrx\":\"0\",\"thumbrx_ticks\":\"1\"}", true);
+            SendMessage("{\"RIGHT_THUMB_Y\":\"-17700\",\"RIGHT_THUMB_X\":\"1\"}");
         }
 
         public void ResetFlaps()
         {
-            SendMessage("{\"ltrigger\":\"0\",\"lt_ticks\":\"20\"}", true);
-
+            SendMessage("{\"LEFT_TRIGGER\":\"20\"}");
         }
 
-        static TcpClient tcp;
-
-        private void SendMessage(string msg, bool forceSend = false)
+        private void SendMessage(string msg)
         {
             _controller.SendMessage(msg);
-
-            /*
-            if (tcp == null)
-            {
-                tcp = new TcpClient("127.0.0.1", 3377);
-            }
-
-            var s = tcp.GetStream();
-
-            var bytes = System.Text.Encoding.UTF8.GetBytes(msg + "\n");
-
-            s.Write(bytes, 0, bytes.Length);
-            s.Flush();
-            */
         }
 
         internal void PressA()
         {
             Trace.WriteLine("Toggle A");
-            SendMessage("{\"a\":\"0\"}");
+            SendMessage("{\"A\":\"0\"}");
         }
 
         internal void SetFlaps(int value)
         {
-
             // flaps max = 235, past is engine shutoff
-            SendMessage("{\"ltrigger\":\"" + value + "\",\"lt_ticks\":\"10000\"}");
+            SendMessage("{\"LEFT_TRIGGER\":\"" + value + "\"}");
         }
 
         internal void PressB()
         {
             Trace.WriteLine("Toggle B");
-            SendMessage("{\"b\":\"0\"}");
+            SendMessage("{\"B\":\"0\"}");
         }
 
         internal void PressStart()
         {
             Trace.WriteLine("Toggle Start");
-            SendMessage("{\"start\":\"0\",\"lbumper\":\"0\",\"lbumper_ticks\":\"0\",\"rbumper\":\"0\",\"rbumper_ticks\":\"0\"}");
+            SendMessage("{\"START\":\"0\"}");
         }
 
         public void SetRoll(double value, int ticks = 12)
         {
-            SendMessage("{\"thumblx\":\"" + value + "\",\"thumblx_ticks\":\"" + ticks + "\"}");
+            SendMessage("{\"LEFT_THUMB_X\":\"" + value + "\"}");
         }
 
         public void SetPitch(double value, int ticks = 12)
         {
-            SendMessage("{\"thumbly\":\"" + value + "\",\"thumbly_ticks\":\"" + ticks + "\"}");
+            SendMessage("{\"LEFT_THUMB_Y\":\"" + value + "\"}");
         }
 
         public void SetThrottle(double value, int ticks = 20)
         {
-            SendMessage("{\"rtrigger\":\"" + (int)value + "\",\"rt_ticks\":\"" + ticks + "\"}");
+            SendMessage("{\"RIGHT_TRIGGER\":\"" + (int)value + "\"}");
         }
 
         public void SetLeftRudder(double ticks)
         {
-            SendMessage("{\"lbumper\":\"1\",\"lbumper_ticks\":\"" + (int)ticks + "\"}");
-            SendMessage("{\"rbumper\":\"1\",\"rbumper_ticks\":\"0\"}");
+            SendMessage("{\"LEFT_SHOULDER\":\"" + ticks + "\"}");
+            SendMessage("{\"RIGHT_SHOULDER\":\"0\"}");
         }
 
         public void SetRightRudder(double ticks)
         {
-            SendMessage("{\"rbumper\":\"1\",\"rbumper_ticks\":\"" + (int)ticks + "\"}");
-            SendMessage("{\"lbumper\":\"1\",\"lbumper_ticks\":\"0\"}");
-        }
-
-        public void ClearInputs()
-        {
-            SendMessage("{\"lbumper\":\"1\",\"lbumper_ticks\":\"0\"}");
-            SendMessage("{\"lbumper\":\"1\",\"lbumper_ticks\":\"0\"}");
-            SendMessage("{\"thumbly\":\"0\",\"thumbly_ticks\":\"1\"}");
-            SendMessage("{\"thumblx\":\"0\",\"thumblx_ticks\":\"1\"}");
+            SendMessage("{\"RIGHT_SHOULDER\":\"" + ticks + "\"}");
+            SendMessage("{\"LEFT_SHOULDER\":\"0\"}");
         }
     }
 }
