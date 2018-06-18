@@ -15,8 +15,8 @@ namespace GTAPilot
         {
             Gain = new PID.Gain
             {
-                P = 1.1,
-                I = 0.05,
+                P = 1,
+                I = 0.1,
                 D = 0
             },
             PV = new PID.Range { Min = -45, Max = 45},
@@ -27,12 +27,12 @@ namespace GTAPilot
         {
             Gain = new PID.Gain
             {
-                P = 1.2,
-                I = 0.03,
+                P = 1,
+                I = 0.1,
                 D = 0
             },
             PV = new PID.Range { Min = -90, Max = 90 },
-            OV = new PID.Range { Min = short.MinValue, Max = short.MaxValue },
+            OV = new PID.Range { Min = short.MinValue, Max = short.MaxValue},
         };
         public static PIDConfig Speed = new PIDConfig
         {

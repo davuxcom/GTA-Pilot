@@ -51,7 +51,7 @@ namespace GTAPilot
             switch (e.PropertyName)
             {
                 case nameof(_mcp.VSHold) when (_mcp.VSHold):
-                    DesiredPitch = 3;
+                    DesiredPitch = Timeline.Pitch;
                     _mcp.VS = (int)DesiredPitch;
                     _mcp.AltitudeHold = false;
                     _pitch_pid.ClearError();
@@ -74,7 +74,7 @@ namespace GTAPilot
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
                     DesiredHeading = Timeline.Heading;
                     _mcp.HDG = (int)DesiredHeading;
-                    // _mcp.BankHold = false;
+                    _mcp.BankHold = false;
                     Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
                 case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
@@ -137,18 +137,30 @@ namespace GTAPilot
 
         internal void OnRollDataSampled(int id)
         {
-            if (_mcp.BankHold)
+            if (_mcp.BankHold | _mcp.HeadingHold)
             {
                 if (!double.IsNaN(Timeline.Data[id].Roll.Value))
                 {
+                    if (_mcp.HeadingHold)
+                    {
+                        var d = Math2.DiffAngles(Timeline.Heading, DesiredHeading);
+                        var sign = Math.Sign(d);
+                        var ad = Math.Abs(d);
+                        if (ad > 8)
+                        {
+                            var roll_angle = Math.Min(ad, 40) / 2;
+                            DesiredRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
+                        }
+                        else
+                        {
+                            DesiredRoll = 0;
+                        }
+                    }
+
                     Timeline.Data[id].Roll.OutputValue = Handle_Roll(
-                        _roll_pid.Compute(Timeline.Roll, DesiredRoll, ComputeDTForFrameId(id, (f) => f.Roll.Value)));
+                        _roll_pid.Compute(0, DesiredRoll - Timeline.Data[id].Roll.Value, ComputeDTForFrameId(id, (f) => f.Roll.Value)));
                 }
                 Timeline.Data[id].Roll.SetpointValue = DesiredRoll;
-            }
-            else if (_mcp.HeadingHold)
-            {
-                // TODO: HDG turns
             }
         }
 
@@ -171,7 +183,7 @@ namespace GTAPilot
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
                     Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(
-                        _pitch_pid.Compute(Timeline.Pitch, DesiredPitch, ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
+                        _pitch_pid.Compute(0, DesiredPitch - Timeline.Data[id].Pitch.Value, ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
                 }
                 Timeline.Data[id].Pitch.SetpointValue = DesiredPitch;
             }
@@ -209,7 +221,7 @@ namespace GTAPilot
                     var aDiff = Math.Abs(diff);
                     if (aDiff > 2)
                     {
-                        aDiff = Math.Min(aDiff, 20) / 4;
+                        aDiff = Math.Min(aDiff, 50);
 
                         if (diff < 0)
                         {
@@ -221,6 +233,10 @@ namespace GTAPilot
                             _control.SetLeftRudder(aDiff);
                             Timeline.Data[id].Heading.OutputValue = aDiff;
                         }
+                    }
+                    else
+                    {
+                        Timeline.Data[id].Heading.OutputValue = 0;
                     }
                 }
                 Timeline.Data[id].Heading.SetpointValue = DesiredHeading;

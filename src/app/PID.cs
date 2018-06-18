@@ -47,9 +47,9 @@ namespace GTAPilot
             sp = ScaleValue(sp, PV.Min, PV.Max, -1.0f, 1.0f);
 
             var error = sp - pv;
-            integral = integral + (error * dT);
+            integral = integral + (Gains.I * error * dT);
             var derivative = (error - error_prior) / dT;
-            var output = Gains.P * error + Gains.I * integral + Gains.D * derivative;
+            var output = Gains.P * error + integral - Gains.D * derivative;
             error_prior = error;
 
             output = Clamp(output, -1.0f, 1.0f);
