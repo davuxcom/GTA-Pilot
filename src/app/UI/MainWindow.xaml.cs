@@ -90,7 +90,11 @@ namespace GTAPilot
             {
                 mgr = new SystemManager(new ReplayFrameProducer(dlg.txtRecording.Text, dlg.txtFrameSet.Text), null);
             }
-            else throw new NotImplementedException();
+            else
+            {
+                Environment.Exit(0);
+                return;
+            }
 
             _viewModel = new MainWindowViewModel(mgr, _captureSink, fridaController);
             DataContext = _viewModel;
