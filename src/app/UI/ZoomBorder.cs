@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -106,6 +107,7 @@ namespace GTAPilot
             {
                 var tt = GetTranslateTransform(child);
                 start = e.GetPosition(this);
+              //  Trace.WriteLine(e.GetPosition(child));
                 origin = new Point(tt.X, tt.Y);
                 this.Cursor = Cursors.Hand;
                 child.CaptureMouse();
@@ -123,7 +125,7 @@ namespace GTAPilot
 
         void child_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            this.Reset();
+           // this.Reset();
         }
 
         private void child_MouseMove(object sender, MouseEventArgs e)
