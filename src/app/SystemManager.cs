@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 
@@ -18,11 +19,14 @@ namespace GTAPilot
         // TODO
         Simulation,
         ControlOutput,
+
+        XInput,
     }
 
 
     class SystemManager
     {
+
         IFrameProducer _producer;
         FrameInputCoordinator _coordinator;
         public IndicatorHost IndicatorHost;
@@ -38,6 +42,7 @@ namespace GTAPilot
             if (fridaController != null)
             {
                 _control = new FlightController(fridaController);
+                _control.ButtonPressed += Controler_ButtonPressed;
                 fridaController.PropertyChanged += FridaController_PropertyChanged;
             }
 
@@ -48,6 +53,11 @@ namespace GTAPilot
             Timeline.Begin();
         }
 
+        private void Controler_ButtonPressed(object sender, FlightController.XInputButtons e)
+        {
+            Trace.WriteLine($"Button Pressed: {e}");
+        }
+
         public SystemManager(IFrameProducer producer, Action<FrameData> consumer, FridaController fridaController)
         {
             _producer = producer;
@@ -56,6 +66,7 @@ namespace GTAPilot
             if (fridaController != null)
             {
                 _control = new FlightController(fridaController);
+                _control.ButtonPressed += Controler_ButtonPressed;
                 fridaController.PropertyChanged += FridaController_PropertyChanged;
             }
 
@@ -83,6 +94,7 @@ namespace GTAPilot
                 case FpsCounterType.Airspeed: return IndicatorHost.Airspeed.Counter;
                 case FpsCounterType.Altitude: return IndicatorHost.Altitude.Counter;
                 case FpsCounterType.Yaw: return IndicatorHost.Compass.Counter;
+                case FpsCounterType.XInput: return _control.XInputFPS;
             }
             throw new NotImplementedException();
         }

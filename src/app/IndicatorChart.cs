@@ -8,13 +8,15 @@ using System.Windows.Threading;
 namespace GTAPilot
 {
 
-    public enum IndicatorChartType
-    {
-        Value, Delay, InputOutput
-    }
-
     public class IndicatorChart : Canvas
     {
+
+        public enum IndicatorChartType
+        {
+            Value, Delay, InputOutput
+        }
+
+
         public IndicatorViewModel Indicator
         {
             get { return (IndicatorViewModel)this.GetValue(IndicatorProperty); }

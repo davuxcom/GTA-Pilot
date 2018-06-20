@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
@@ -7,8 +8,11 @@ using System.Text;
 
 namespace GTAPilot
 {
-    public class FlightController
+    public class FlightController : INotifyPropertyChanged
     {
+        public FpsCounter XInputFPS { get; private set; }
+        public event EventHandler<XInputButtons> ButtonPressed;
+
         [Flags]
         public enum XInputButtons : int
         {
@@ -29,6 +33,13 @@ namespace GTAPilot
         };
 
         [DataContract]
+        public class BaseMessage
+        {
+            [DataMember] public string Type { get; set; }
+            [DataMember] public int Value { get; set; }
+        }
+
+        [DataContract]
         public class ControllerMessage
         {
             [DataMember] public XInputButtons Buttons { get; set; }
@@ -40,14 +51,18 @@ namespace GTAPilot
             [DataMember] public int LEFT_THUMB_Y { get; set; }
         }
 
-        private DataContractJsonSerializer _deserializer = new DataContractJsonSerializer(typeof(ControllerMessage));
+        private DataContractJsonSerializer _baseDeserializer = new DataContractJsonSerializer(typeof(BaseMessage));
+        private DataContractJsonSerializer _controlInputdeserializer = new DataContractJsonSerializer(typeof(ControllerMessage));
         private FridaController _controller;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         internal FlightController(FridaController fridaController)
         {
             _controller = fridaController;
 
             fridaController.OnMessage += FridaController_OnMessage;
+            XInputFPS = new FpsCounter();
         }
 
         private void FridaController_OnMessage(string payload)
@@ -57,11 +72,28 @@ namespace GTAPilot
             using (var ms = new MemoryStream(Encoding.UTF8.GetBytes(payload)))
             {
                 ms.Position = 0;
-                var msg = (ControllerMessage)_deserializer.ReadObject(ms);
+                var msg = (BaseMessage)_baseDeserializer.ReadObject(ms);
 
-                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Roll, msg.LEFT_THUMB_X + ushort.MaxValue / 2);
-                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Pitch, msg.LEFT_THUMB_Y + ushort.MaxValue / 2);
-                SetValueAndHistory(frameId, (id) => Timeline.Data[id].Speed, msg.RIGHT_TRIGGER);
+                switch(msg.Type)
+                {
+                    case "XInputFPS":
+                        XInputFPS.Fps = msg.Value;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(XInputFPS)));
+                        break;
+                    case "InputData":
+                        {
+                            ms.Position = 0;
+                            var controllerMsg = (ControllerMessage)_controlInputdeserializer.ReadObject(ms);
+
+                            SetValueAndHistory(frameId, (id) => Timeline.Data[id].Roll, controllerMsg.LEFT_THUMB_X + ushort.MaxValue / 2);
+                            SetValueAndHistory(frameId, (id) => Timeline.Data[id].Pitch, controllerMsg.LEFT_THUMB_Y + ushort.MaxValue / 2);
+                            SetValueAndHistory(frameId, (id) => Timeline.Data[id].Speed, controllerMsg.RIGHT_TRIGGER);
+                        }
+                        break;
+                    case "ButtonPress":
+                        ButtonPressed?.Invoke(this, (XInputButtons)msg.Value);
+                        break;
+                }
             }
         }
 

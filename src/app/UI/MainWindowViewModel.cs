@@ -121,16 +121,20 @@ namespace GTAPilot
             }
             else
             {
+                /*
                 Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Roll), "Roll"));
                 Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Pitch), "Pitch"));
                 Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Airspeed), "Speed"));
                 Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Altitude), "Altitude"));
                 Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Yaw), "Yaw"));
+                */
                 if (_controller != null)
                 {
-                    Counters.Add(new FpsCounterViewModel(_controller.Counter, "Frida-Out"));
+                    Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.XInput), "XInput-In"));
+                    Counters.Add(new FpsCounterViewModel(_controller.Counter, "XInput-Out"));
                 }
 
+                
                 Indicators.Add(new IndicatorViewModel("Roll", _inputManager.IndicatorHost.Roll));
                 Indicators.Add(new IndicatorViewModel("Pitch", _inputManager.IndicatorHost.Pitch));
                 Indicators.Add(new IndicatorViewModel("Speed", _inputManager.IndicatorHost.Airspeed));

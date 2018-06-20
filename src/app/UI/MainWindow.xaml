@@ -11,10 +11,8 @@
         <Style TargetType="{x:Type TextBlock}">
             <Setter Property="FontSize" Value="28" />
             <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="VerticalAlignment"
-                    Value="Center" />
-            <Setter Property="Margin"
-                    Value="2" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="2" />
         </Style>
 
         <Style TargetType="{x:Type TextBox}">

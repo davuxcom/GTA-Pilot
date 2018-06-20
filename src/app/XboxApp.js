@@ -22,6 +22,7 @@ var XInputButtons = {
     Y: 0x8000,
 }
 
+// C++ Struct helper
 var Struct = function (structInfo) {
     this.Get = function () { return this.base_ptr; }
     this.base_ptr = null;
@@ -82,10 +83,12 @@ var SavedState = { // Value is value from XInput controller.
     RIGHT_THUMB_X: 0,
     RIGHT_THUMB_Y: 0,
     LEFT_THUMB_X: 0,
-    LEFT_THUMB_Y: 0
+    LEFT_THUMB_Y: 0,
+
+    Type: "InputData" // For sending to the host.
 }
 
-var NextState = { // Ticks
+var NextState = { // Ticks to applly NextStateValue
     DPAD_UP: 0,
     DPAD_DOWN: 0,
     DPAD_LEFT: 0,
@@ -109,7 +112,7 @@ var NextState = { // Ticks
     LEFT_THUMB_Y: 0
 }
 
-var NextStateValue = {
+var NextStateValue = { // Control value data
     DPAD_UP: 0,
     DPAD_DOWN: 0,
     DPAD_LEFT: 0,
@@ -131,6 +134,24 @@ var NextStateValue = {
     RIGHT_THUMB_Y: 0,
     LEFT_THUMB_X: 0,
     LEFT_THUMB_Y: 0
+}
+
+// Ticks to ignore the state of a button (de-bounce)
+var ButtonTicksBackoff = {
+    DPAD_UP: 0,
+    DPAD_DOWN: 0,
+    DPAD_LEFT: 0,
+    DPAD_RIGHT: 0,
+    START: 0,
+    BACK: 0,
+    LEFT_THUMB: 0,
+    RIGHT_THUMB: 0,
+    LEFT_SHOULDER: 0,
+    RIGHT_SHOULDER: 0,
+    A: 0,
+    B: 0,
+    X: 0,
+    Y: 0,
 }
 
 // Inputs missing from DefaultTicks will have their ticks set to their value.
@@ -146,13 +167,6 @@ var DefaultTicks = {
 Kernel32.LoadLibrary(Memory.allocUtf16String("XInputUAP.dll"));
 var XInputGetStateAddress = Module.findExportByName("XInputUAP.dll", "XInputGetState");
 var OriginalXInputGetState = new NativeFunction(XInputGetStateAddress, 'uint', ['uint', 'pointer'], 'win64');
-
-var ClampMax = 10000;
-function Clamp(input) {
-    if (input < -1 * ClampMax) input = -1 * ClampMax;
-    if (input > ClampMax) input = ClampMax;
-    return input;
-}
 
 var ticks = 0;
 Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIndex, pState) {
@@ -175,22 +189,34 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
             SavedState[input] = controllerStateData[input];
         }
 
-        //controllerStateData.LEFT_THUMB_X = Clamp(controllerStateData.LEFT_THUMB_X);
-      //  controllerStateData.LEFT_THUMB_Y = Clamp(controllerStateData.LEFT_THUMB_Y);
+        for (var btn in ButtonTicksBackoff) {
+            if (ButtonTicksBackoff[btn]) {
+                ButtonTicksBackoff[btn]--;
+            }
+        }
 
-
+        // We could control input feedback with some eventing, it can't
+        // be left on all the time due to performance impact.
         //send(JSON.stringify(SavedState));
 
         for (var input in SavedState) {
             if (input == "Buttons") {
-              //  controllerStateData.Buttons = 0;
                 for (var btn in XInputButtons) {
+                    // Collect buttons and send events.
+                    if (controllerStateData.Buttons & XInputButtons[btn]) {
+                        if (ButtonTicksBackoff[btn] == 0) {
+                            ButtonTicksBackoff[btn] = 20;
+                            OnButtonPressed(XInputButtons[btn]);
+                        }
+                    }
+                    // Replace buttons
                     if (NextState[btn]) {
                         controllerStateData.Buttons |= XInputButtons[btn]
                         NextState[btn]--;
                     }
                 }
             } else {
+                // Replace axis'
                 if (NextState[input]) {
                     controllerStateData[input] = NextStateValue[input];
                     NextState[input]--;
@@ -203,13 +229,25 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
     return retValFromOriginal;
 }, 'uint', ['uint', 'pointer']));
 
+function OnButtonPressed(btn) {
+    send(JSON.stringify({
+        Type: "ButtonPress",
+        Value: btn
+    }));
+}
+
 // NOTE/BUG: When using frida node.js bindings, recv takes a string, using C# bindings it's an object
 function recv_one_message(packet) {
     try {
-        for (var input in NextState) {
-            if (packet[input]) {
-                NextState[input] = DefaultTicks[input] ? DefaultTicks[input] : parseInt(packet[input], 10);
-                NextStateValue[input] = parseInt(packet[input], 10);
+        if (packet.PING) {
+            send(packet);
+        }
+        else {
+            for (var input in NextState) {
+                if (packet[input]) {
+                    NextState[input] = DefaultTicks[input] ? DefaultTicks[input] : parseInt(packet[input], 10);
+                    NextStateValue[input] = parseInt(packet[input], 10);
+                }
             }
         }
     } catch (e) {
@@ -220,8 +258,13 @@ function recv_one_message(packet) {
 
 function printInputFpsEachMinute() {
     setTimeout(function () {
-        console.log("Input calls per second: " + (ticks / 60));
+        var fps = (ticks / 60);
         ticks = 0;
+
+        send(JSON.stringify({
+            Type: "XInputFPS",
+            Value: parseInt(fps, 10)
+        }));
 
         printInputFpsEachMinute();
     }, 60 * 1000);
@@ -229,4 +272,4 @@ function printInputFpsEachMinute() {
 
 recv(recv_one_message);
 printInputFpsEachMinute();
-console.log("READY");
+console.log("Ready.");
