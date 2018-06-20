@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GTAPilot
+﻿namespace GTAPilot
 {
     class PIDConfig
     {
@@ -11,28 +9,31 @@ namespace GTAPilot
 
     class FlightComputerConfig
     {
+        private static double MIN_AXIS_VALUE = -12000;
+        private static double MAX_AXIS_VALUE = 12000;
+
         public static PIDConfig Roll = new PIDConfig
         {
             Gain = new PID.Gain
             {
-                P = 1,
+                P = 6,
                 I = 0.1,
                 D = 0
             },
             PV = new PID.Range { Min = -45, Max = 45},
-            OV = new PID.Range { Min = short.MinValue, Max = short.MaxValue },
+            OV = new PID.Range { Min = MIN_AXIS_VALUE, Max = MAX_AXIS_VALUE },
         };
 
         public static PIDConfig Pitch = new PIDConfig
         {
             Gain = new PID.Gain
             {
-                P = 1,
-                I = 0.1,
+                P = 5,
+                I = 0.2,
                 D = 0
             },
             PV = new PID.Range { Min = -90, Max = 90 },
-            OV = new PID.Range { Min = short.MinValue, Max = short.MaxValue},
+            OV = new PID.Range { Min = MIN_AXIS_VALUE, Max = MAX_AXIS_VALUE },
         };
         public static PIDConfig Speed = new PIDConfig
         {

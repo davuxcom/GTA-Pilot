@@ -118,12 +118,14 @@ namespace GTAPilot
 
         double Handle_Roll(double power)
         {
+            power = RemoveDeadZone(power, 4000, 10000);
             _control.SetRoll(power);
             return power;
         }
 
         double Handle_Pitch(double power)
         {
+            power = RemoveDeadZone(power, 4000, 12000);
             power = -1 * power;
             _control.SetPitch(power);
             return power;
@@ -146,10 +148,20 @@ namespace GTAPilot
                         var d = Math2.DiffAngles(Timeline.Heading, DesiredHeading);
                         var sign = Math.Sign(d);
                         var ad = Math.Abs(d);
-                        if (ad > 8)
+                        if (ad > 4)
                         {
-                            var roll_angle = Math.Min(ad, 40) / 2;
-                            DesiredRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
+                            var roll_angle = Math.Min(ad, 25);
+                            var newRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
+
+                            if (DesiredRoll > newRoll)
+                            {
+                                DesiredRoll--;
+                            }
+                            else
+                            {
+                                DesiredRoll++;
+                            }
+
                         }
                         else
                         {
@@ -219,9 +231,9 @@ namespace GTAPilot
                 {
                     var diff = Math2.DiffAngles(val, DesiredHeading);
                     var aDiff = Math.Abs(diff);
-                    if (aDiff > 2)
+                    if (aDiff < 4 && aDiff > 2)
                     {
-                        aDiff = Math.Min(aDiff, 50);
+                        aDiff = Math.Min(aDiff, 50) / 4;
 
                         if (diff < 0)
                         {
@@ -236,7 +248,7 @@ namespace GTAPilot
                     }
                     else
                     {
-                        Timeline.Data[id].Heading.OutputValue = 0;
+                       // Timeline.Data[id].Heading.OutputValue = 0;
                     }
                 }
                 Timeline.Data[id].Heading.SetpointValue = DesiredHeading;
@@ -254,5 +266,19 @@ namespace GTAPilot
             }
             return dT;
         }
+
+        double RemoveDeadZone(double power, double deadzone = 4000, double max = 12000)
+        {
+            if (power > 0)
+            {
+                power = Math2.MapValue(0, 12000, deadzone, max, power);
+            }
+            else if (power < 0)
+            {
+                power = Math2.MapValue(-1 * 12000, 0, -1 * max, -1 * deadzone, power);
+            }
+            return power;
+        }
+
     }
 }

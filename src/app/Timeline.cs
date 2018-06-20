@@ -53,7 +53,7 @@ namespace GTAPilot
         public static int LastFrameId;
 
         // TODO: static to save allocations but bad
-        public static TimelineFrame[] Data = new TimelineFrame[250000];
+        public static TimelineFrame[] Data = new TimelineFrame[950000];
 
         // location is los santos runway 3
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);

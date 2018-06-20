@@ -147,6 +147,13 @@ Kernel32.LoadLibrary(Memory.allocUtf16String("XInputUAP.dll"));
 var XInputGetStateAddress = Module.findExportByName("XInputUAP.dll", "XInputGetState");
 var OriginalXInputGetState = new NativeFunction(XInputGetStateAddress, 'uint', ['uint', 'pointer'], 'win64');
 
+var ClampMax = 10000;
+function Clamp(input) {
+    if (input < -1 * ClampMax) input = -1 * ClampMax;
+    if (input > ClampMax) input = ClampMax;
+    return input;
+}
+
 var ticks = 0;
 Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIndex, pState) {
     try {
@@ -167,6 +174,10 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
         for (var input in SavedState) {
             SavedState[input] = controllerStateData[input];
         }
+
+        //controllerStateData.LEFT_THUMB_X = Clamp(controllerStateData.LEFT_THUMB_X);
+      //  controllerStateData.LEFT_THUMB_Y = Clamp(controllerStateData.LEFT_THUMB_Y);
+
 
         //send(JSON.stringify(SavedState));
 

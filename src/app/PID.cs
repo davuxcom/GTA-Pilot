@@ -48,6 +48,7 @@ namespace GTAPilot
 
             var error = sp - pv;
             integral = integral + (Gains.I * error * dT);
+            integral = Clamp(integral, -1.0f, 1.0f);
             var derivative = (error - error_prior) / dT;
             var output = Gains.P * error + integral - Gains.D * derivative;
             error_prior = error;

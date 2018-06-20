@@ -173,11 +173,11 @@ namespace GTAPilot
 
                 if (Keyboard.IsKeyDown(Key.LeftCtrl))
                 {
-                    next = (vl + Math.Sign(e.Delta) * 0.001);
+                    next = (vl + Math.Sign(e.Delta) * 0.01);
                 }
                 else
                 {
-                    next = (vl + Math.Sign(e.Delta) * 0.01);
+                    next = (vl + Math.Sign(e.Delta) * 0.1);
                 }
             }
             else
