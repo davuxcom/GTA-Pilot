@@ -67,7 +67,7 @@ namespace GTAPilot
         }
     }
 
-    class FpsCounterViewModel : INotifyPropertyChanged
+    public class FpsCounterViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -88,9 +88,9 @@ namespace GTAPilot
         }
     }
 
-    class MainWindowViewModel //: INotifyPropertyChanged
+    public class MainWindowViewModel : INotifyPropertyChanged
     {
-       // public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public ObservableCollection<FpsCounterViewModel> Counters { get; }
         public ObservableCollection<IndicatorViewModel> Indicators { get; }
@@ -103,7 +103,7 @@ namespace GTAPilot
         SystemManager _inputManager;
         FridaController _controller;
 
-        public MainWindowViewModel(SystemManager inputManager, SaveFrameConsumer captureSink, FridaController controller)
+        internal MainWindowViewModel(SystemManager inputManager, SaveFrameConsumer captureSink, FridaController controller)
         {
             _controller = controller;
             _captureSink = captureSink;

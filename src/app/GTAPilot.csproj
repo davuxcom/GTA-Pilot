@@ -84,6 +84,7 @@
     <Compile Include="FlightDataComputer.cs" />
     <Compile Include="IndicatorChart.cs" />
     <Compile Include="ModeControlPanel.cs" />
+    <Compile Include="ToggleButtonEx.cs" />
     <Compile Include="UI\CaptureProgress.xaml.cs">
       <DependentUpon>CaptureProgress.xaml</DependentUpon>
     </Compile>

@@ -1,10 +1,54 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
+using System.Windows.Input;
 
 namespace GTAPilot
 {
-    class ModeControlPanel : INotifyPropertyChanged
+
+    public class RelayCommand : ICommand
+    {
+        private Action _actionToExecute;
+
+        public event EventHandler CanExecuteChanged;
+
+        public RelayCommand(Action actionToExecute)
+        {
+            _actionToExecute = actionToExecute;
+        }
+
+        public bool CanExecute(object parameter = null)
+        {
+            return true;
+        }
+
+        public void Execute(object parameter = null)
+        {
+            if (_actionToExecute == null)
+            {
+                return;
+            }
+
+            _actionToExecute.Invoke();
+        }
+
+        public void RaiseCanExecuteChanged()
+        {
+            if (CanExecuteChanged != null)
+            {
+                CanExecuteChanged.Invoke(this, null);
+            }
+        }
+    }
+
+    public class ModeControlPanel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public RelayCommand HeadingToggle { get; }
+        public RelayCommand IASToggle { get; }
+        public RelayCommand BankToggle { get; }
+        public RelayCommand ALTToggle { get; }
+        public RelayCommand VSToggle { get; }
 
         private bool _pitchHold;
         public bool VSHold
@@ -85,6 +129,15 @@ namespace GTAPilot
                 storageValue = newValue;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
             }
+        }
+
+        public ModeControlPanel()
+        {
+            HeadingToggle = new RelayCommand(() => HeadingHold = !HeadingHold);
+            IASToggle = new RelayCommand(() => SpeedHold = !SpeedHold);
+            BankToggle = new RelayCommand(() => BankHold = !BankHold);
+            ALTToggle = new RelayCommand(() => AltitudeHold = !AltitudeHold);
+            VSToggle = new RelayCommand(() => VSHold = !VSHold);
         }
     }
 }

@@ -55,6 +55,25 @@ namespace GTAPilot
 
         private void Controler_ButtonPressed(object sender, FlightController.XInputButtons e)
         {
+            switch(e)
+            {
+                case FlightController.XInputButtons.BACK:
+                    if (MCP.BankHold || MCP.HeadingHold || MCP.VSHold || MCP.AltitudeHold || MCP.SpeedHold)
+                    {
+                        MCP.BankHold = false;
+                        MCP.HeadingHold = false;
+                        MCP.VSHold = false;
+                        MCP.AltitudeHold = false;
+                        MCP.SpeedHold = false;
+                    }
+                    else
+                    {
+                        MCP.VSHold = true;
+                        MCP.HeadingHold = true;
+                    }
+                    break;
+            }
+
             Trace.WriteLine($"Button Pressed: {e}");
         }
 
