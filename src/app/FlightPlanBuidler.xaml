@@ -24,11 +24,16 @@
             </Viewbox>
         </local:ZoomBorder>
 
-        <StackPanel Grid.Column="1" Orientation="Vertical">
-            <TextBlock>
-                Flight Plan Positions
-            </TextBlock>
-        </StackPanel>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0">Save</Button>
+
+            <ListView Grid.Row="1"
+                      ItemsSource="{Binding Positions}" />
+        </Grid>
 
     </Grid>
 </Window>
