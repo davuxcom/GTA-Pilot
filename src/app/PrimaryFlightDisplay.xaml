@@ -1,0 +1,30 @@
+﻿<Window x:Class="GTAPilot.PrimaryFlightDisplay"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GTAPilot"
+        Title="PrimaryFlightDisplay"
+        Width="1400"
+        Height="1000">
+    <Grid>
+        <StackPanel Orientation="Horizontal">
+            <Canvas Name="PFD"
+                    Width="800"
+                    Height="800"
+                    Background="Black" />
+
+            <Slider Name="Roll"
+                    Maximum="40"
+                    Minimum="-40"
+                    Orientation="Vertical"
+                    ValueChanged="Slider_ValueChanged"
+                    Value="0" />
+
+            <Slider Name="Pitch"
+                    Maximum="90"
+                    Minimum="-90"
+                    Orientation="Vertical"
+                    ValueChanged="Slider_ValueChanged"
+                    Value="0" />
+        </StackPanel>
+    </Grid>
+</Window>

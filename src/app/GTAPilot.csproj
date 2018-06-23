@@ -83,6 +83,9 @@
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
     <Compile Include="FlightPlan.cs" />
+    <Compile Include="PrimaryFlightDisplay.xaml.cs">
+      <DependentUpon>PrimaryFlightDisplay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\FlightPlanBuidler.xaml.cs">
       <DependentUpon>FlightPlanBuidler.xaml</DependentUpon>
     </Compile>
@@ -120,6 +123,10 @@
     </Compile>
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
+    <Page Include="PrimaryFlightDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\FlightPlanBuidler.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -134,27 +134,26 @@
                             <Grid>
                                 <Image Width="200"
                                        Height="200"
-                                       
                                        Source="{Binding Img}" />
 
-                                <TextBlock HorizontalAlignment="Left"
+                                <TextBlock Margin="4"
+                                           HorizontalAlignment="Left"
                                            VerticalAlignment="Bottom"
                                            FontSize="30"
-                                           Margin="4"
                                            Foreground="Yellow"
                                            Text="{Binding Value}" />
 
-                                <TextBlock HorizontalAlignment="Right"
+                                <TextBlock Margin="4"
+                                           HorizontalAlignment="Right"
                                            VerticalAlignment="Bottom"
-                                           Foreground="Yellow"
-                                           Margin="4"
                                            FontSize="30"
+                                           Foreground="Yellow"
                                            Text="{Binding CachedTuningValue}" />
 
-                                <TextBlock VerticalAlignment="Top"
+                                <TextBlock Margin="4"
+                                           VerticalAlignment="Top"
                                            FontSize="24"
                                            Foreground="Yellow"
-                                           Margin="4"
                                            Text="{Binding BadFrameCount}" />
 
                             </Grid>
