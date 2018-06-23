@@ -68,6 +68,8 @@ namespace GTAPilot
                     {
                         DesiredRoll = 0;
                         _mcp.Bank = 0;
+                        _mcp.HeadingHold = false;
+                        _mcp.LNAV = false;
                         _roll_pid.ClearError();
                         Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
                     }
@@ -81,6 +83,7 @@ namespace GTAPilot
                     DesiredHeading = Timeline.Heading;
                     _mcp.HDG = (int)DesiredHeading;
                     _mcp.BankHold = false;
+                    _mcp.LNAV = false;
                     Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
                 case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
@@ -94,7 +97,6 @@ namespace GTAPilot
                     DesiredAltitude = Timeline.Altitude;
                     _mcp.ALT = (int)DesiredAltitude;
                     _mcp.VSHold = false;
-
                     Trace.WriteLine($"A/P: Altitude: {DesiredAltitude}");
                     break;
 

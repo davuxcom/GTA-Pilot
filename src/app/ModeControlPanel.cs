@@ -49,6 +49,7 @@ namespace GTAPilot
         public RelayCommand BankToggle { get; }
         public RelayCommand ALTToggle { get; }
         public RelayCommand VSToggle { get; }
+        public RelayCommand LNAVToggle { get; }
 
         private bool _pitchHold;
         public bool VSHold
@@ -145,6 +146,7 @@ namespace GTAPilot
             BankToggle = new RelayCommand(() => BankHold = !BankHold);
             ALTToggle = new RelayCommand(() => AltitudeHold = !AltitudeHold);
             VSToggle = new RelayCommand(() => VSHold = !VSHold);
+            LNAVToggle = new RelayCommand(() => LNAV = !LNAV);
         }
     }
 }

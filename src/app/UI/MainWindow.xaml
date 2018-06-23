@@ -87,6 +87,8 @@
 
             <Button Click="Button_Click">Map</Button>
 
+            <ToggleButton Command="{Binding MCP.LNAVToggle}" IsChecked="{Binding MCP.LNAV, Mode=TwoWay, UpdateSourceTrigger=Explicit}">LNAV</ToggleButton>
+
             <TextBox Tag="HDG" Text="{Binding MCP.HDG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
             <ToggleButton Command="{Binding MCP.HeadingToggle}" IsChecked="{Binding MCP.HeadingHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">HDG HOLD</ToggleButton>
 
