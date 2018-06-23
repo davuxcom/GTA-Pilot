@@ -64,20 +64,18 @@ namespace GTAPilot
                     Trace.WriteLine($"A/P: Pitch: {DesiredPitch}");
                     break;
                 case nameof(_mcp.BankHold) when (_mcp.BankHold):
-                    if (_mcp.BankHold)
-                    {
-                        DesiredRoll = 0;
-                        _mcp.Bank = 0;
-                        _mcp.HeadingHold = false;
-                        _mcp.LNAV = false;
-                        _roll_pid.ClearError();
-                        Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
-                    }
-                    else
-                    {
-                        DesiredRoll = double.NaN;
-                    }
-
+                    DesiredRoll = 0;
+                    _mcp.Bank = 0;
+                    _mcp.HeadingHold = false;
+                    _mcp.LNAV = false;
+                    _roll_pid.ClearError();
+                    Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
+                    break;
+                case nameof(_mcp.LNAV) when (_mcp.LNAV):
+                    _mcp.HeadingHold = false;
+                    _mcp.BankHold = false;
+                    _roll_pid.ClearError();
+                    Trace.WriteLine($"A/P: LNAV: On");
                     break;
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
                     DesiredHeading = Timeline.Heading;
@@ -145,8 +143,12 @@ namespace GTAPilot
             return throttle;
         }
 
+        int ticks = 0;
+
         internal void OnRollDataSampled(int id)
         {
+            if (double.IsNaN(Timeline.Heading)) return;
+
             _flightPlan.UpdateLocation();
 
             if (_mcp.BankHold | _mcp.HeadingHold | _mcp.LNAV)
@@ -158,6 +160,13 @@ namespace GTAPilot
                         if (_mcp.LNAV)
                         {
                             DesiredHeading = _flightPlan.TargetHeading;
+
+                            ticks++;
+
+                            if (ticks % 100 == 0)
+                            {
+                                Trace.WriteLine($"LNAV HDG: {DesiredHeading}");
+                            }
                         }
 
                         var d = Math2.DiffAngles(Timeline.Heading, DesiredHeading);
@@ -239,31 +248,34 @@ namespace GTAPilot
 
         internal void OnCompassDataSampled(int id)
         {
-            if (_mcp.HeadingHold)
+            if (_mcp.HeadingHold | _mcp.LNAV)
             {
-                var val = Timeline.Data[id].Heading.Value;
-                if (!double.IsNaN(val))
+                if (_mcp.HeadingHold)
                 {
-                    var diff = Math2.DiffAngles(val, DesiredHeading);
-                    var aDiff = Math.Abs(diff);
-                    if (aDiff < 4 && aDiff > 2)
+                    var val = Timeline.Data[id].Heading.Value;
+                    if (!double.IsNaN(val))
                     {
-                        aDiff = Math.Min(aDiff, 50) / 4;
-
-                        if (diff < 0)
+                        var diff = Math2.DiffAngles(val, DesiredHeading);
+                        var aDiff = Math.Abs(diff);
+                        if (aDiff < 4 && aDiff > 2)
                         {
-                            _control.SetRightRudder(aDiff);
-                            Timeline.Data[id].Heading.OutputValue = -1 * aDiff;
+                            aDiff = Math.Min(aDiff, 50) / 4;
+
+                            if (diff < 0)
+                            {
+                                _control.SetRightRudder(aDiff);
+                                Timeline.Data[id].Heading.OutputValue = -1 * aDiff;
+                            }
+                            else
+                            {
+                                _control.SetLeftRudder(aDiff);
+                                Timeline.Data[id].Heading.OutputValue = aDiff;
+                            }
                         }
                         else
                         {
-                            _control.SetLeftRudder(aDiff);
-                            Timeline.Data[id].Heading.OutputValue = aDiff;
+                            // Timeline.Data[id].Heading.OutputValue = 0;
                         }
-                    }
-                    else
-                    {
-                       // Timeline.Data[id].Heading.OutputValue = 0;
                     }
                 }
                 Timeline.Data[id].Heading.SetpointValue = DesiredHeading;
