@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using GTAPilot.Extensions;
 
 namespace GTAPilot
 {
@@ -63,27 +64,7 @@ namespace GTAPilot
                 l.StrokeThickness = 1;
                 canvas.Children.Insert(canvas.Children.Count - 1, l);
 
-                heading = Math.Atan2(l.Y2 - l.Y1, l.X2 - l.X1);
-                // Starting at 9PM clockwise to 3PM: 0 to pi
-                // Starting at 9PM counter-clockwise to 3PM: 0 to -pi
-                if (heading >= 0)
-                {
-                    // 0 to 180
-                    heading = (heading * (180 / Math.PI));
-                }
-                else
-                {
-                    // 0 to -180
-                    heading = heading * (180 / Math.PI);
-                    // 180 to 0
-                    heading = 180 + heading;
-                    // 360 to 180
-                    heading = heading + 180;
-                }
-
-                // Skew so 0 is at 12PM.
-                heading -= 90;
-                if (heading < 0) heading = 360 + heading;
+                heading = Math2.GetPolarHeadingFromLine(pt.ToPointF(), lastPoint.ToPointF());
             }
 
             Ellipse dot = new Ellipse();

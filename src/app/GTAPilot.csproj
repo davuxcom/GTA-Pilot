@@ -83,12 +83,11 @@
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
     <Compile Include="FlightPlan.cs" />
-    <Compile Include="FlightPlanBuidler.xaml.cs">
+    <Compile Include="UI\FlightPlanBuidler.xaml.cs">
       <DependentUpon>FlightPlanBuidler.xaml</DependentUpon>
     </Compile>
-    <Compile Include="IndicatorChart.cs" />
-    <Compile Include="ModeControlPanel.cs" />
-    <Compile Include="ToggleButtonEx.cs" />
+    <Compile Include="UI\IndicatorChart.cs" />
+    <Compile Include="UI\ModeControlPanel.cs" />
     <Compile Include="UI\CaptureProgress.xaml.cs">
       <DependentUpon>CaptureProgress.xaml</DependentUpon>
     </Compile>
@@ -121,7 +120,7 @@
     </Compile>
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
-    <Page Include="FlightPlanBuidler.xaml">
+    <Page Include="UI\FlightPlanBuidler.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

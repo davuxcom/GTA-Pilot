@@ -9,6 +9,11 @@ namespace GTAPilot.Extensions
             return new Point((int)pointf.X, (int)pointf.Y);
         }
 
+        public static PointF ToPointF(this System.Windows.Point point)
+        {
+            return new PointF((float)point.X, (float)point.Y);
+        }
+
         public static Point Add(this Point self, Point other)
         {
             return new Point(self.X + other.X, self.Y + other.Y);

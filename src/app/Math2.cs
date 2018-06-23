@@ -107,7 +107,7 @@ namespace GTAPilot
 
         public static double GetPolarHeadingFromLine(PointF pt1, PointF pt2)
         {
-            var heading = Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.Y);
+            var heading = Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.X);
             // Starting at 9PM clockwise to 3PM: 0 to pi
             // Starting at 9PM counter-clockwise to 3PM: 0 to -pi
             if (heading >= 0)
