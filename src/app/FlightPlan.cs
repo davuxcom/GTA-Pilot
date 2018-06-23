@@ -20,7 +20,8 @@ namespace GTAPilot
             {
                 var parts = line.Split(',');
                 Debug.Assert(parts.Length == 2);
-                _points.Add(new PointF((float)double.Parse(parts[0]), (float)double.Parse(parts[1])));
+                _points.Add(new PointF((float)double.Parse(parts[0]) * FlightPlanBuidler.FlightPlanScaleFactor, 
+                    (float)double.Parse(parts[1]) * FlightPlanBuidler.FlightPlanScaleFactor));
             }
         }
 
@@ -30,6 +31,7 @@ namespace GTAPilot
             if (isCloseToPoint)
             {
                 CurrentIndex++;
+                Trace.WriteLine($"Flight Plan: Advance: {CurrentIndex}");
 
                 if (CurrentIndex > _points.Count - 1)
                 {

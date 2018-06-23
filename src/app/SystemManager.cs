@@ -16,10 +16,6 @@ namespace GTAPilot
         Altitude,
         Airspeed,
 
-        // TODO
-        Simulation,
-        ControlOutput,
-
         XInput,
     }
 

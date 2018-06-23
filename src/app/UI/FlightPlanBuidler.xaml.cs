@@ -12,6 +12,8 @@ namespace GTAPilot
 {
     public partial class FlightPlanBuidler : Window
     {
+        public static int FlightPlanScaleFactor = 5;
+
         public class Position
         {
             public Point pt;
@@ -35,7 +37,7 @@ namespace GTAPilot
 
             var start = new Point(2030.2f, 4573.9f);
 
-            AddPosition(new Point(start.X / 5, start.Y / 5));
+            AddPosition(new Point(start.X / FlightPlanScaleFactor, start.Y / FlightPlanScaleFactor));
             AddPosition(new Point(426, 880));
 
             DataContext = this;
