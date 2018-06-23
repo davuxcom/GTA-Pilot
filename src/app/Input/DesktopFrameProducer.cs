@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Threading;
 
 namespace GTAPilot
 {
@@ -9,6 +8,12 @@ namespace GTAPilot
         public event Action<int, Bitmap> FrameProduced;
 
         private bool _isRunning;
+        private int _screenId;
+
+        public DesktopFrameProducer(int screenId)
+        {
+            _screenId = screenId;
+        }
 
         public void Begin()
         {
@@ -16,8 +21,7 @@ namespace GTAPilot
             var t = new System.Threading.Thread(() =>
             {
                 int frameId = 0;
-                // CONFIG
-                var desktop = new DesktopDuplication.DesktopDuplicator(0, 2);
+                var desktop = new DesktopDuplication.DesktopDuplicator(0, _screenId);
                 while (_isRunning)
                 {
                     var f = desktop.GetLatestFrame();
@@ -28,7 +32,6 @@ namespace GTAPilot
                     }
 
                     FrameProduced(frameId++, f.DesktopImage);
-                   // Thread.Sleep(10);
                 }
             });
             t.Priority = System.Threading.ThreadPriority.Highest;

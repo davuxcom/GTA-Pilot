@@ -34,7 +34,7 @@ namespace GTAPilot
         public ModeControlPanel MCP = new ModeControlPanel();
         FlightDataComputer _computer;
 
-        public SystemManager(IFrameProducer producer, FridaController fridaController)
+        public SystemManager(IFrameProducer producer, string flightPlanFile = null, FridaController fridaController = null)
         {
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
@@ -46,7 +46,7 @@ namespace GTAPilot
                 fridaController.PropertyChanged += FridaController_PropertyChanged;
             }
 
-            _computer = new FlightDataComputer(MCP, _control);
+            _computer = new FlightDataComputer(MCP, _control, flightPlanFile);
             IndicatorHost = new IndicatorHost(_computer);
 
             _coordinator.Begin();
@@ -77,7 +77,7 @@ namespace GTAPilot
             Trace.WriteLine($"Button Pressed: {e}");
         }
 
-        public SystemManager(IFrameProducer producer, Action<FrameData> consumer, FridaController fridaController)
+        public SystemManager(IFrameProducer producer, Action<FrameData> consumer, FridaController fridaController = null)
         {
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, consumer);

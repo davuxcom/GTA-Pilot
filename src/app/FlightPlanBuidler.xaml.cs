@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -61,12 +61,11 @@ namespace GTAPilot
                 };
                 l.Stroke = Brushes.Blue;
                 l.StrokeThickness = 1;
-                canvas.Children.Add(l);
+                canvas.Children.Insert(canvas.Children.Count - 1, l);
 
                 heading = Math.Atan2(l.Y2 - l.Y1, l.X2 - l.X1);
                 // Starting at 9PM clockwise to 3PM: 0 to pi
-                // Start at 9PM counter-clockwise to 3PM: 0 to -pi
-
+                // Starting at 9PM counter-clockwise to 3PM: 0 to -pi
                 if (heading >= 0)
                 {
                     // 0 to 180
@@ -96,6 +95,25 @@ namespace GTAPilot
             lastPoint = pt;
 
             Positions.Add(new Position { pt = pt, Heading = heading });
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            StringBuilder ret = new StringBuilder();
+            foreach(var p in Positions)
+            {
+                ret.AppendLine($"{p.pt.X},{p.pt.Y}");
+            }
+
+            Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+            dlg.FileName = "FlightPlan";
+            dlg.DefaultExt = ".txt";
+            dlg.Filter = "Text documents (.txt)|*.txt"; 
+
+            if (dlg.ShowDialog() == true)
+            {
+                System.IO.File.WriteAllText(dlg.FileName, ret.ToString());
+            }
         }
     }
 }

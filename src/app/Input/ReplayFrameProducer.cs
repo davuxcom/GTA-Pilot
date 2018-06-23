@@ -8,21 +8,15 @@ namespace GTAPilot
 {
     class ReplayFrameProducer : IFrameProducer
     {
+        public event Action<int, Bitmap> FrameProduced;
+
         string[] _frames;
-        int[] _frameSet;
         int _currentId = 0;
 
-        public ReplayFrameProducer(string dir, string framesetTxt)
+        public ReplayFrameProducer(string dir)
         {
             _frames = Directory.GetFiles(dir);
-
-            if (!string.IsNullOrWhiteSpace(framesetTxt))
-            {
-                _frameSet = File.ReadAllLines(framesetTxt).Select(l => int.Parse(l)).ToArray();
-            }
         }
-
-        public event Action<int, Bitmap> FrameProduced;
 
         public void Begin()
         {
@@ -30,20 +24,9 @@ namespace GTAPilot
             {
                 while (true)
                 {
-                    if (_frameSet != null)
-                    {
-                        var frameId = _frameSet[_currentId++];
-                        FrameProduced(frameId, new Bitmap(_frames[frameId]));
+                    FrameProduced(_currentId, new Bitmap(_frames[_currentId++]));
 
-                        if (_currentId >= _frameSet.Length) _currentId = 0;
-
-                    }
-                    else
-                    {
-                        FrameProduced(_currentId, new Bitmap(_frames[_currentId++]));
-
-                        if (_currentId >= _frames.Length) _currentId = 0;
-                    }
+                    if (_currentId >= _frames.Length) _currentId = 0;
                 }
             });
             t.Priority = ThreadPriority.Highest;

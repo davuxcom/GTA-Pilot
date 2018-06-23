@@ -4,7 +4,7 @@
         xmlns:local="clr-namespace:GTAPilot"
         Title="Select Source"
         Width="700"
-        Height="300"
+        Height="400"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <Style TargetType="{x:Type Button}">
@@ -44,8 +44,13 @@
         <StackPanel Grid.Column="1" Orientation="Vertical">
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock>Screen:</TextBlock>
+                <TextBlock>Capture Screen:</TextBlock>
                 <TextBox Name="txtScreenId">2</TextBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+                <TextBlock>Flight Plan:</TextBlock>
+                <TextBox Name="txtFlightPlan">c:\workspace\FlightPlan.txt</TextBox>
             </StackPanel>
 
         </StackPanel>
@@ -55,7 +60,7 @@
                     Orientation="Vertical">
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock>Location:</TextBlock>
+                <TextBlock>Frame Save Location:</TextBlock>
                 <TextBox Name="txtCaptureLocation">c:\save\recording_1</TextBox>
             </StackPanel>
         </StackPanel>
@@ -65,14 +70,10 @@
                     Orientation="Vertical">
 
             <StackPanel Orientation="Horizontal">
-                <TextBlock>Source:</TextBlock>
+                <TextBlock>Playback Frame Source:</TextBlock>
                 <TextBox Name="txtRecording">c:\save\recording1</TextBox>
             </StackPanel>
 
-            <StackPanel Orientation="Horizontal">
-                <TextBlock>Frame Set:</TextBlock>
-                <TextBox Name="txtFrameSet" />
-            </StackPanel>
 
         </StackPanel>
     </Grid>

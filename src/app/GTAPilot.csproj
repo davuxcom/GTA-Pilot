@@ -82,6 +82,7 @@
     </ApplicationDefinition>
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
+    <Compile Include="FlightPlan.cs" />
     <Compile Include="FlightPlanBuidler.xaml.cs">
       <DependentUpon>FlightPlanBuidler.xaml</DependentUpon>
     </Compile>

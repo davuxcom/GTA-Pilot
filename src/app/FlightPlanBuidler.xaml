@@ -29,7 +29,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Button Grid.Row="0">Save</Button>
+            <Button Grid.Row="0" Click="Button_Click">Save</Button>
 
             <ListView Grid.Row="1" ItemsSource="{Binding Positions}" />
         </Grid>
