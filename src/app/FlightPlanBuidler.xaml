@@ -31,8 +31,7 @@
             </Grid.RowDefinitions>
             <Button Grid.Row="0">Save</Button>
 
-            <ListView Grid.Row="1"
-                      ItemsSource="{Binding Positions}" />
+            <ListView Grid.Row="1" ItemsSource="{Binding Positions}" />
         </Grid>
 
     </Grid>
