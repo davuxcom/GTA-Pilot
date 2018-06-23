@@ -145,12 +145,19 @@ namespace GTAPilot
 
         internal void OnRollDataSampled(int id)
         {
-            if (_mcp.BankHold | _mcp.HeadingHold)
+            _flightPlan.UpdateLocation();
+
+            if (_mcp.BankHold | _mcp.HeadingHold | _mcp.LNAV)
             {
                 if (!double.IsNaN(Timeline.Data[id].Roll.Value))
                 {
-                    if (_mcp.HeadingHold)
+                    if (_mcp.HeadingHold | _mcp.LNAV)
                     {
+                        if (_mcp.LNAV)
+                        {
+                            DesiredHeading = _flightPlan.TargetHeading;
+                        }
+
                         var d = Math2.DiffAngles(Timeline.Heading, DesiredHeading);
                         var sign = Math.Sign(d);
                         var ad = Math.Abs(d);

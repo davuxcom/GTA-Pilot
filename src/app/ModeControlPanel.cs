@@ -57,6 +57,13 @@ namespace GTAPilot
             set => UpdateAndNotify(nameof(VSHold), value, ref _pitchHold);
         }
 
+        private bool _lnav;
+        public bool LNAV
+        {
+            get => _lnav;
+            set => UpdateAndNotify(nameof(LNAV), value, ref _lnav);
+        }
+
         private bool _bankHold;
         public bool BankHold
         {

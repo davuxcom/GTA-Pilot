@@ -104,6 +104,33 @@ namespace GTAPilot
             double mid = (ys.Count - 1) / 2.0;
             return (ys[(int)(mid)] + ys[(int)(mid + 0.5)]) / 2;
         }
+
+        public static double GetPolarHeadingFromLine(PointF pt1, PointF pt2)
+        {
+            var heading = Math.Atan2(pt2.Y - pt1.Y, pt2.X - pt1.Y);
+            // Starting at 9PM clockwise to 3PM: 0 to pi
+            // Starting at 9PM counter-clockwise to 3PM: 0 to -pi
+            if (heading >= 0)
+            {
+                // 0 to 180
+                heading = (heading * (180 / Math.PI));
+            }
+            else
+            {
+                // 0 to -180
+                heading = heading * (180 / Math.PI);
+                // 180 to 0
+                heading = 180 + heading;
+                // 360 to 180
+                heading = heading + 180;
+            }
+
+            // Skew so 0 is at 12PM.
+            heading -= 90;
+            if (heading < 0) heading = 360 + heading;
+
+            return heading;
+        }
     }
 
 }
