@@ -73,6 +73,26 @@ namespace GTAPilot
             }
         }
 
+        public void ScaleTo(double scale)
+        {
+            var st = GetScaleTransform(child);
+            st.ScaleX = scale;
+            st.ScaleY = scale;
+        }
+
+        public void PanTo(System.Drawing.PointF pt)
+        {
+            var child = (Viewbox)Child;
+
+            var img = (Grid)child.Child;
+
+            var tt = GetTranslateTransform(child);
+
+            child.RenderTransformOrigin = new Point(
+                pt.X / 5500, 
+                pt.Y / 6000);
+        }
+
         #region Child Events
 
         private void child_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -96,8 +116,9 @@ namespace GTAPilot
                 st.ScaleX += zoom;
                 st.ScaleY += zoom;
 
-                tt.X = abosuluteX - relative.X * st.ScaleX;
-                tt.Y = abosuluteY - relative.Y * st.ScaleY;
+                // NOTE: turn back on when not using forced-center!
+               // tt.X = abosuluteX - relative.X * st.ScaleX;
+               // tt.Y = abosuluteY - relative.Y * st.ScaleY;
             }
         }
 

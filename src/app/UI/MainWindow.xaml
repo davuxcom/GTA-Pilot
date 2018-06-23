@@ -12,7 +12,7 @@
             <Setter Property="FontSize" Value="28" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="2" />
+            <Setter Property="Margin" Value="4" />
         </Style>
 
         <Style TargetType="{x:Type TextBox}">
@@ -57,7 +57,8 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -124,23 +125,40 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <TextBlock FontSize="30" Text="{Binding Value}" />
 
-                        <TextBlock Grid.Row="2"
-                                   FontSize="30"
-                                   Text="{Binding BadFrameCount}" />
 
-                        <TextBlock Grid.Row="2"
-                                   HorizontalAlignment="Right"
-                                   FontSize="30"
-                                   Text="{Binding CachedTuningValue}" />
 
                         <Border Grid.Row="3"
-                                Background="Transparent"
+                                Background="Gray"
                                 PreviewMouseUp="Border_PreviewMouseUp">
-                            <Image Width="200"
-                                   Height="200"
-                                   Source="{Binding Img}" />
+                            <Grid>
+                                <Image Width="200"
+                                       Height="200"
+                                       
+                                       Source="{Binding Img}" />
+
+                                <TextBlock HorizontalAlignment="Left"
+                                           VerticalAlignment="Bottom"
+                                           FontSize="30"
+                                           Margin="4"
+                                           Foreground="Yellow"
+                                           Text="{Binding Value}" />
+
+                                <TextBlock HorizontalAlignment="Right"
+                                           VerticalAlignment="Bottom"
+                                           Foreground="Yellow"
+                                           Margin="4"
+                                           FontSize="30"
+                                           Text="{Binding CachedTuningValue}" />
+
+                                <TextBlock VerticalAlignment="Top"
+                                           FontSize="24"
+                                           Foreground="Yellow"
+                                           Margin="4"
+                                           Text="{Binding BadFrameCount}" />
+
+                            </Grid>
+
                         </Border>
 
 
@@ -171,6 +189,20 @@
                 </ItemContainerTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
+        <local:ZoomBorder x:Name="border"
+                          Grid.Column="2"
+                          Width="600"
+                          Height="600"
+                          Background="Gray"
+                          ClipToBounds="True">
+            <Viewbox>
+                <Grid>
+                    <Image Name="img" Stretch="None" />
+                    <Canvas Name="canvas" />
+                </Grid>
+            </Viewbox>
+        </local:ZoomBorder>
 
         <DockPanel Grid.Row="1"
                    Grid.Column="1"

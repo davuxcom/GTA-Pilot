@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace GTAPilot
@@ -27,6 +29,7 @@ namespace GTAPilot
         MainWindowViewModel _viewModel;
         DispatcherTimer _fpsTimer = new DispatcherTimer();
         SaveFrameConsumer _captureSink;
+        TimelineFrame _lastRenderedFrame = null;
 
         internal MainWindow()
         {
@@ -110,6 +113,9 @@ namespace GTAPilot
 
                 mgr.StopCapture();
             }
+
+            img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png")));
+            border.ScaleTo(4);
         }
 
         private string GetScriptContent()
@@ -121,9 +127,49 @@ namespace GTAPilot
             }
         }
 
+        int ticks = 0;
         private void FpsTimer_Tick(object sender, EventArgs e)
         {
             _viewModel.Tick();
+
+            if (ticks % 10000 == 0)
+            {
+                var startId = _lastRenderedFrame != null ? _lastRenderedFrame.Id : 0;
+                for (var i = Timeline.LastFrameId; i > startId; i--)
+                {
+                    if (Timeline.Data[i] != null && Timeline.Data[i].LocationComplete)
+                    {
+                        RenderFrame(_lastRenderedFrame, Timeline.Data[i]);
+
+                        _lastRenderedFrame = Timeline.Data[i];
+                        break;
+                    }
+                }
+
+                border.PanTo(Timeline.CurrentLocation);
+            }
+        }
+
+        private void RenderFrame(TimelineFrame lastFrame, TimelineFrame frame)
+        {
+            Line l = new Line();
+            l.Stroke = Brushes.Red;
+            l.StrokeThickness = 2;
+
+            if (lastFrame != null)
+            {
+                l.X1 = lastFrame.Location.X / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.X2 = frame.Location.X / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.Y1 = lastFrame.Location.Y / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.Y2 = frame.Location.Y / FlightPlanBuidler.FlightPlanScaleFactor;
+            }
+            else
+            {
+                l.X1 = l.X2 = frame.Location.X / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.Y1 = l.Y2 = frame.Location.Y / FlightPlanBuidler.FlightPlanScaleFactor;
+            }
+
+            canvas.Children.Add(l);
         }
 
         private void SaveFrameSet_Click(object sender, RoutedEventArgs e)
@@ -132,7 +178,7 @@ namespace GTAPilot
 
             var frames = string.Join("\r\n", indicator.BadFrames.Select(f => f.ToString()));
 
-            var fn = Path.GetTempFileName() + ".txt";
+            var fn = System.IO.Path.GetTempFileName() + ".txt";
             File.WriteAllText(fn, frames);
 
             Process.Start(fn);

@@ -17,7 +17,7 @@ namespace GTAPilot
         {
             InitializeComponent();
 
-            img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full.png")));
+            img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png")));
 
             _timer.Interval = TimeSpan.FromMilliseconds(App.FPS);
             _timer.Tick += Timer_Tick;
@@ -50,16 +50,16 @@ namespace GTAPilot
 
             if (_lastRenderedFrame != null)
             {
-                l.X1 = _lastRenderedFrame.Location.X;
-                l.X2 = frame.Location.X;
-                l.Y1 = _lastRenderedFrame.Location.Y;
-                l.Y2 = frame.Location.Y;
+                l.X1 = _lastRenderedFrame.Location.X / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.X2 = frame.Location.X / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.Y1 = _lastRenderedFrame.Location.Y / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.Y2 = frame.Location.Y / FlightPlanBuidler.FlightPlanScaleFactor;
             }
             else
             {
 
-                l.X1 = l.X2 = frame.Location.X;
-                l.Y1 = l.Y2 = frame.Location.Y;
+                l.X1 = l.X2 = frame.Location.X / FlightPlanBuidler.FlightPlanScaleFactor;
+                l.Y1 = l.Y2 = frame.Location.Y / FlightPlanBuidler.FlightPlanScaleFactor;
             }
 
             canvas.Children.Add(l);

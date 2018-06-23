@@ -165,7 +165,7 @@ namespace GTAPilot
 
                             if (ticks % 100 == 0)
                             {
-                                Trace.WriteLine($"LNAV HDG: {DesiredHeading}");
+                                //  Trace.WriteLine($"LNAV HDG: {DesiredHeading}");
                             }
                         }
 
@@ -179,11 +179,11 @@ namespace GTAPilot
 
                             if (DesiredRoll > newRoll)
                             {
-                                DesiredRoll--;
+                                DesiredRoll -= 0.25;
                             }
                             else
                             {
-                                DesiredRoll++;
+                                DesiredRoll += 0.25;
                             }
 
                         }
@@ -210,7 +210,7 @@ namespace GTAPilot
 
                     var desiredPitch = dx / 10;
 
-                    if (desiredPitch > 10) desiredPitch = 10;
+                    if (desiredPitch > 20) desiredPitch = 20;
                     if (desiredPitch < -10) desiredPitch = -10;
 
                     DesiredPitch = desiredPitch;

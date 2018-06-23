@@ -10,13 +10,8 @@
                       ClipToBounds="True">
         <Viewbox>
             <Grid>
-                <Image Name="img"
-                       Width="5500"
-                       Height="6000"
-                       Stretch="None" />
-                <Canvas Name="canvas"
-                        Width="5500"
-                        Height="6000" />
+                <Image Name="img" Stretch="None" />
+                <Canvas Name="canvas" />
             </Grid>
         </Viewbox>
     </local:ZoomBorder>

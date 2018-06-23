@@ -158,10 +158,8 @@ namespace GTAPilot.Indicators_v2
                                     debugState[3] = rotated_letter_only;
                                 }
 
-
                                 parts.Add(new CompassPack { Item1 = rotated_letter_only, Item2 = biased_angle, BlobBox = b.BoundingBox, BlobArea = b.Area });
                             }
-
                         }
                         catch (Exception ex)
                         {
@@ -169,26 +167,25 @@ namespace GTAPilot.Indicators_v2
                         }
                     }
 
-
-                    return CompassProcFrame(data.Id, parts, focus);
-
-
-
-
-
+                    var ret = CompassProcFrame(data.Id, parts, focus);
+                    if (!double.IsNaN(ret))
+                    {
+                        // Account for the panel view skew.
+                        ret += 1.5;
+                        if (ret > 360)
+                        {
+                            ret -= 360;
+                        }
+                        return ret;
+                    }
                 }
             }
-
-
-
             return double.NaN;
         }
 
         double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame)
         {
-            
             var my_frameref = Timeline.Data[frameId];
-
             TimelineFrame last_frameref = null;
 
             for (var i = frameId - 1; i >= 0; i--)

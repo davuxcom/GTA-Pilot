@@ -35,7 +35,7 @@ namespace GTAPilot
             ticks++;
             if (ticks % 50 == 0)
             {
-                Trace.WriteLine($"Flight Plan: {dist} {isCloseToPoint}");
+              //  Trace.WriteLine($"Flight Plan: {dist} {isCloseToPoint}");
             }
 
             if (isCloseToPoint)
