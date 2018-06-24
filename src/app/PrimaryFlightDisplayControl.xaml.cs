@@ -11,28 +11,22 @@ namespace GTAPilot
     {
         Polygon _top = new Polygon();
         Polygon _bottom = new Polygon();
-        Ellipse _circle = new Ellipse();
         DispatcherTimer _fpsTimer = new DispatcherTimer();
+        Line _pitchLine = new Line();
 
 
         public PrimaryFlightDisplayControl()
         {
             InitializeComponent();
 
-            _top.Fill = Brushes.SkyBlue;
-            _bottom.Fill = Brushes.Brown;
-            _circle.Stroke = Brushes.White;
-            _circle.StrokeThickness = 4;
-            _circle.Height = Width / 2;
-            _circle.Width = Width / 2;
-            Canvas.SetLeft(_circle, PFD.Width / 2 - _circle.Width / 2);
-            Canvas.SetTop(_circle, PFD.Height / 2 - _circle.Height / 2);
-
-            LayoutBackground();
+            _pitchLine.Stroke = Brushes.White;
+            _pitchLine.StrokeThickness = 4;
+            _top.Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#0480D8"));
+            _bottom.Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#744C07"));
 
             PFD.Children.Add(_top);
             PFD.Children.Add(_bottom);
-            PFD.Children.Add(_circle);
+           // PFD.Children.Add(_pitchLine);
 
             _fpsTimer.Interval = TimeSpan.FromMilliseconds(App.FPS);
             _fpsTimer.Tick += FpsTimer_Tick;
@@ -67,6 +61,11 @@ namespace GTAPilot
             _bottom.Points.Add(new Point(PFD.ActualWidth, PFD.ActualHeight));
             _bottom.Points.Add(new Point(0, PFD.ActualHeight));
 
+            _pitchLine.X1 = PFD.ActualWidth * 0.25;
+            _pitchLine.X2 = PFD.ActualWidth * 0.75;
+
+            _pitchLine.Y1 = PFD.ActualHeight / 2 - leftSkew;
+            _pitchLine.Y2 = PFD.ActualHeight / 2 - rightSkew;
         }
     }
 }

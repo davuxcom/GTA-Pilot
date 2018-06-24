@@ -6,25 +6,18 @@
         Width="1400"
         Height="1000">
     <Grid>
-        <StackPanel Orientation="Horizontal">
-            <Canvas Name="PFD"
-                    Width="800"
-                    Height="800"
-                    Background="Black" />
 
-            <Slider Name="Roll"
-                    Maximum="40"
-                    Minimum="-40"
-                    Orientation="Vertical"
-                    ValueChanged="Slider_ValueChanged"
-                    Value="0" />
-
-            <Slider Name="Pitch"
-                    Maximum="90"
-                    Minimum="-90"
-                    Orientation="Vertical"
-                    ValueChanged="Slider_ValueChanged"
-                    Value="0" />
-        </StackPanel>
+        <local:ZoomBorder x:Name="border"
+                          Width="600"
+                          Height="600"
+                          Background="Gray"
+                          ClipToBounds="True">
+            <Viewbox>
+                <Grid>
+                    <Image Name="img" Stretch="None" />
+                    <Canvas Name="canvas" />
+                </Grid>
+            </Viewbox>
+        </local:ZoomBorder>
     </Grid>
 </Window>

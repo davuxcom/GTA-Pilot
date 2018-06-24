@@ -13,6 +13,12 @@ namespace GTAPilot
         private Point origin;
         private Point start;
 
+        private RotateTransform GetRotateTransform(UIElement element)
+        {
+            return (RotateTransform)((TransformGroup)element.RenderTransform)
+              .Children.First(tr => tr is RotateTransform);
+        }
+
         private TranslateTransform GetTranslateTransform(UIElement element)
         {
             return (TranslateTransform)((TransformGroup)element.RenderTransform)
@@ -46,6 +52,9 @@ namespace GTAPilot
                 group.Children.Add(st);
                 TranslateTransform tt = new TranslateTransform();
                 group.Children.Add(tt);
+                RotateTransform rt = new RotateTransform();
+                group.Children.Add(rt);
+
                 child.RenderTransform = group;
                 child.RenderTransformOrigin = new Point(0.0, 0.0);
                 this.MouseWheel += child_MouseWheel;
@@ -80,7 +89,7 @@ namespace GTAPilot
             st.ScaleY = scale;
         }
 
-        public void PanTo(System.Drawing.PointF pt)
+        public void PanTo(System.Drawing.PointF pt, double heading)
         {
             var child = (Viewbox)Child;
 
@@ -91,6 +100,10 @@ namespace GTAPilot
             child.RenderTransformOrigin = new Point(
                 pt.X / 5500, 
                 pt.Y / 6000);
+
+            var rt = GetRotateTransform(child);
+
+            rt.Angle = -1 * heading;
         }
 
         #region Child Events

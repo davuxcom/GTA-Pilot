@@ -146,7 +146,7 @@ namespace GTAPilot
                     }
                 }
 
-                border.PanTo(Timeline.CurrentLocation);
+                border.PanTo(Timeline.CurrentLocation, 0);
             }
         }
 
