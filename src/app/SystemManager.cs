@@ -26,6 +26,7 @@ namespace GTAPilot
     {
         public static SystemManager Instance = null;
 
+        public FlightPlan FlightPlan => _computer.FlightPlan;
 
         IFrameProducer _producer;
         FrameInputCoordinator _coordinator;
@@ -98,7 +99,7 @@ namespace GTAPilot
         public static void InitializeForLiveCapture()
         {
             var fridaController = new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
-            var mgr = new SystemManager(new DesktopFrameProducer(2), "", fridaController);
+            var mgr = new SystemManager(new DesktopFrameProducer(2), @"C:\workspace\FlightPlan.txt", fridaController);
         }
 
         private static string GetScriptContent()

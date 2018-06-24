@@ -8,10 +8,10 @@ namespace GTAPilot
     class FlightPlan
     {
         public int CurrentIndex { get; private set; }
-        public PointF Target => _points[CurrentIndex];
+        public PointF Target => Points[CurrentIndex];
         public double TargetHeading => Math2.GetPolarHeadingFromLine(Target, Timeline.CurrentLocation);
 
-        List<PointF> _points = new List<PointF>();
+        public List<PointF> Points = new List<PointF>();
 
         public FlightPlan(string fileName)
         {
@@ -20,7 +20,7 @@ namespace GTAPilot
             {
                 var parts = line.Split(',');
                 Debug.Assert(parts.Length == 2);
-                _points.Add(new PointF((float)double.Parse(parts[0]) * FlightPlanBuidler.FlightPlanScaleFactor, 
+                Points.Add(new PointF((float)double.Parse(parts[0]) * FlightPlanBuidler.FlightPlanScaleFactor, 
                     (float)double.Parse(parts[1]) * FlightPlanBuidler.FlightPlanScaleFactor));
             }
         }
@@ -29,7 +29,7 @@ namespace GTAPilot
         int ticks = 0;
         internal void UpdateLocation()
         {
-            var dist = Math2.GetDistance(_points[CurrentIndex], Timeline.CurrentLocation);
+            var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
             bool isCloseToPoint = dist < 120;
 
             ticks++;
@@ -43,7 +43,7 @@ namespace GTAPilot
                 CurrentIndex++;
                 Trace.WriteLine($"Flight Plan: Advance: {CurrentIndex}");
 
-                if (CurrentIndex > _points.Count - 1)
+                if (CurrentIndex > Points.Count - 1)
                 {
                     // Loop at end, if possible.
                     CurrentIndex = 0;

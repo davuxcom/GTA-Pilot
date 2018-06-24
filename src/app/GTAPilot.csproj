@@ -83,6 +83,7 @@
     <Compile Include="ControlPanelControl.xaml.cs">
       <DependentUpon>ControlPanelControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Extensions\UIElementExtensions.cs" />
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
     <Compile Include="FlightPlan.cs" />

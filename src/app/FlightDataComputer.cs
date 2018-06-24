@@ -7,7 +7,7 @@ namespace GTAPilot
     {
         private ModeControlPanel _mcp;
         private FlightController _control;
-        private FlightPlan _flightPlan;
+        public FlightPlan FlightPlan;
 
         double DesiredPitch;
         double DesiredRoll;
@@ -48,7 +48,7 @@ namespace GTAPilot
 
             if (!string.IsNullOrWhiteSpace(flightPlanFile))
             {
-                _flightPlan = new FlightPlan(flightPlanFile);
+                FlightPlan = new FlightPlan(flightPlanFile);
             }
         }
 
@@ -149,9 +149,9 @@ namespace GTAPilot
         {
             if (double.IsNaN(Timeline.Heading)) return;
 
-            if (_flightPlan != null)
+            if (FlightPlan != null)
             {
-                _flightPlan.UpdateLocation();
+                FlightPlan.UpdateLocation();
             }
 
             if (_mcp.BankHold | _mcp.HeadingHold | _mcp.LNAV)
@@ -162,7 +162,7 @@ namespace GTAPilot
                     {
                         if (_mcp.LNAV)
                         {
-                            DesiredHeading = _flightPlan.TargetHeading;
+                            DesiredHeading = FlightPlan.TargetHeading;
 
                             ticks++;
 

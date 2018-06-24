@@ -11,7 +11,7 @@
         </Grid.ColumnDefinitions>
 
         <local:PrimaryFlightDisplayControl Width="500" Height="500" />
-        
+
         <local:NavigationDisplayControl Grid.Column="1"
                                         Width="500"
                                         Height="500" />
