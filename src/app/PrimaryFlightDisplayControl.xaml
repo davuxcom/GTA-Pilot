@@ -10,13 +10,13 @@
         <Canvas Name="PFD">
             <Rectangle Canvas.Left="50"
                        Canvas.Top="50"
-                       Width="50"
+                       Width="75"
                        Height="400"
                        Fill="#22000000" />
 
-            <Rectangle Canvas.Left="400"
-                       Canvas.Top="50"
-                       Width="50"
+            <Rectangle Canvas.Top="50"
+                       Canvas.Right="50"
+                       Width="75"
                        Height="400"
                        Fill="#22000000" />
 
@@ -27,9 +27,9 @@
                        Fill="#22000000" />
 
             <Border Canvas.Left="50"
-                    Canvas.Top="230"
-                    Width="50"
-                    Height="40"
+                    Canvas.Top="220"
+                    Width="75"
+                    Height="60"
                     Background="Black"
                     BorderBrush="White"
                     BorderThickness="1">
@@ -40,10 +40,10 @@
                 </TextBlock>
             </Border>
 
-            <Border Canvas.Top="230"
+            <Border Canvas.Top="220"
                     Canvas.Right="50"
-                    Width="50"
-                    Height="40"
+                    Width="75"
+                    Height="60"
                     Background="Black"
                     BorderBrush="White"
                     BorderThickness="1">
@@ -54,6 +54,16 @@
                 </TextBlock>
             </Border>
 
+            <Polygon Fill="Black"
+                     Points="160,250  220,250, 220,270, 
+                             215,270, 215,255, 160,255"
+                     Stroke="White" />
+
+            <Polygon Fill="Black"
+                     Points="340,250  280,250, 280,270, 
+                             285,270, 285,255, 340,255"
+                     Stroke="White" />
+            
         </Canvas>
     </Grid>
 </UserControl>

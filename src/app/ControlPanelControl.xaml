@@ -16,6 +16,7 @@
                                         Width="500"
                                         Height="500" />
 
+        <local:MCPControl Grid.Column="2" Width="500" Height="500" />
 
         <!--
         <ListView Grid.Column="1"

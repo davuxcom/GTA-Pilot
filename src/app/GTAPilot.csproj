@@ -95,6 +95,9 @@
     </Compile>
     <Compile Include="Interop\DwmApi.cs" />
     <Compile Include="Interop\User32.cs" />
+    <Compile Include="MCPControl.xaml.cs">
+      <DependentUpon>MCPControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NavigationDisplayControl.xaml.cs">
       <DependentUpon>NavigationDisplayControl.xaml</DependentUpon>
     </Compile>
@@ -150,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ImmersiveWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MCPControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
