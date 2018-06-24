@@ -149,7 +149,10 @@ namespace GTAPilot
         {
             if (double.IsNaN(Timeline.Heading)) return;
 
-            _flightPlan.UpdateLocation();
+            if (_flightPlan != null)
+            {
+                _flightPlan.UpdateLocation();
+            }
 
             if (_mcp.BankHold | _mcp.HeadingHold | _mcp.LNAV)
             {

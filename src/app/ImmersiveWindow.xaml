@@ -5,6 +5,7 @@
         Title="ImmersiveWindow"
         Width="800"
         Height="450"
+        ResizeMode="NoResize"
         WindowState="Maximized">
     <Grid Name="LayoutRoot" />
 </Window>

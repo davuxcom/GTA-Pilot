@@ -1,8 +1,10 @@
 ﻿using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Linq;
 using System.Threading;
 
 namespace GTAPilot
@@ -61,6 +63,8 @@ namespace GTAPilot
 
         public static double Roll => Latest(f => f.Roll.Value);
         public static double Pitch => Latest(f => f.Pitch.Value);
+        public static double RollAvg => LatestAvg(f => f.Roll.Value);
+        public static double PitchAvg => LatestAvg(f => f.Pitch.Value);
         public static double Speed => Latest(f => f.Speed.Value);
         public static double Altitude => Latest(f => f.Altitude.Value);
         public static double Heading => Latest(f => f.Heading.Value);
@@ -108,6 +112,28 @@ namespace GTAPilot
                 }
             }
             return double.NaN;
+        }
+
+        private static double LatestAvg(Func<TimelineFrame, double> finder)
+        {
+            List<double> ret = new List<double>();
+
+            for (var i = LastFrameId; i >= 0; i--)
+            {
+                if (Data[i] != null)
+                {
+                    if (!double.IsNaN(finder(Data[i])))
+                    {
+                        ret.Add(finder(Data[i]));
+
+                        if (ret.Count == 8) break;
+                    }
+                }
+            }
+
+            if (ret.Count == 0) return 0;
+
+            return ret.Sum() / ret.Count;
         }
 
         public static TimelineFrame LatestFrame(Func<TimelineFrame, double> finder, int endId)

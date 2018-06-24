@@ -16,6 +16,8 @@ namespace GTAPilot
         {
             InitializeComponent();
 
+            SystemManager.InitializeForLiveCapture();
+
             _overlay = new ImmersiveOverlayWindow();
 
             Activated += Window_Activated;

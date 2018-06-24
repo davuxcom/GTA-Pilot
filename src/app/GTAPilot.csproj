@@ -80,6 +80,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ControlPanelControl.xaml.cs">
+      <DependentUpon>ControlPanelControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
     <Compile Include="FlightPlan.cs" />
@@ -93,6 +96,9 @@
     <Compile Include="Interop\User32.cs" />
     <Compile Include="PrimaryFlightDisplay.xaml.cs">
       <DependentUpon>PrimaryFlightDisplay.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="PrimaryFlightDisplayControl.xaml.cs">
+      <DependentUpon>PrimaryFlightDisplayControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\FlightPlanBuidler.xaml.cs">
       <DependentUpon>FlightPlanBuidler.xaml</DependentUpon>
@@ -131,6 +137,10 @@
     </Compile>
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
+    <Page Include="ControlPanelControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ImmersiveOverlayWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -140,6 +150,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="PrimaryFlightDisplay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="PrimaryFlightDisplayControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

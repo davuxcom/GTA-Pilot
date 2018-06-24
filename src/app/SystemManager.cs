@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Threading;
 
 namespace GTAPilot
@@ -22,6 +24,8 @@ namespace GTAPilot
 
     class SystemManager
     {
+        public static SystemManager Instance = null;
+
 
         IFrameProducer _producer;
         FrameInputCoordinator _coordinator;
@@ -32,6 +36,8 @@ namespace GTAPilot
 
         public SystemManager(IFrameProducer producer, string flightPlanFile = null, FridaController fridaController = null)
         {
+            Instance = this;
+
             _producer = producer;
             _coordinator = new FrameInputCoordinator(producer, FrameArrived);
 
@@ -87,6 +93,21 @@ namespace GTAPilot
 
             _coordinator.Begin();
             Timeline.Begin();
+        }
+
+        public static void InitializeForLiveCapture()
+        {
+            var fridaController = new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
+            var mgr = new SystemManager(new DesktopFrameProducer(2), "", fridaController);
+        }
+
+        private static string GetScriptContent()
+        {
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GTAPilot.XboxApp.js"))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
         }
 
         private void FridaController_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

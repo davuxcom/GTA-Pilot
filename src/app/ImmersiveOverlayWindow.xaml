@@ -9,16 +9,27 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="650" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <DockPanel>
-            <Menu>
-                <MenuItem Header="File">
-                    <MenuItem Header="Exit" />
-                </MenuItem>
-            </Menu>
-        </DockPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="450" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Menu Grid.ColumnSpan="2">
+            <MenuItem Header="File">
+                <MenuItem Header="Exit" />
+            </MenuItem>
+        </Menu>
+
+        <Border Grid.Row="2"
+                Grid.Column="1"
+                BorderBrush="Yellow"
+                BorderThickness="1">
+            <local:ControlPanelControl />
+        </Border>
 
 
     </Grid>
