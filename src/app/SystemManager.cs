@@ -7,7 +7,7 @@ namespace GTAPilot
         public static SystemManager Instance = null;
 
         public FlightPlan FlightPlan => _computer.FlightPlan;
-        public IndicatorHost IndicatorHost;
+        public IndicatorHandler IndicatorHost;
         public ModeControlPanel MCP = new ModeControlPanel();
 
         XboxApp _app;
@@ -25,7 +25,7 @@ namespace GTAPilot
             _app.PropertyChanged += XboxApp_PropertyChanged;
 
             _computer = new FlightDataComputer(MCP, _app.Controller, flightPlanFile);
-            IndicatorHost = new IndicatorHost(_computer);
+            IndicatorHost = new IndicatorHandler(_computer);
 
             _coordinator.Begin();
             Timeline.Begin();

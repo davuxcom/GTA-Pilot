@@ -80,31 +80,28 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ControlPanelControl.xaml.cs">
+    <Compile Include="UI\ControlPanelControl.xaml.cs">
       <DependentUpon>ControlPanelControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Extensions\UIElementExtensions.cs" />
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
     <Compile Include="FlightPlan.cs" />
-    <Compile Include="ImmersiveOverlayWindow.xaml.cs">
+    <Compile Include="UI\ImmersiveOverlayWindow.xaml.cs">
       <DependentUpon>ImmersiveOverlayWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ImmersiveWindow.xaml.cs">
+    <Compile Include="UI\ImmersiveWindow.xaml.cs">
       <DependentUpon>ImmersiveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Interop\DwmApi.cs" />
     <Compile Include="Interop\User32.cs" />
-    <Compile Include="MCPControl.xaml.cs">
+    <Compile Include="UI\MCPControl.xaml.cs">
       <DependentUpon>MCPControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="NavigationDisplayControl.xaml.cs">
+    <Compile Include="UI\NavigationDisplayControl.xaml.cs">
       <DependentUpon>NavigationDisplayControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PrimaryFlightDisplay.xaml.cs">
-      <DependentUpon>PrimaryFlightDisplay.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="PrimaryFlightDisplayControl.xaml.cs">
+    <Compile Include="UI\PrimaryFlightDisplayControl.xaml.cs">
       <DependentUpon>PrimaryFlightDisplayControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\FlightPlanBuidler.xaml.cs">
@@ -145,31 +142,27 @@
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
     <Compile Include="XboxApp.cs" />
-    <Page Include="ControlPanelControl.xaml">
+    <Page Include="UI\ControlPanelControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImmersiveOverlayWindow.xaml">
+    <Page Include="UI\ImmersiveOverlayWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ImmersiveWindow.xaml">
+    <Page Include="UI\ImmersiveWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MCPControl.xaml">
+    <Page Include="UI\MCPControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="NavigationDisplayControl.xaml">
+    <Page Include="UI\NavigationDisplayControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="PrimaryFlightDisplay.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PrimaryFlightDisplayControl.xaml">
+    <Page Include="UI\PrimaryFlightDisplayControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -194,7 +187,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="FpsCounter.cs" />
-    <Compile Include="IndicatorHost.cs" />
+    <Compile Include="IndicatorHandler.cs" />
     <Compile Include="Input\DesktopDuplicator.cs" />
     <Compile Include="Input\DesktopFrameProducer.cs" />
     <Compile Include="Input\FrameData.cs" />

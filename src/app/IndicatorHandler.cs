@@ -14,7 +14,7 @@ namespace GTAPilot
         public int Id;
     }
 
-    class IndicatorHost
+    class IndicatorHandler
     {
         public Indicator Roll = new Indicator(new RollIndicator_v2());
         public Indicator Pitch = new Indicator(new PitchIndicator_v2());
@@ -28,7 +28,7 @@ namespace GTAPilot
         ConcurrentQueue<IndicatorData> _stage5 = new ConcurrentQueue<IndicatorData>();
         FlightDataComputer _computer;
 
-        public IndicatorHost(FlightDataComputer computer)
+        public IndicatorHandler(FlightDataComputer computer)
         {
             _computer = computer;
 
@@ -105,7 +105,6 @@ namespace GTAPilot
             Timeline.Data[data.Id].Roll.Value = Roll.Tick(data);
             _computer.OnRollDataSampled(data.Id);
             Timeline.Data[data.Id].Roll.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-
         }
 
         void Tick2(IndicatorData data)
@@ -113,7 +112,6 @@ namespace GTAPilot
             Timeline.Data[data.Id].Pitch.Value = Pitch.Tick(data);
             _computer.OnPitchDataSampled(data.Id);
             Timeline.Data[data.Id].Pitch.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-
         }
 
         void Tick3(IndicatorData data)
@@ -121,7 +119,6 @@ namespace GTAPilot
             Timeline.Data[data.Id].Speed.Value = Airspeed.Tick(data);
             _computer.OnSpeedDataSampled(data.Id);
             Timeline.Data[data.Id].Speed.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-
         }
 
         void Tick4(IndicatorData data)
@@ -129,7 +126,6 @@ namespace GTAPilot
             Timeline.Data[data.Id].Altitude.Value = Altitude.Tick(data);
             _computer.OnAltidudeDataSampled(data.Id);
             Timeline.Data[data.Id].Altitude.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-
         }
 
         void Tick5(IndicatorData data)
@@ -141,7 +137,6 @@ namespace GTAPilot
             Timeline.Data[data.Id].Heading.SecondsWhenComputed = doneTime;
 
             var prev = Timeline.LatestFrame(d => d.Heading.Value, data.Id);
-
             if (prev != null && !double.IsNaN(Timeline.Data[data.Id].Heading.Value))
             {
                 var dT = doneTime - prev.Heading.SecondsWhenComputed;
