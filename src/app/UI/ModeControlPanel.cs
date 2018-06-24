@@ -96,35 +96,35 @@ namespace GTAPilot
             set => UpdateAndNotify(nameof(AltitudeHold), value, ref _altitudeHold);
         }
 
-        private int _vs;
-        public int VS
+        private double _vs;
+        public double VS
         {
             get => _vs;
             set => UpdateAndNotify(nameof(VS), value, ref _vs);
         }
 
-        private int _bank;
-        public int Bank
+        private double _bank;
+        public double Bank
         {
             get => _bank;
             set => UpdateAndNotify(nameof(Bank), value, ref _bank);
         }
-        private int _ias;
-        public int IAS
+        private double _ias;
+        public double IAS
         {
             get => _ias;
             set => UpdateAndNotify(nameof(IAS), value, ref _ias);
         }
 
-        private int _alt;
-        public int ALT
+        private double _alt;
+        public double ALT
         {
             get => _alt;
             set => UpdateAndNotify(nameof(ALT), value, ref _alt);
         }
 
-        private int _hdg;
-        public int HDG
+        private double _hdg;
+        public double HDG
         {
             get => _hdg;
             set => UpdateAndNotify(nameof(HDG), value, ref _hdg);

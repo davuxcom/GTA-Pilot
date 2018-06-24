@@ -137,8 +137,6 @@ namespace GTAPilot
             return throttle;
         }
 
-        int ticks = 0;
-
         internal void OnRollDataSampled(int id)
         {
             if (double.IsNaN(Timeline.Heading)) return;
@@ -157,13 +155,7 @@ namespace GTAPilot
                         if (_mcp.LNAV)
                         {
                             DesiredHeading = FlightPlan.TargetHeading;
-
-                            ticks++;
-
-                            if (ticks % 100 == 0)
-                            {
-                                //  Trace.WriteLine($"LNAV HDG: {DesiredHeading}");
-                            }
+                            _mcp.HDG = DesiredHeading;
                         }
 
                         var d = Math2.DiffAngles(Timeline.Heading, DesiredHeading);
@@ -211,6 +203,7 @@ namespace GTAPilot
                     if (desiredPitch < -10) desiredPitch = -10;
 
                     DesiredPitch = desiredPitch;
+                    _mcp.VS = DesiredPitch;
                 }
 
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
