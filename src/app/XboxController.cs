@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GTAPilot
 {
-    public class FlightController : INotifyPropertyChanged
+    public class XboxController : INotifyPropertyChanged
     {
         public FpsCounter XInputFPS { get; private set; }
         public event EventHandler<XInputButtons> ButtonPressed;
@@ -57,7 +57,7 @@ namespace GTAPilot
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal FlightController(FridaController fridaController)
+        internal XboxController(FridaController fridaController)
         {
             _controller = fridaController;
 
@@ -108,21 +108,18 @@ namespace GTAPilot
             } while (frameId > 1 && double.IsNaN(thisFrame.InputValue));
         }
 
-        public void ToggleLandingGear()
+        public void PressLeftThumb()
         {
             Trace.WriteLine("Toggle landing gear");
             SendMessage("{\"LEFT_THUMB\":\"0\"}");
         }
 
-        public void LockViewMin()
+        public void HoldRightThumbY(int value = -17700)
         {
-            SendMessage("{\"RIGHT_THUMB_Y\":\"-17700\",\"RIGHT_THUMB_X\":\"0\"}");
+            SendMessage("{\"RIGHT_THUMB_Y\":\"" + value + "\",\"RIGHT_THUMB_X\":\"0\"}");
         }
 
-        public void ResetFlaps()
-        {
-            SendMessage("{\"LEFT_TRIGGER\":\"20\"}");
-        }
+
 
         private void SendMessage(string msg)
         {
@@ -135,10 +132,15 @@ namespace GTAPilot
             SendMessage("{\"A\":\"0\"}");
         }
 
-        internal void SetFlaps(int value)
+        internal void HoldLefTrigger(int value)
         {
             // flaps max = 235, past is engine shutoff
             SendMessage("{\"LEFT_TRIGGER\":\"" + value + "\"}");
+        }
+
+        public void ResetLeftTrigger()
+        {
+            SendMessage("{\"LEFT_TRIGGER\":\"20\"}");
         }
 
         internal void PressB()
@@ -153,27 +155,27 @@ namespace GTAPilot
             SendMessage("{\"START\":\"0\"}");
         }
 
-        public void SetRoll(double value, int ticks = 12)
+        public void SetLeftThumbX(double value, int ticks = 12)
         {
             SendMessage("{\"LEFT_THUMB_X\":\"" + value + "\"}");
         }
 
-        public void SetPitch(double value, int ticks = 12)
+        public void SetLeftThumbY(double value, int ticks = 12)
         {
             SendMessage("{\"LEFT_THUMB_Y\":\"" + value + "\"}");
         }
 
-        public void SetThrottle(double value, int ticks = 20)
+        public void SetRightTrigger(double value, int ticks = 20)
         {
             SendMessage("{\"RIGHT_TRIGGER\":\"" + (int)value + "\"}");
         }
 
-        public void SetLeftRudder(double ticks)
+        public void SetLeftShoulder(double ticks)
         {
             SendMessage("{\"LEFT_SHOULDER\":\"" + ticks + "\", \"RIGHT_SHOULDER\":\"0\"}");
         }
 
-        public void SetRightRudder(double ticks)
+        public void SetRightShoulder(double ticks)
         {
             SendMessage("{\"RIGHT_SHOULDER\":\"" + ticks + "\", \"LEFT_SHOULDER\":\"0\"}");
         }

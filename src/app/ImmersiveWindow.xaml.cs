@@ -16,7 +16,7 @@ namespace GTAPilot
         {
             InitializeComponent();
 
-            SystemManager.InitializeForLiveCapture();
+            new SystemManager(@"C:\workspace\FlightPlan.txt");
 
             _overlay = new ImmersiveOverlayWindow();
 

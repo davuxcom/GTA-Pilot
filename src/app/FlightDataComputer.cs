@@ -6,7 +6,7 @@ namespace GTAPilot
     class FlightDataComputer
     {
         private ModeControlPanel _mcp;
-        private FlightController _control;
+        private XboxController _control;
         public FlightPlan FlightPlan;
 
         double DesiredPitch;
@@ -19,7 +19,7 @@ namespace GTAPilot
         public PID _roll_pid;
         public PID _airspeed_pid;
 
-        public FlightDataComputer(ModeControlPanel mcp, FlightController control, string flightPlanFile)
+        public FlightDataComputer(ModeControlPanel mcp, XboxController control, string flightPlanFile)
         {
             _control = control;
             _mcp = mcp;
@@ -125,7 +125,7 @@ namespace GTAPilot
         double Handle_Roll(double power)
         {
             power = RemoveDeadZone(power, 4000, 10000);
-            _control.SetRoll(power);
+            _control.SetLeftThumbX(power);
             return power;
         }
 
@@ -133,13 +133,13 @@ namespace GTAPilot
         {
             power = RemoveDeadZone(power, 4000, 12000);
             power = -1 * power;
-            _control.SetPitch(power);
+            _control.SetLeftThumbY(power);
             return power;
         }
 
         double Handle_Throttle(double throttle)
         {
-            _control.SetThrottle(throttle);
+            _control.SetRightTrigger(throttle);
             return throttle;
         }
 
@@ -266,12 +266,12 @@ namespace GTAPilot
 
                             if (diff < 0)
                             {
-                                _control.SetRightRudder(aDiff);
+                                _control.SetRightShoulder(aDiff);
                                 Timeline.Data[id].Heading.OutputValue = -1 * aDiff;
                             }
                             else
                             {
-                                _control.SetLeftRudder(aDiff);
+                                _control.SetLeftShoulder(aDiff);
                                 Timeline.Data[id].Heading.OutputValue = aDiff;
                             }
                         }

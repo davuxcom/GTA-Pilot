@@ -115,7 +115,7 @@
     <Compile Include="UI\CaptureProgress.xaml.cs">
       <DependentUpon>CaptureProgress.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controller.cs" />
+    <Compile Include="XboxController.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />

@@ -15,7 +15,7 @@ namespace GTAPilot
 
         public IntPtr WindowHandle { get; private set; }
         public bool IsConnected { get; private set; }
-        public FlightController Controller { get; private set; }
+        public XboxController Controller { get; private set; }
 
         private DesktopFrameProducer _desktopFrameProducer;
 
@@ -32,11 +32,11 @@ namespace GTAPilot
 
         private void Connect()
         {
-            Controller = new FlightController(new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent()));
+            Controller = new XboxController(new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent()));
             IsConnected = true;
 
             // TODO: bad place for this
-            Controller.LockViewMin();
+            Controller.HoldRightThumbY();
 
             // TODO: Find screen from window location
 
