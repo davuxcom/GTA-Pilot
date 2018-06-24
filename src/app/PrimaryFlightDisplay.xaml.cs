@@ -19,8 +19,8 @@ namespace GTAPilot
             _bottom.Fill = Brushes.Brown;
             _circle.Stroke = Brushes.White;
             _circle.StrokeThickness = 4;
-            _circle.Height = 500;
-            _circle.Width = 500;
+            _circle.Height = Width / 2;
+            _circle.Width = Width / 2;
             Canvas.SetLeft(_circle, PFD.Width / 2 - _circle.Width / 2);
             Canvas.SetTop(_circle, PFD.Height / 2 - _circle.Height / 2);
 
@@ -33,11 +33,11 @@ namespace GTAPilot
 
         private void LayoutBackground()
         {
-            var pitch_mult = 4;
+            var pitch_mult = 2;
             var rightSkew = -1 * Pitch.Value * pitch_mult;
             var leftSkew = -1 * Pitch.Value * pitch_mult;
 
-            var roll_mult = 4;
+            var roll_mult = 2;
             rightSkew -= Roll.Value * roll_mult;
             leftSkew += Roll.Value * roll_mult;
 

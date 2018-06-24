@@ -1,0 +1,10 @@
+﻿<Window x:Class="GTAPilot.ImmersiveWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:GTAPilot"
+        Title="ImmersiveWindow"
+        Width="800"
+        Height="450"
+        WindowState="Maximized">
+    <Grid Name="LayoutRoot" />
+</Window>
