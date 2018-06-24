@@ -83,10 +83,14 @@
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
     <Compile Include="FlightPlan.cs" />
+    <Compile Include="ImmersiveOverlayWindow.xaml.cs">
+      <DependentUpon>ImmersiveOverlayWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ImmersiveWindow.xaml.cs">
       <DependentUpon>ImmersiveWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Interop\DwmApi.cs" />
+    <Compile Include="Interop\User32.cs" />
     <Compile Include="PrimaryFlightDisplay.xaml.cs">
       <DependentUpon>PrimaryFlightDisplay.xaml</DependentUpon>
     </Compile>
@@ -127,6 +131,10 @@
     </Compile>
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
+    <Page Include="ImmersiveOverlayWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ImmersiveWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,7 +1,6 @@
 ﻿using GTAPilot.Interop;
 using System;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using static GTAPilot.Interop.DwmApi;
@@ -10,21 +9,27 @@ namespace GTAPilot
 {
     public partial class ImmersiveWindow : Window
     {
-        [DllImport("user32.dll")]
-        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        IntPtr _thumbnailId;
+        ImmersiveOverlayWindow _overlay;
 
         public ImmersiveWindow()
         {
             InitializeComponent();
 
+            _overlay = new ImmersiveOverlayWindow();
+
             Activated += Window_Activated;
         }
 
-        private void Window_Activated(object sender, EventArgs e)
+        private void ConnectWindowToXboxApp()
         {
-            Activated -= Window_Activated;
+            if (_thumbnailId != IntPtr.Zero)
+            {
+                DwmApi.DwmUnregisterThumbnail(_thumbnailId);
+                _thumbnailId = IntPtr.Zero;
+            }
 
-            var xboxAppHwnd = FindWindow("ApplicationFrameWindow", "Xbox");
+            var xboxAppHwnd = User32.FindWindow("ApplicationFrameWindow", "Xbox");
             var handle = DwmApi.DwmRegisterThumbnail(new WindowInteropHelper(this).Handle, xboxAppHwnd);
 
             var props = new DWM_THUMBNAIL_PROPERTIES
@@ -44,6 +49,23 @@ namespace GTAPilot
             DwmQueryThumbnailSourceSize(handle, out var sz);
 
             Trace.WriteLine($"DwmRegisterThumbnail: {handle} {sz}");
+        }
+
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            Activated -= Window_Activated;
+
+            ConnectWindowToXboxApp();
+
+            var clientAreaScreenCoordinates = LayoutRoot.PointToScreen(new Point(0, 0));
+
+            _overlay.Top = clientAreaScreenCoordinates.Y;
+            _overlay.Left = clientAreaScreenCoordinates.X;
+            _overlay.Height = LayoutRoot.ActualHeight;
+            _overlay.Width = LayoutRoot.ActualWidth;
+            _overlay.Show();
+            _overlay.Owner = this;
+
         }
     }
 }
