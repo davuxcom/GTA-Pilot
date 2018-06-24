@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Threading;
 
 namespace GTAPilot
 {
@@ -35,19 +31,15 @@ namespace GTAPilot
         public ModeControlPanel MCP = new ModeControlPanel();
         FlightDataComputer _computer;
 
-        public SystemManager(IFrameProducer producer, string flightPlanFile = null, FridaController fridaController = null)
+        public SystemManager(XboxApp app, string flightPlanFile)
         {
             Instance = this;
 
-            _producer = producer;
-            _coordinator = new FrameInputCoordinator(producer, FrameArrived);
+            _producer = app;
+            _coordinator = new FrameInputCoordinator(app, f => IndicatorHost.HandleFrameArrived(f));
 
-            if (fridaController != null)
-            {
-                _control = new FlightController(fridaController);
-                _control.ButtonPressed += Controler_ButtonPressed;
-                fridaController.PropertyChanged += FridaController_PropertyChanged;
-            }
+            app.Controller.ButtonPressed += Controler_ButtonPressed;
+            app.PropertyChanged += XboxApp_PropertyChanged;
 
             _computer = new FlightDataComputer(MCP, _control, flightPlanFile);
             IndicatorHost = new IndicatorHost(_computer);
@@ -58,7 +50,7 @@ namespace GTAPilot
 
         private void Controler_ButtonPressed(object sender, FlightController.XInputButtons e)
         {
-            switch(e)
+            switch (e)
             {
                 case FlightController.XInputButtons.BACK:
                     if (MCP.BankHold || MCP.HeadingHold || MCP.VSHold || MCP.AltitudeHold || MCP.SpeedHold)
@@ -89,7 +81,7 @@ namespace GTAPilot
             {
                 _control = new FlightController(fridaController);
                 _control.ButtonPressed += Controler_ButtonPressed;
-                fridaController.PropertyChanged += FridaController_PropertyChanged;
+                fridaController.PropertyChanged += XboxApp_PropertyChanged;
             }
 
             _coordinator.Begin();
@@ -98,60 +90,16 @@ namespace GTAPilot
 
         public static void InitializeForLiveCapture()
         {
-            var fridaController = new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
-            var mgr = new SystemManager(new DesktopFrameProducer(2), @"C:\workspace\FlightPlan.txt", fridaController);
+            new SystemManager(new XboxApp(), @"C:\workspace\FlightPlan.txt");
         }
 
-        private static string GetScriptContent()
-        {
-            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GTAPilot.XboxApp.js"))
-            using (StreamReader reader = new StreamReader(stream))
-            {
-                return reader.ReadToEnd();
-            }
-        }
-
-        private void FridaController_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        private void XboxApp_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             // crappy, won't work for reconnect
             if (e.PropertyName == "IsConnected")
             {
                 _control.LockViewMin();
             }
-        }
-
-        internal FpsCounter GetCounter(FpsCounterType type)
-        {
-            switch(type)
-            {
-                case FpsCounterType.Capture_Enqueue: return _coordinator.EnqueuePerf;
-                case FpsCounterType.Capture_Dequeue: return _coordinator.DequeuePerf;
-                case FpsCounterType.Roll: return IndicatorHost.Roll.Counter;
-                case FpsCounterType.Pitch: return IndicatorHost.Pitch.Counter;
-                case FpsCounterType.Airspeed: return IndicatorHost.Airspeed.Counter;
-                case FpsCounterType.Altitude: return IndicatorHost.Altitude.Counter;
-                case FpsCounterType.Yaw: return IndicatorHost.Compass.Counter;
-                case FpsCounterType.XInput: return _control.XInputFPS;
-            }
-            throw new NotImplementedException();
-        }
-
-        internal Bitmap GetLatestFrame(FpsCounterType type)
-        {
-            switch(type)
-            {
-                case FpsCounterType.Roll: return IndicatorHost.Roll.Image?.ToBitmap();
-                case FpsCounterType.Pitch: return IndicatorHost.Pitch.Image?.ToBitmap();
-                case FpsCounterType.Airspeed: return IndicatorHost.Airspeed.Image?.ToBitmap();
-                case FpsCounterType.Altitude: return IndicatorHost.Altitude.Image?.ToBitmap();
-                case FpsCounterType.Yaw: return IndicatorHost.Compass.Image?.ToBitmap();
-            }
-            throw new NotImplementedException();
-        }
-
-        private void FrameArrived(FrameData data)
-        {
-            IndicatorHost.HandleFrameArrived(data);
         }
 
         internal void StopCapture()

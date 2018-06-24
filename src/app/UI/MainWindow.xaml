@@ -10,16 +10,11 @@
     <Window.Resources>
 
         <Style TargetType="{x:Type TextBox}">
-            <Setter Property="FontSize"
-                    Value="28" />
-            <Setter Property="Margin"
-                    Value="6" />
-            <Setter Property="MinWidth"
-                    Value="80" />
-            <Setter Property="HorizontalAlignment"
-                    Value="Stretch" />
-            <EventSetter Event="MouseWheel"
-                         Handler="TextBox_MouseWheel" />
+            <Setter Property="FontSize" Value="28" />
+            <Setter Property="Margin" Value="6" />
+            <Setter Property="MinWidth" Value="80" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <EventSetter Event="MouseWheel" Handler="TextBox_MouseWheel" />
         </Style>
 
     </Window.Resources>

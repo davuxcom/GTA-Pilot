@@ -46,6 +46,12 @@ namespace GTAPilot
             {
                 WorkerThread(processId, scriptContent);
             }).Start();
+
+            while(!IsConnected)
+            {
+                // TODO: not a good solution
+                Thread.Sleep(100);
+            }
         }
 
         private void WorkerThread(uint processId, string scriptContent)

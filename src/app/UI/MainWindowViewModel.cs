@@ -112,7 +112,7 @@ namespace GTAPilot
             Counters = new ObservableCollection<FpsCounterViewModel>();
             Indicators = new ObservableCollection<IndicatorViewModel>();
 
-            Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Enqueue), "Capture"));
+        //    Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Enqueue), "Capture"));
            // Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Dequeue), "Dispatch"));
 
             if (_captureSink != null)
@@ -130,7 +130,7 @@ namespace GTAPilot
                 */
                 if (_controller != null)
                 {
-                    Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.XInput), "XInput-In"));
+                 //   Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.XInput), "XInput-In"));
                     Counters.Add(new FpsCounterViewModel(_controller.Counter, "XInput-Out"));
                 }
 

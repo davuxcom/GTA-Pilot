@@ -75,21 +75,19 @@ namespace GTAPilot
             dlg.ShowDialog();
 
             FridaController fridaController = null;
-            SystemManager mgr;
+            SystemManager mgr = null;
             if (dlg.Result == SourceType.Live)
             {
-                fridaController = new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
-                mgr = new SystemManager(new DesktopFrameProducer(int.Parse(dlg.txtScreenId.Text)), dlg.txtFlightPlan.Text, fridaController);
+              //  mgr = new SystemManager(new DesktopFrameProducer(int.Parse(dlg.txtScreenId.Text)), dlg.txtFlightPlan.Text);
             }
             else if (dlg.Result == SourceType.Capture)
             {
                 _captureSink = new SaveFrameConsumer(dlg.txtCaptureLocation.Text);
-                fridaController = new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
-                mgr = new SystemManager(new DesktopFrameProducer(int.Parse(dlg.txtScreenId.Text)), _captureSink.HandleFrameArrived, fridaController);
+              //  mgr = new SystemManager(new DesktopFrameProducer(int.Parse(dlg.txtScreenId.Text)), _captureSink.HandleFrameArrived, fridaController);
             }
             else if (dlg.Result == SourceType.Playback)
             {
-                mgr = new SystemManager(new ReplayFrameProducer(dlg.txtRecording.Text));
+              //  mgr = new SystemManager(new ReplayFrameProducer(dlg.txtRecording.Text), null);
             }
             else
             {
