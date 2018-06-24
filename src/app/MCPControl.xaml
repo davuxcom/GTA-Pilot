@@ -6,24 +6,29 @@
              Height="500"
              Background="Black">
     <UserControl.Resources>
-        <Style TargetType="{x:Type TextBox}">
-            <Setter Property="Margin" Value="5" />
-            <Setter Property="Padding" Value="4,0,4,0" />
-            <Setter Property="FontSize" Value="30" />
-            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        </Style>
 
         <Style TargetType="{x:Type ToggleButton}">
             <Setter Property="Padding" Value="8,0,8,0" />
             <Setter Property="Margin" Value="4" />
 
-            <Setter Property="FontSize" Value="30" />
+            <Setter Property="FontSize" Value="24" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="4,0,4,0" />
+            <Setter Property="FontSize" Value="24" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <EventSetter Event="MouseWheel" Handler="TextBox_MouseWheel" />
+        </Style>
     </UserControl.Resources>
     <Grid>
-        <StackPanel Orientation="Horizontal">
+        <StackPanel Width="200"
+                    HorizontalAlignment="Left"
+                    Orientation="Vertical">
 
             <Grid>
                 <Grid.RowDefinitions>
@@ -32,9 +37,19 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBox Name="SpeedText" Text="100" />
-                <ToggleButton Grid.Row="1">IAS</ToggleButton>
-                <ToggleButton Grid.Row="2">THR</ToggleButton>
+
+                <TextBox Tag="HDG" Text="{Binding MCP.HDG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ToggleButton Grid.Row="1"
+                              Command="{Binding MCP.HeadingToggle}"
+                              IsChecked="{Binding MCP.HeadingHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
+                    HDG SEL
+                </ToggleButton>
+                <ToggleButton Grid.Row="2"
+                              Command="{Binding MCP.LNAVToggle}"
+                              IsChecked="{Binding MCP.LNAV, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
+                    LNAV
+                </ToggleButton>
+
             </Grid>
 
             <Grid>
@@ -44,9 +59,13 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBox Name="HadingText" Text="359" />
-                <ToggleButton Grid.Row="1">HDG SEL</ToggleButton>
-                <ToggleButton Grid.Row="2">LNAV</ToggleButton>
+                <TextBox Text="{Binding MCP.IAS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ToggleButton Grid.Row="1"
+                              Command="{Binding MCP.IASToggle}"
+                              IsChecked="{Binding MCP.SpeedHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
+                    IAS
+                </ToggleButton>
+
             </Grid>
 
             <Grid>
@@ -55,8 +74,13 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <TextBox Name="AltitudeText" Text="8.500" />
-                <ToggleButton Grid.Row="1">ALT HOLD</ToggleButton>
+                <TextBox Tag="ALT" Text="{Binding MCP.ALT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ToggleButton Grid.Row="1"
+                              Command="{Binding MCP.ALTToggle}"
+                              IsChecked="{Binding MCP.AltitudeHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
+                    ALT HOLD
+                </ToggleButton>
+
             </Grid>
 
             <Grid>
@@ -64,9 +88,13 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
+                <TextBox Text="{Binding MCP.VS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <ToggleButton Grid.Row="1"
+                              Command="{Binding MCP.VSToggle}"
+                              IsChecked="{Binding MCP.VSHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
+                    VS
+                </ToggleButton>
 
-                <TextBox Name="VerticalSpeedText" Text="-750" />
-                <ToggleButton Grid.Row="1">VS</ToggleButton>
             </Grid>
 
         </StackPanel>

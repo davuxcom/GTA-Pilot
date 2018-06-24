@@ -99,12 +99,6 @@ namespace GTAPilot
                     break;
 
                 case nameof(_mcp.HDG):
-
-                    if (_mcp.HDG < 0)
-                    {
-                        _mcp.HDG = 360 - _mcp.HDG;
-                    }
-
                     DesiredHeading = _mcp.HDG;
                     break;
                 case nameof(_mcp.VS):
