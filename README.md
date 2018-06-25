@@ -1,6 +1,8 @@
 # GTA Pilot 
 ## Fly airplanes in GTA V without touching the controls.
 
+![GTA Pilot running on Xbox One](./res/hero1.png)
+
 This is a research project I started some time ago.  The goal is to use the Xbox One streaming app to view the screen and intercept the controller input.
 
 We use Frida to inject a Javascript hook into XboxApp.exe, and EmguCV to interpret the screen.
@@ -31,6 +33,8 @@ These modes approximate a 1950's style Auto pilot system, similar to the Boeing 
 - Franklin must have access to Los Santos Airport
 - Must be in the Buckingham Luxor or Buckingham Shamal airplane, other types have differnet indicator positions.
 - Save point starting at LS RW3
+
+![Buckingham Luxor airplane](./res/luxor.png)
 
 ### Getting Started:
 - Configure Xbox app for streaming, connect controller to PC
