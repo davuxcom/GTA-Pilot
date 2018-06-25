@@ -19,6 +19,7 @@ These modes approximate a 1950's style Auto pilot system, similar to the Boeing 
 
 v1 TODOs:
 - Auto-find XboxApp screen
+- Verify build (empty bin folder, Tesseract etc.)
 
 TODOs:
 - Switch to nuget for EmguCV (and upgrade past 3.0.1)

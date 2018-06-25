@@ -24,14 +24,14 @@ namespace GTAPilot
                 var desktop = new DesktopDuplication.DesktopDuplicator(0, _screenId);
                 while (_isRunning)
                 {
-                    var f = desktop.GetLatestFrame();
-                    if (f == null)
+                    var frame = desktop.GetLatestFrame();
+                    if (frame == null)
                     {
                         System.Threading.Thread.Sleep(1);
                         continue;
                     }
 
-                    FrameProduced(frameId++, f.DesktopImage);
+                    FrameProduced(frameId++, frame);
                 }
             });
             t.Priority = System.Threading.ThreadPriority.Highest;
