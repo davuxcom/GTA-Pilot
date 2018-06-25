@@ -139,13 +139,13 @@
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="Extensions\PointExtensions.cs" />
-    <Compile Include="Indicators_v2\AirspeedIndicator_v2.cs" />
-    <Compile Include="Indicators_v2\AltitudeIndicator_v2.cs" />
-    <Compile Include="Indicators_v2\Indicator.cs" />
-    <Compile Include="Indicators_v2\ISimpleIndicator.cs" />
-    <Compile Include="Indicators_v2\PitchIndicator_v2.cs" />
-    <Compile Include="Indicators_v2\RollIndicator_v2.cs" />
-    <Compile Include="Indicators_v2\YawIndicator_v2.cs" />
+    <Compile Include="Indicators\AirspeedIndicator.cs" />
+    <Compile Include="Indicators\AltitudeIndicator.cs" />
+    <Compile Include="Indicators\Indicator.cs" />
+    <Compile Include="Indicators\ISimpleIndicator.cs" />
+    <Compile Include="Indicators\PitchIndicator.cs" />
+    <Compile Include="Indicators\RollIndicator.cs" />
+    <Compile Include="Indicators\YawIndicator.cs" />
     <Compile Include="FridaAppConnector.cs" />
     <Compile Include="UI\IndicatorWindow.xaml.cs">
       <DependentUpon>IndicatorWindow.xaml</DependentUpon>

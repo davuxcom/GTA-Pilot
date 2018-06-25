@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GTAPilot.Indicators_v2
+namespace GTAPilot.Indicators
 {
     interface ISimpleIndicator
     {

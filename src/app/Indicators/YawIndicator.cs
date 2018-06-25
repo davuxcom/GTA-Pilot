@@ -11,9 +11,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
-namespace GTAPilot.Indicators_v2
+namespace GTAPilot.Indicators
 {
-    class YawIndicator_v2 : ISimpleIndicator
+    class YawIndicator : ISimpleIndicator
     {
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Heading;
@@ -23,7 +23,7 @@ namespace GTAPilot.Indicators_v2
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data, out var circle))
+            if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 1050, circle.Center.Y - 20);
                 circle.Radius = 70;

@@ -1,6 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
-using GTAPilot.Indicators_v2;
+using GTAPilot.Indicators;
 using System;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -23,11 +23,11 @@ namespace GTAPilot
     // strategy like the above as opposed to forking the image and handing it out to multiple threads concurrencly.
     class IndicatorHandler
     {
-        public Indicator Roll = new Indicator(new RollIndicator_v2());
-        public Indicator Pitch = new Indicator(new PitchIndicator_v2());
-        public Indicator Airspeed = new Indicator(new AirspeedIndicator_v2());
-        public Indicator Altitude = new Indicator(new AltitudeIndicator_v2());
-        public Indicator Compass = new Indicator(new YawIndicator_v2());
+        public Indicator Roll = new Indicator(new RollIndicator());
+        public Indicator Pitch = new Indicator(new PitchIndicator());
+        public Indicator Airspeed = new Indicator(new AirspeedIndicator());
+        public Indicator Altitude = new Indicator(new AltitudeIndicator());
+        public Indicator Compass = new Indicator(new YawIndicator());
 
         ConcurrentQueue<IndicatorData> _stage2 = new ConcurrentQueue<IndicatorData>();
         ConcurrentQueue<IndicatorData> _stage3 = new ConcurrentQueue<IndicatorData>();

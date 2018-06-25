@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GTAPilot.Indicators_v2
+namespace GTAPilot.Indicators
 {
     class Indicator
     {

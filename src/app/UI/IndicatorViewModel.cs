@@ -1,5 +1,5 @@
 ﻿using GTAPilot.Extensions;
-using GTAPilot.Indicators_v2;
+using GTAPilot.Indicators;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

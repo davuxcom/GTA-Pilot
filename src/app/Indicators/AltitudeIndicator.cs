@@ -5,13 +5,12 @@ using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
-namespace GTAPilot.Indicators_v2
+namespace GTAPilot.Indicators
 {
-    class AltitudeIndicator_v2 : ISimpleIndicator
+    class AltitudeIndicator : ISimpleIndicator
     {
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Altitude;
@@ -22,7 +21,7 @@ namespace GTAPilot.Indicators_v2
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data, out var circle))
+            if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y - 40);
                 circle.Radius = 45;

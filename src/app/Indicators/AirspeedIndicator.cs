@@ -4,13 +4,12 @@ using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
-namespace GTAPilot.Indicators_v2
+namespace GTAPilot.Indicators
 {
-    class AirspeedIndicator_v2 : ISimpleIndicator
+    class AirspeedIndicator : ISimpleIndicator
     {
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Speed;
@@ -28,7 +27,7 @@ namespace GTAPilot.Indicators_v2
             DateTime this_last_time = last_time;
             double this_last_value = last_value;
 
-            if (RollIndicator_v2.TryFindRollCircleInFullFrame(data, out var circle))
+            if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y + 70);
                 circle.Radius = 55;

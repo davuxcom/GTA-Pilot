@@ -4,13 +4,12 @@ using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
-namespace GTAPilot.Indicators_v2
+namespace GTAPilot.Indicators
 {
-    class RollIndicator_v2 : ISimpleIndicator
+    class RollIndicator : ISimpleIndicator
     {
         class PointAndCount
         {
