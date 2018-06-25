@@ -36,12 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Emgu.CV.UI">
-      <HintPath>..\..\lib\CV\Emgu.CV.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.CV.UI.GL">
-      <HintPath>..\..\lib\CV\Emgu.CV.UI.GL.dll</HintPath>
-    </Reference>
     <Reference Include="Emgu.CV.World">
       <HintPath>..\..\lib\CV\Emgu.CV.World.dll</HintPath>
     </Reference>
@@ -66,8 +60,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
