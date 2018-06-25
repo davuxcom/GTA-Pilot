@@ -80,6 +80,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FlightPlanControl.xaml.cs">
+      <DependentUpon>FlightPlanControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ICanTick.cs" />
     <Compile Include="UI\ControlPanelControl.xaml.cs">
       <DependentUpon>ControlPanelControl.xaml</DependentUpon>
@@ -143,6 +146,10 @@
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
     <Compile Include="XboxApp.cs" />
+    <Page Include="FlightPlanControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\ControlPanelControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

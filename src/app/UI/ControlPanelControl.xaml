@@ -13,6 +13,7 @@
         <local:PrimaryFlightDisplayControl />
 
         <local:NavigationDisplayControl Grid.Column="1" />
+        <local:FlightPlanControl Grid.Column="2" />
 
         <!--
         <ListView Grid.Column="1"

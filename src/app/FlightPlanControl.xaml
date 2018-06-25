@@ -1,0 +1,35 @@
+﻿<UserControl x:Class="GTAPilot.FlightPlanControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:GTAPilot"
+             Width="240"
+             Height="500">
+    <UserControl.Resources>
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Margin" Value="4" />
+            <Setter Property="Padding" Value="4" />
+        </Style>
+    </UserControl.Resources>
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ListView ItemsSource="{Binding Points}" />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Command="{Binding Open}">Open</Button>
+            <Button Grid.Column="1" Command="{Binding Save}">Save as...</Button>
+            <Button Grid.Column="2" Command="{Binding Edit}">Editor</Button>
+        </Grid>
+
+    </Grid>
+</UserControl>
