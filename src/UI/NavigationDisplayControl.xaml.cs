@@ -20,7 +20,7 @@ namespace GTAPilot
             InitializeComponent();
             App.Register(this);
 
-            img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../../res/map_zoom4_full_20.png")));
+            img.Source = new BitmapImage(Metrics.Map_Zoom4_Full_20);
 
             MouseWheel += NavigationDisplayControl_MouseWheel;
 

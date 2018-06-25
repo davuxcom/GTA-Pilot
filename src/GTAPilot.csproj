@@ -16,25 +16,6 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\x64\Debug\</OutputPath>
@@ -63,7 +44,7 @@
       <HintPath>packages\EMGU.CV.3.4.1.2976\lib\net35\Emgu.CV.World.dll</HintPath>
     </Reference>
     <Reference Include="Frida">
-      <HintPath>..\..\lib\Frida.dll</HintPath>
+      <HintPath>..\lib\Frida.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <HintPath>packages\SharpDX.4.1.0\lib\net45\SharpDX.dll</HintPath>
@@ -262,6 +243,6 @@
   <Import Project="packages\EMGU.CUFFT.9.1.0\build\EMGU.CUFFT.targets" Condition="Exists('packages\EMGU.CUFFT.9.1.0\build\EMGU.CUFFT.targets')" />
   <Import Project="packages\EMGU.CV-CUDA.DEPENDENCY.9.1.0\build\EMGU.CV-CUDA.DEPENDENCY.targets" Condition="Exists('packages\EMGU.CV-CUDA.DEPENDENCY.9.1.0\build\EMGU.CV-CUDA.DEPENDENCY.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(SolutionDir)..\..\res\tessdata" "$(TargetDir)\tessdata\" /S /Y</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(SolutionDir)res\tessdata" "$(TargetDir)tessdata\" /S /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>
