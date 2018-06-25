@@ -139,7 +139,7 @@ namespace GTAPilot
                     }
                 }
 
-                border.PanTo(Timeline.CurrentLocation, 0);
+             //   border.PanTo(Timeline.CurrentLocation, 0);
             }
         }
 

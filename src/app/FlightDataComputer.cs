@@ -19,7 +19,7 @@ namespace GTAPilot
         public PID _roll_pid;
         public PID _airspeed_pid;
 
-        public FlightDataComputer(ModeControlPanel mcp, XboxController control, string flightPlanFile)
+        public FlightDataComputer(ModeControlPanel mcp, XboxController control)
         {
             _control = control;
             _mcp = mcp;
@@ -46,10 +46,7 @@ namespace GTAPilot
                 OV = FlightComputerConfig.Speed.OV,
             };
 
-            if (!string.IsNullOrWhiteSpace(flightPlanFile))
-            {
-                FlightPlan = new FlightPlan(flightPlanFile);
-            }
+            FlightPlan = new FlightPlan();
         }
 
         private void MCP_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using GTAPilot.Extensions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,24 +11,6 @@ namespace GTAPilot
         private UIElement child = null;
         private Point origin;
         private Point start;
-
-        private RotateTransform GetRotateTransform(UIElement element)
-        {
-            return (RotateTransform)((TransformGroup)element.RenderTransform)
-              .Children.First(tr => tr is RotateTransform);
-        }
-
-        private TranslateTransform GetTranslateTransform(UIElement element)
-        {
-            return (TranslateTransform)((TransformGroup)element.RenderTransform)
-              .Children.First(tr => tr is TranslateTransform);
-        }
-
-        private ScaleTransform GetScaleTransform(UIElement element)
-        {
-            return (ScaleTransform)((TransformGroup)element.RenderTransform)
-              .Children.First(tr => tr is ScaleTransform);
-        }
 
         public override UIElement Child
         {
@@ -48,72 +29,31 @@ namespace GTAPilot
             if (child != null)
             {
                 TransformGroup group = new TransformGroup();
-                ScaleTransform st = new ScaleTransform();
-                group.Children.Add(st);
-                TranslateTransform tt = new TranslateTransform();
-                group.Children.Add(tt);
-                RotateTransform rt = new RotateTransform();
-                group.Children.Add(rt);
-
+                group.Children.Add(new ScaleTransform());
+                group.Children.Add(new TranslateTransform());
+                group.Children.Add(new RotateTransform());
                 child.RenderTransform = group;
                 child.RenderTransformOrigin = new Point(0.0, 0.0);
                 this.MouseWheel += child_MouseWheel;
                 this.MouseLeftButtonDown += child_MouseLeftButtonDown;
                 this.MouseLeftButtonUp += child_MouseLeftButtonUp;
                 this.MouseMove += child_MouseMove;
-                this.PreviewMouseRightButtonDown += new MouseButtonEventHandler(
-                  child_PreviewMouseRightButtonDown);
-            }
-        }
-
-        public void Reset()
-        {
-            if (child != null)
-            {
-                // reset zoom
-                var st = GetScaleTransform(child);
-                st.ScaleX = 1.0;
-                st.ScaleY = 1.0;
-
-                // reset pan
-                var tt = GetTranslateTransform(child);
-                tt.X = 0.0;
-                tt.Y = 0.0;
             }
         }
 
         public void ScaleTo(double scale)
         {
-            var st = GetScaleTransform(child);
+            var st = child.Get<ScaleTransform>();
             st.ScaleX = scale;
             st.ScaleY = scale;
         }
-
-        public void PanTo(System.Drawing.PointF pt, double heading)
-        {
-            var child = (Viewbox)Child;
-
-            var img = (Grid)child.Child;
-
-            var tt = GetTranslateTransform(child);
-
-            child.RenderTransformOrigin = new Point(
-                pt.X / 5500, 
-                pt.Y / 6000);
-
-            var rt = GetRotateTransform(child);
-
-            rt.Angle = -1 * heading;
-        }
-
-        #region Child Events
 
         private void child_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             if (child != null)
             {
-                var st = GetScaleTransform(child);
-                var tt = GetTranslateTransform(child);
+                var st = child.Get<ScaleTransform>();
+                var tt = child.Get<TranslateTransform>();
 
                 double zoom = e.Delta > 0 ? .2 : -.2;
                 if (!(e.Delta > 0) && (st.ScaleX < .4 || st.ScaleY < .4))
@@ -129,9 +69,8 @@ namespace GTAPilot
                 st.ScaleX += zoom;
                 st.ScaleY += zoom;
 
-                // NOTE: turn back on when not using forced-center!
-               // tt.X = abosuluteX - relative.X * st.ScaleX;
-               // tt.Y = abosuluteY - relative.Y * st.ScaleY;
+                tt.X = abosuluteX - relative.X * st.ScaleX;
+                tt.Y = abosuluteY - relative.Y * st.ScaleY;
             }
         }
 
@@ -139,9 +78,8 @@ namespace GTAPilot
         {
             if (child != null)
             {
-                var tt = GetTranslateTransform(child);
+                var tt = child.Get<TranslateTransform>();
                 start = e.GetPosition(this);
-              //  Trace.WriteLine(e.GetPosition(child));
                 origin = new Point(tt.X, tt.Y);
                 this.Cursor = Cursors.Hand;
                 child.CaptureMouse();
@@ -157,25 +95,18 @@ namespace GTAPilot
             }
         }
 
-        void child_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-           // this.Reset();
-        }
-
         private void child_MouseMove(object sender, MouseEventArgs e)
         {
             if (child != null)
             {
                 if (child.IsMouseCaptured)
                 {
-                    var tt = GetTranslateTransform(child);
+                    var tt = child.Get<TranslateTransform>();
                     Vector v = start - e.GetPosition(this);
                     tt.X = origin.X - v.X;
                     tt.Y = origin.Y - v.Y;
                 }
             }
         }
-
-        #endregion
     }
 }

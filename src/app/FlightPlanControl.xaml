@@ -17,7 +17,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ListView ItemsSource="{Binding Points}" />
+        <ListBox Name="lstPoints" ItemsSource="{Binding Points}" />
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>

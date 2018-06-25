@@ -15,6 +15,11 @@ namespace GTAPilot.Extensions
             return new PointF((float)point.X, (float)point.Y);
         }
 
+        public static System.Windows.Point ToPointWin(this System.Drawing.PointF point)
+        {
+            return new System.Windows.Point((float)point.X, (float)point.Y);
+        }
+
         public static System.Windows.Point ToPoint(this System.Drawing.Point point)
         {
             return new System.Windows.Point((float)point.X, (float)point.Y);

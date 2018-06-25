@@ -14,7 +14,7 @@ namespace GTAPilot
         FrameInputCoordinator _coordinator;
         FlightDataComputer _computer;
 
-        public SystemManager(string flightPlanFile)
+        public SystemManager()
         {
             Instance = this;
 
@@ -24,7 +24,8 @@ namespace GTAPilot
             _app.Controller.ButtonPressed += Controler_ButtonPressed;
             _app.PropertyChanged += XboxApp_PropertyChanged;
 
-            _computer = new FlightDataComputer(MCP, _app.Controller, flightPlanFile);
+            _computer = new FlightDataComputer(MCP, _app.Controller);
+            _computer.FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
             IndicatorHost = new IndicatorHandler(_computer);
 
             _coordinator.Begin();
@@ -61,7 +62,7 @@ namespace GTAPilot
             // crappy, won't work for reconnect
             if (e.PropertyName == "IsConnected")
             {
-               // _app.Controller.HoldRightThumbY();
+                _app.Controller.HoldRightThumbY();
             }
         }
 
