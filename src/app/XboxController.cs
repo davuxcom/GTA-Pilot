@@ -53,11 +53,11 @@ namespace GTAPilot
 
         private DataContractJsonSerializer _baseDeserializer = new DataContractJsonSerializer(typeof(BaseMessage));
         private DataContractJsonSerializer _controlInputdeserializer = new DataContractJsonSerializer(typeof(ControllerMessage));
-        private FridaController _controller;
+        private FridaAppConnector _controller;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        internal XboxController(FridaController fridaController)
+        internal XboxController(FridaAppConnector fridaController)
         {
             _controller = fridaController;
 

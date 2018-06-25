@@ -74,7 +74,7 @@ namespace GTAPilot
             dlg.Owner = this;
             dlg.ShowDialog();
 
-            FridaController fridaController = null;
+            FridaAppConnector fridaController = null;
             SystemManager mgr = null;
             if (dlg.Result == SourceType.Live)
             {

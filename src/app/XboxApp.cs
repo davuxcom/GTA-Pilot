@@ -18,27 +18,25 @@ namespace GTAPilot
         public XboxController Controller { get; private set; }
 
         private DesktopFrameProducer _desktopFrameProducer;
+        private FridaAppConnector _fridaConnector;
 
         public XboxApp()
         {
             WindowHandle = GetWindow();
             if (WindowHandle != IntPtr.Zero)
             {
-                Connect();
+                ConnectAsync();
             }
 
             // TODO: Listen for window changes and connect/disconnect
         }
 
-        private void Connect()
+        private void ConnectAsync()
         {
-            Controller = new XboxController(new FridaController((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent()));
-            IsConnected = true;
-
-            // TODO: bad place for this
-            Controller.HoldRightThumbY();
-
-            // TODO: Find screen from window location
+            _fridaConnector = new FridaAppConnector();
+            Controller = new XboxController(_fridaConnector);
+            _fridaConnector.PropertyChanged += FridaAppConnector_PropertyChanged;
+            _fridaConnector.ConnectAsync((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
 
             if (_desktopFrameProducer != null)
             {
@@ -46,11 +44,33 @@ namespace GTAPilot
                 _desktopFrameProducer = null;
             }
 
+            // TODO: Find screen from window location
             _desktopFrameProducer = new DesktopFrameProducer(1);
             _desktopFrameProducer.FrameProduced += DesktopFrameProducer_FrameProduced;
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Controller)));
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
+        }
+
+        private void FridaAppConnector_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_fridaConnector.IsConnected))
+            {
+                if (_fridaConnector.IsConnected)
+                {
+                    // Lock the view
+                    Controller.HoldRightThumbY();
+
+                    IsConnected = true;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
+                }
+                else
+                {
+                    // TODO: reconnect logic
+
+                    IsConnected = false;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
+                }
+            }
         }
 
         private void DesktopFrameProducer_FrameProduced(int id, Bitmap frame)

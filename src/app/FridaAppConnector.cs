@@ -11,7 +11,10 @@ using System.Windows.Threading;
 
 namespace GTAPilot
 {
-    internal class FridaController : INotifyPropertyChanged
+    // FridaAppConnector represents the script injected to the target process.
+    // We receive messages from the target and are notified if the process quits
+    // or our target script faults in a fatal way.
+    internal class FridaAppConnector : INotifyPropertyChanged
     {
         [DataContract]
         public class JsonMessage
@@ -40,18 +43,12 @@ namespace GTAPilot
         private Script _script;
         private DataContractJsonSerializer _deserializer = new DataContractJsonSerializer(typeof(JsonMessage));
 
-        public FridaController(uint processId, string scriptContent)
+        public void ConnectAsync(uint processId, string scriptContent)
         {
             new Thread(() =>
             {
                 WorkerThread(processId, scriptContent);
             }).Start();
-
-            while(!IsConnected)
-            {
-                // TODO: not a good solution
-                Thread.Sleep(100);
-            }
         }
 
         private void WorkerThread(uint processId, string scriptContent)
@@ -127,7 +124,7 @@ namespace GTAPilot
 
         private void TraceLine(string msg)
         {
-            System.Diagnostics.Trace.WriteLine($"FridaController: {msg}");
+            System.Diagnostics.Trace.WriteLine($"FridaAppConnector: {msg}");
         }
 
         private void OnDisconnected()

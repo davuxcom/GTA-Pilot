@@ -14,6 +14,13 @@ namespace GTAPilot
         public int Id;
     }
 
+    // IndicatorHandler takes a fullscreen bitmap image and 'ticks' it to each of the indicators in turn.
+    // Threads are created such that there is a pipeline of reading the indicator data.  This way there is
+    // less overall latency in that we don't wait for each indicator, we do one at a time and thus the last
+    // in the order has the highest latency, and the first has almost no latency.
+    //
+    // There is a high const in calling Image.Copy such that it seems to yield better performance using a
+    // strategy like the above as opposed to forking the image and handing it out to multiple threads concurrencly.
     class IndicatorHandler
     {
         public Indicator Roll = new Indicator(new RollIndicator_v2());
