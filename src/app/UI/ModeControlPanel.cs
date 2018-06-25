@@ -81,12 +81,12 @@ namespace GTAPilot
             set => UpdateAndNotify(nameof(HeadingHold), value, ref _headingHold);
         }
 
-        private bool _speedHold;
+        private bool _iasHold;
 
-        public bool SpeedHold
+        public bool IASHold
         {
-            get => _speedHold;
-            set => UpdateAndNotify(nameof(SpeedHold), value, ref _speedHold);
+            get => _iasHold;
+            set => UpdateAndNotify(nameof(IASHold), value, ref _iasHold);
         }
 
         private bool _altitudeHold;
@@ -142,7 +142,7 @@ namespace GTAPilot
         public ModeControlPanel()
         {
             HeadingToggle = new RelayCommand(() => HeadingHold = !HeadingHold);
-            IASToggle = new RelayCommand(() => SpeedHold = !SpeedHold);
+            IASToggle = new RelayCommand(() => IASHold = !IASHold);
             BankToggle = new RelayCommand(() => BankHold = !BankHold);
             ALTToggle = new RelayCommand(() => AltitudeHold = !AltitudeHold);
             VSToggle = new RelayCommand(() => VSHold = !VSHold);

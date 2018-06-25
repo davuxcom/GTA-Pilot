@@ -36,18 +36,19 @@ namespace GTAPilot
             switch (e)
             {
                 case XboxController.XInputButtons.BACK:
-                    if (MCP.BankHold || MCP.HeadingHold || MCP.VSHold || MCP.AltitudeHold || MCP.SpeedHold)
+                    if (MCP.BankHold || MCP.HeadingHold || MCP.VSHold || MCP.AltitudeHold || MCP.IASHold | MCP.LNAV)
                     {
                         MCP.BankHold = false;
                         MCP.HeadingHold = false;
                         MCP.VSHold = false;
                         MCP.AltitudeHold = false;
-                        MCP.SpeedHold = false;
+                        MCP.IASHold = false;
+                        MCP.LNAV = false;
                     }
                     else
                     {
                         MCP.VSHold = true;
-                        MCP.HeadingHold = true;
+                        MCP.LNAV = true;
                     }
                     break;
             }

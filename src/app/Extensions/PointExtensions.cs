@@ -1,4 +1,5 @@
-﻿using System.Drawing;
+﻿using System;
+using System.Drawing;
 
 namespace GTAPilot.Extensions
 {
@@ -32,6 +33,13 @@ namespace GTAPilot.Extensions
         public static PointF Add(this PointF self, PointF other)
         {
             return new PointF(self.X + other.X, self.Y + other.Y);
+        }
+
+        public static PointF ExtendAlongHeading(this PointF self, double heading, double dist)
+        {
+            self.X += (float)Math.Sin(Math2.ToRad(heading)) * (float)dist;
+            self.Y -= (float)Math.Cos(Math2.ToRad(heading)) * (float)dist;
+            return self;
         }
     }
 }

@@ -84,7 +84,7 @@ namespace GTAPilot
                     _mcp.LNAV = false;
                     Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
                     break;
-                case nameof(_mcp.SpeedHold) when (_mcp.SpeedHold):
+                case nameof(_mcp.IASHold) when (_mcp.IASHold):
                     DesiredSpeed = Timeline.Speed;
                     _mcp.IAS = (int)DesiredSpeed;
                     _airspeed_pid.ClearError();
@@ -217,7 +217,7 @@ namespace GTAPilot
 
         internal void OnSpeedDataSampled(int id)
         {
-            if (_mcp.SpeedHold)
+            if (_mcp.IASHold)
             {
                 if (!double.IsNaN(Timeline.Data[id].Speed.Value))
                 {

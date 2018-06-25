@@ -6,24 +6,36 @@
              Height="500"
              Background="Yellow">
     <Grid>
-        <Border Width="458"
-                Background="Gray"
-                ClipToBounds="True">
+        <Border Background="Gray" ClipToBounds="True">
 
-            <Viewbox>
-                <Grid Name="imgHost">
-                    <Grid.RenderTransform>
+            <Canvas Name="rotHost"
+                    Background="Gray"
+                    ClipToBounds="False"
+                    RenderTransformOrigin="0.5,0.5">
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+
+                        <RotateTransform />
+
+                    </TransformGroup>
+                </Canvas.RenderTransform>
+
+                <Canvas Name="imgHost" ClipToBounds="False">
+                    <Canvas.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform />
-                            <RotateTransform />
+
+                            <TranslateTransform />
                         </TransformGroup>
-                    </Grid.RenderTransform>
-                    <Image Name="img" Stretch="None" />
+                    </Canvas.RenderTransform>
+
+                    <Image Name="img"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Stretch="None" />
                     <Canvas Name="canvas" />
-                </Grid>
-            </Viewbox>
-
-
+                </Canvas>
+            </Canvas>
         </Border>
         <Grid>
             <Grid.RowDefinitions>
@@ -37,15 +49,19 @@
                     BorderBrush="White"
                     BorderThickness="2">
                 <TextBlock Name="HeadingText"
+                           Margin="4,0,4,0"
+                           FontSize="35"
                            Foreground="White"
                            Text="359" />
             </Border>
 
             <Border Grid.Row="2" HorizontalAlignment="Center">
                 <Polygon Grid.Row="2"
+                         Margin="0,0,0,12"
                          Fill="Black"
-                         Points="25,0 50,100, 0,100"
-                         Stroke="White" />
+                         Points="20,0 40,45, 0,45"
+                         Stroke="White"
+                         StrokeThickness="2" />
             </Border>
         </Grid>
     </Grid>

@@ -4,55 +4,32 @@
              xmlns:local="clr-namespace:GTAPilot"
              Width="500"
              Height="500">
+    <UserControl.Resources>
+
+        <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#55000000" />
+
+        <Style x:Key="ModeTextStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="LimeGreen" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+
+        <Style x:Key="SetpointTextStyle" TargetType="{x:Type TextBlock}">
+            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="Foreground" Value="Magenta" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+    </UserControl.Resources>
     <Grid ClipToBounds="True">
         <Canvas Name="PFDBackground" Background="Gray" />
 
         <Canvas Name="PFD">
-            <Rectangle Canvas.Left="50"
-                       Canvas.Top="50"
-                       Width="75"
-                       Height="400"
-                       Fill="#22000000" />
-
-            <Rectangle Canvas.Top="50"
-                       Canvas.Right="50"
-                       Width="75"
-                       Height="400"
-                       Fill="#22000000" />
-
-            <Rectangle Canvas.Left="125"
-                       Canvas.Top="4"
-                       Width="250"
-                       Height="25"
-                       Fill="#22000000" />
-
-            <Border Canvas.Left="50"
-                    Canvas.Top="220"
-                    Width="75"
-                    Height="60"
-                    Background="Black"
-                    BorderBrush="White"
-                    BorderThickness="1">
-                <TextBlock Name="SpeedText"
-                           FontSize="25"
-                           Foreground="White">
-                    100
-                </TextBlock>
-            </Border>
-
-            <Border Canvas.Top="220"
-                    Canvas.Right="50"
-                    Width="75"
-                    Height="60"
-                    Background="Black"
-                    BorderBrush="White"
-                    BorderThickness="1">
-                <TextBlock Name="AltitudeText"
-                           FontSize="25"
-                           Foreground="White">
-                    100
-                </TextBlock>
-            </Border>
 
             <Polygon Fill="Black"
                      Points="160,250  220,250, 220,270,                               215,270, 215,255, 160,255"
@@ -62,6 +39,144 @@
                      Points="340,250  280,250, 280,270,                               285,270, 285,255, 340,255"
                      Stroke="White" />
 
+            <Line Name="VSLine"
+                  Stroke="White"
+                  StrokeThickness="4"
+                  X1="482"
+                  X2="498"
+                  Y1="250"
+                  Y2="250" />
+
         </Canvas>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition Width="25" />
+                </Grid.ColumnDefinitions>
+
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="1"
+                            Margin="4"
+                            Background="Black">
+                        <TextBlock Name="SpeedSetpoint"
+                                   Style="{StaticResource SetpointTextStyle}"
+                                   Text="SPD" />
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Column="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="1"
+                            Margin="4"
+                            Background="Black">
+                        <TextBlock Name="AltSetpoint"
+                                   Style="{StaticResource SetpointTextStyle}"
+                                   Text="ALT" />
+                    </Border>
+                </Grid>
+
+                <Grid Grid.Column="2"
+                      Width="300"
+                      Height="35"
+                      Margin="4,4,4,24"
+                      Background="{StaticResource PanelBackgroundBrush}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border BorderBrush="White" BorderThickness="0,0,1,0">
+                        <TextBlock Name="TModeText"
+                                   Style="{StaticResource ModeTextStyle}"
+                                   Text="TMode" />
+                    </Border>
+
+                    <TextBlock Name="LModeText"
+                               Grid.Column="1"
+                               Style="{StaticResource ModeTextStyle}"
+                               Text="LMode" />
+
+                    <Border Grid.Column="2"
+                            BorderBrush="White"
+                            BorderThickness="1,0,0,0">
+                        <TextBlock Name="VModeText"
+                                   Style="{StaticResource ModeTextStyle}"
+                                   Text="VMode" />
+                    </Border>
+                </Grid>
+
+
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="25" />
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="75" />
+                    <ColumnDefinition Width="25" />
+                </Grid.ColumnDefinitions>
+
+                <Rectangle Grid.Column="1" Fill="{StaticResource PanelBackgroundBrush}" />
+
+                <Border Grid.Column="1"
+                        Width="75"
+                        Height="60"
+                        Background="Black"
+                        BorderBrush="White"
+                        BorderThickness="1">
+                    <TextBlock Name="SpeedText"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="25"
+                               Foreground="White">
+                        100
+                    </TextBlock>
+                </Border>
+
+                <Rectangle Grid.Column="3" Fill="{StaticResource PanelBackgroundBrush}" />
+
+                <Border Grid.Column="3"
+                        Width="75"
+                        Height="60"
+                        Background="Black"
+                        BorderBrush="White"
+                        BorderThickness="1">
+                    <TextBlock Name="AltitudeText"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontSize="25"
+                               Foreground="White">
+                        100
+                    </TextBlock>
+                </Border>
+            </Grid>
+
+
+
+            <Grid Grid.Row="2" Height="50" />
+
+        </Grid>
     </Grid>
 </UserControl>

@@ -35,14 +35,14 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           TextWrapping="Wrap"
-                                           TextAlignment="Center"
-                                           FontSize="13"
-                                           Margin="0"
+                                <TextBlock Margin="0"
                                            Padding="0"
-                                           Text="{TemplateBinding Content}" />
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           FontSize="13"
+                                           Text="{TemplateBinding Content}"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap" />
 
                                 <Rectangle Name="OnRect"
                                            Grid.Row="2"
@@ -96,9 +96,10 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <TextBox Grid.ColumnSpan="2" Tag="HDG" Text="{Binding MCP.HDG, Mode=TwoWay, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Grid.ColumnSpan="2"
+                         Tag="HDG"
+                         Text="{Binding MCP.HDG, Mode=TwoWay, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" />
                 <ToggleButton Grid.Row="1"
-                              
                               Command="{Binding MCP.HeadingToggle}"
                               IsChecked="{Binding MCP.HeadingHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
                     HDG SEL
@@ -122,7 +123,7 @@
                 <TextBox Text="{Binding MCP.IAS, Mode=TwoWay, StringFormat=N0, UpdateSourceTrigger=PropertyChanged}" />
                 <ToggleButton Grid.Row="1"
                               Command="{Binding MCP.IASToggle}"
-                              IsChecked="{Binding MCP.SpeedHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
+                              IsChecked="{Binding MCP.IASHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">
                     IAS
                 </ToggleButton>
 

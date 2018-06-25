@@ -22,6 +22,9 @@ namespace GTAPilot
 
         public XboxApp()
         {
+            _fridaConnector = new FridaAppConnector();
+            _fridaConnector.PropertyChanged += FridaAppConnector_PropertyChanged;
+            Controller = new XboxController(_fridaConnector);
             WindowHandle = GetWindow();
             if (WindowHandle != IntPtr.Zero)
             {
@@ -33,9 +36,6 @@ namespace GTAPilot
 
         private void ConnectAsync()
         {
-            _fridaConnector = new FridaAppConnector();
-            Controller = new XboxController(_fridaConnector);
-            _fridaConnector.PropertyChanged += FridaAppConnector_PropertyChanged;
             _fridaConnector.ConnectAsync((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
 
             if (_desktopFrameProducer != null)

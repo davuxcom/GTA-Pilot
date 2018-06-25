@@ -113,6 +113,25 @@ namespace GTAPilot
 
             AltitudeText.Text = "" + Math.Round(Timeline.Altitude);
             SpeedText.Text = "" + Math.Round(Timeline.Speed);
+
+            var mcp = SystemManager.Instance.MCP;
+
+            TModeText.Text = mcp.IASHold ? "SPD" : "";
+            VModeText.Text = mcp.VSHold ? "VS" :
+                (mcp.AltitudeHold ? "ALT" : "");
+            LModeText.Text = mcp.HeadingHold ? "HDG SEL" :
+                (mcp.LNAV ? "LNAV" : "");
+
+            AltSetpoint.Text = "" + Math.Round(mcp.ALT);
+            SpeedSetpoint.Text = "" + Math.Round(mcp.IAS);
+
+
+            if (!double.IsNaN(Timeline.Pitch))
+            {
+                var pitch = Timeline.Pitch / 4;
+
+                VSLine.Y1 = 250 - pitch;
+            }
         }
     }
 }

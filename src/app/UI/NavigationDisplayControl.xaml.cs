@@ -22,19 +22,34 @@ namespace GTAPilot
 
             img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png")));
 
-            var st = imgHost.Get<ScaleTransform>();
-            st.ScaleX = st.ScaleY = 14;
+            MouseWheel += NavigationDisplayControl_MouseWheel;
 
             DrawFlightPlanLines();
+
+            var st = imgHost.Get<ScaleTransform>();
+            st.ScaleX = st.ScaleY = 8;
+
 
             _locationTimer.Interval = TimeSpan.FromSeconds(2);
             _locationTimer.Tick += LocationTimer_Tick;
             _locationTimer.Start();
         }
 
+        private void NavigationDisplayControl_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var st = imgHost.Get<ScaleTransform>();
+            double zoom = e.Delta > 0 ? .2 : -.2;
+            if (!(e.Delta > 0) && (st.ScaleX < .4 || st.ScaleY < .4))
+                return;
+
+            st.ScaleX += zoom;
+            st.ScaleY += zoom;
+
+            Tick();
+        }
+
         private void LocationTimer_Tick(object sender, EventArgs e)
         {
-
             var startId = _lastRenderedFrame != null ? _lastRenderedFrame.Id : 0;
             for (var i = startId; i < Timeline.LastFrameId; i++)
             {
@@ -114,12 +129,23 @@ namespace GTAPilot
         public void Tick()
         {
             var pt = Timeline.CurrentLocation;
-            imgHost.RenderTransformOrigin = new Point(
-            pt.X / (double)5500,
-            pt.Y / (double)6000);
+            // Convert from map cords to 20% cords
+            pt = new System.Drawing.PointF(pt.X / FlightPlanBuidler.FlightPlanScaleFactor, pt.Y / FlightPlanBuidler.FlightPlanScaleFactor);
 
-            var rt = imgHost.Get<RotateTransform>();
-            rt.Angle = -1 * Timeline.Heading;
+            var st = imgHost.Get<ScaleTransform>();
+
+            // Extend such that our center point is at the bottom of the viewport.
+            pt = pt.ExtendAlongHeading(Timeline.Heading, 220 / st.ScaleX);
+
+            var tt = imgHost.Get<TranslateTransform>();
+
+            tt.X = -1 * (pt.X * st.ScaleX - 250) ;
+            tt.Y = -1 * (pt.Y * st.ScaleY - 250) ;
+
+           var rt = rotHost.Get<RotateTransform>();
+           rt.Angle = -1 * Timeline.Heading;
+
+            HeadingText.Text = "" + Math.Round(Timeline.Heading);
         }
     }
 }
