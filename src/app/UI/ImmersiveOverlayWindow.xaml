@@ -20,10 +20,10 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Menu Grid.ColumnSpan="2" Background="Transparent">
+        <Menu Grid.ColumnSpan="2" Background="Black">
             <MenuItem Background="Transparent"
                       Foreground="White"
-                      Header="Flight Plan">
+                      Header="Flight Planner">
                 <MenuItem Command="{Binding FlightPlanOpen}"
                           Foreground="Black"
                           Header="Open" />
