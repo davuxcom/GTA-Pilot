@@ -61,7 +61,7 @@ namespace GTAPilot
             // crappy, won't work for reconnect
             if (e.PropertyName == "IsConnected")
             {
-                _app.Controller.HoldRightThumbY();
+               // _app.Controller.HoldRightThumbY();
             }
         }
 

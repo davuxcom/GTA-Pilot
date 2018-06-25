@@ -63,23 +63,23 @@ namespace GTAPilot
             for (var i = 0; i < 25; i += 4)
             {
                 var l = _pitchLines[i];
-                l.X1 = 200;
-                l.X2 = 300;
+                l.X1 = 300;
+                l.X2 = 400;
                 l.Y1 = start;
                 l.Y2 = start;
                 var l2 = _pitchLines[i + 1];
-                l2.X1 = 230;
-                l2.X2 = 270;
+                l2.X1 = 330;
+                l2.X2 = 370;
                 l2.Y1 = start + (step / 4) * 1;
                 l2.Y2 = start + (step / 4) * 1;
                 var l3 = _pitchLines[i + 2];
-                l3.X1 = 220;
-                l3.X2 = 280;
+                l3.X1 = 320;
+                l3.X2 = 380;
                 l3.Y1 = start + (step / 4) * 2;
                 l3.Y2 = start + (step / 4) * 2;
                 var l4 = _pitchLines[i + 3];
-                l4.X1 = 230;
-                l4.X2 = 270;
+                l4.X1 = 330;
+                l4.X2 = 370;
                 l4.Y1 = start + (step / 4) * 3;
                 l4.Y2 = start + (step / 4) * 3;
                 start += step;
@@ -128,9 +128,11 @@ namespace GTAPilot
 
             if (!double.IsNaN(Timeline.Pitch))
             {
-                var pitch = Timeline.Pitch / 4;
+                var pitch = Timeline.Pitch * 1.4;
 
                 VSLine.Y1 = 250 - pitch;
+
+                VSLine.Stroke = Math.Abs(Timeline.Pitch) > 30 ? Brushes.Yellow : Brushes.White;
             }
         }
     }

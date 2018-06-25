@@ -5,16 +5,14 @@
     <Grid>
 
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="500" />
-            <ColumnDefinition Width="500" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
         <local:PrimaryFlightDisplayControl />
 
         <local:NavigationDisplayControl Grid.Column="1" />
-
-        <local:MCPControl Grid.Column="2" />
 
         <!--
         <ListView Grid.Column="1"

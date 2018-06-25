@@ -126,7 +126,7 @@ namespace GTAPilot
                     {
                         ret.Add(finder(Data[i]));
 
-                        if (ret.Count == 8) break;
+                        if (ret.Count == 20) break;
                     }
                 }
             }

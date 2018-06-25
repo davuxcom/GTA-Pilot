@@ -58,7 +58,7 @@ namespace GTAPilot
                 if (_fridaConnector.IsConnected)
                 {
                     // Lock the view
-                    Controller.HoldRightThumbY();
+                   // Controller.HoldRightThumbY();
 
                     IsConnected = true;
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
