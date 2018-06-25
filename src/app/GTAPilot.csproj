@@ -274,15 +274,6 @@
   <ItemGroup>
     <EmbeddedResource Include="XboxApp.js" />
   </ItemGroup>
-  <ItemGroup>
-    <Resource Include="License-LGPL.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="CUFFT_EULA.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="CUDA_EULA.txt" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets" Condition="Exists('packages\EMGU.CV.3.4.1.2976\build\EMGU.CV.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -10,11 +10,6 @@ using MapFlags = SharpDX.Direct3D11.MapFlags;
 
 namespace DesktopDuplication
 {
-    public class DesktopDuplicationException : Exception
-    {
-        public DesktopDuplicationException(string message) : base(message){}
-    }
-
     // Provides access to frame-by-frame updates of a particular desktop (i.e. one monitor).
     public class DesktopDuplicator
     {
@@ -24,14 +19,11 @@ namespace DesktopDuplication
         private OutputDuplication mDeskDupl;
 
         private Texture2D desktopImageTexture = null;
-        private OutputDuplicateFrameInformation frameInfo = new OutputDuplicateFrameInformation();
-        private int mWhichOutputDevice = -1;
 
         public DesktopDuplicator(int whichMonitor) : this(0, whichMonitor) { }
 
         public DesktopDuplicator(int whichGraphicsCardAdapter, int whichOutputDevice)
         {
-            this.mWhichOutputDevice = whichOutputDevice;
             var adapter = new Factory1().GetAdapter1(whichGraphicsCardAdapter);
             this.mDevice = new Device(adapter);
             Output output = adapter.GetOutput(whichOutputDevice);
@@ -52,6 +44,7 @@ namespace DesktopDuplication
                 Usage = ResourceUsage.Staging
             };
 
+            this.desktopImageTexture = new Texture2D(mDevice, mTextureDesc);
             this.mDeskDupl = output1.DuplicateOutput(mDevice);
         }
 
@@ -70,10 +63,8 @@ namespace DesktopDuplication
 
         private bool RetrieveFrame()
         {
-            if (desktopImageTexture == null) desktopImageTexture = new Texture2D(mDevice, mTextureDesc);
-
             SharpDX.DXGI.Resource desktopResource = null;
-            frameInfo = new OutputDuplicateFrameInformation();
+            var frameInfo = new OutputDuplicateFrameInformation();
             try
             {
                 mDeskDupl.AcquireNextFrame(-1, out frameInfo, out desktopResource);
