@@ -8,11 +8,11 @@ namespace GTAPilot
         public event Action<int, Bitmap> FrameProduced;
 
         private bool _isRunning;
-        private int _screenId;
+        private IntPtr _window;
 
-        public DesktopFrameProducer(int screenId)
+        public DesktopFrameProducer(IntPtr window)
         {
-            _screenId = screenId;
+            _window = window;
         }
 
         public void Begin()
@@ -21,7 +21,7 @@ namespace GTAPilot
             var t = new System.Threading.Thread(() =>
             {
                 int frameId = 0;
-                var desktop = new DesktopDuplication.DesktopDuplicator(0, _screenId);
+                var desktop = new DesktopDuplication.DesktopDuplicator(_window);
                 while (_isRunning)
                 {
                     var frame = desktop.GetLatestFrame();

@@ -7,5 +7,10 @@ namespace GTAPilot.Interop
     {
         [DllImport("user32.dll")]
         internal static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll", PreserveSig = true)]
+        public static extern bool GetWindowRect(
+            IntPtr hwnd,
+            out RECT lpRect);
     }
 }

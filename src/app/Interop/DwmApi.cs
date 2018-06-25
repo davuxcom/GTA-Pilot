@@ -38,17 +38,5 @@ namespace GTAPilot.Interop
             public const uint DWM_TNP_VISIBLE = 0x00000008;
             public const uint DWM_TNP_SOURCECLIENTAREAONLY = 0x00000010;
         }
-
-        [StructLayout(LayoutKind.Sequential)]
-        public struct RECT
-        {
-            public int left, top, right, bottom;
-
-            public RECT(int left, int top, int right, int bottom)
-            {
-                this.left = left; this.top = top;
-                this.right = right; this.bottom = bottom;
-            }
-        }
     }
 }

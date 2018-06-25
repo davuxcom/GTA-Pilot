@@ -18,5 +18,10 @@ namespace GTAPilot.Extensions
         {
             return rect.Bottom - rect.Top;
         }
+
+        public static System.Drawing.Rectangle ToRectangle(this RawRectangle rect)
+        {
+            return new System.Drawing.Rectangle(rect.Left, rect.Top, rect.Width(), rect.Height());
+        }
     }
 }

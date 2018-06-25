@@ -99,6 +99,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
+    <Compile Include="Interop\RECT.cs" />
     <Compile Include="UI\FlightPlanControl.xaml.cs">
       <DependentUpon>FlightPlanControl.xaml</DependentUpon>
     </Compile>

@@ -1,4 +1,5 @@
 ﻿using GTAPilot.Extensions;
+using GTAPilot.Interop;
 using SharpDX;
 using SharpDX.Direct3D11;
 using SharpDX.DXGI;
@@ -13,30 +14,55 @@ namespace DesktopDuplication
     // Provides access to frame-by-frame updates of a particular desktop (i.e. one monitor).
     public class DesktopDuplicator
     {
-        private Device mDevice;
-        private Texture2DDescription mTextureDesc;
-        private OutputDescription mOutputDesc;
-        private OutputDuplication mDeskDupl;
+        private Device _device;
+        private Texture2DDescription _desktopTextureDescription;
+        private OutputDescription _outputDescription;
+        private OutputDuplication _desktopDuplication;
+        private Texture2D _desktopImageTexture;
 
-        private Texture2D desktopImageTexture = null;
+        public DesktopDuplicator(IntPtr window)
+        {
+            User32.GetWindowRect(window, out var rectNative);
+            var windowRect = rectNative.ToRect();
 
-        public DesktopDuplicator(int whichMonitor) : this(0, whichMonitor) { }
+            // NOTE: We only search the first graphics adapter!
+            var adapter = new Factory1().GetAdapter1(0);
 
-        public DesktopDuplicator(int whichGraphicsCardAdapter, int whichOutputDevice)
+            for(var i = 0; i < adapter.GetOutputCount(); i++)
+            {
+                var output = adapter.GetOutput(i);
+                var bounds = output.Description.DesktopBounds.ToRectangle();
+                if (bounds.Contains(windowRect))
+                {
+                    Initialize(0, i);
+                    return;
+                }
+            }
+
+            throw new Exception("Didn't find the XboxApp window on any monitor on the first graphics card.");
+        }
+
+        private DesktopDuplicator(int whichGraphicsCardAdapter, int whichOutputDevice)
+        {
+            Initialize(whichGraphicsCardAdapter, whichOutputDevice);
+
+        }
+
+        private void Initialize(int whichGraphicsCardAdapter, int whichOutputDevice)
         {
             var adapter = new Factory1().GetAdapter1(whichGraphicsCardAdapter);
-            this.mDevice = new Device(adapter);
+            this._device = new Device(adapter);
             Output output = adapter.GetOutput(whichOutputDevice);
 
             var output1 = output.QueryInterface<Output1>();
-            this.mOutputDesc = output.Description;
-            this.mTextureDesc = new Texture2DDescription()
+            this._outputDescription = output.Description;
+            this._desktopTextureDescription = new Texture2DDescription()
             {
                 CpuAccessFlags = CpuAccessFlags.Read,
                 BindFlags = BindFlags.None,
                 Format = Format.B8G8R8A8_UNorm,
-                Width = this.mOutputDesc.DesktopBounds.Width(),
-                Height = this.mOutputDesc.DesktopBounds.Height(),
+                Width = this._outputDescription.DesktopBounds.Width(),
+                Height = this._outputDescription.DesktopBounds.Height(),
                 OptionFlags = ResourceOptionFlags.None,
                 MipLevels = 1,
                 ArraySize = 1,
@@ -44,68 +70,58 @@ namespace DesktopDuplication
                 Usage = ResourceUsage.Staging
             };
 
-            this.desktopImageTexture = new Texture2D(mDevice, mTextureDesc);
-            this.mDeskDupl = output1.DuplicateOutput(mDevice);
+            this._desktopImageTexture = new Texture2D(_device, _desktopTextureDescription);
+            this._desktopDuplication = output1.DuplicateOutput(_device);
         }
 
         public Bitmap GetLatestFrame()
         {
-            if (RetrieveFrame()) return null;
+            if (!RetrieveFrame()) return null;
             try
             {
                 return ProcessFrame();
             }
             finally
             {
-                mDeskDupl.ReleaseFrame();
+                _desktopDuplication.ReleaseFrame();
             }
         }
 
         private bool RetrieveFrame()
         {
-            SharpDX.DXGI.Resource desktopResource = null;
-            var frameInfo = new OutputDuplicateFrameInformation();
-            try
+            if (_desktopDuplication.TryAcquireNextFrame(-1, out var frameInfo, out var desktopResource) == SharpDX.DXGI.ResultCode.WaitTimeout.Result)
             {
-                mDeskDupl.AcquireNextFrame(-1, out frameInfo, out desktopResource);
+                return false;
             }
-            catch (SharpDXException ex)
-            {
-                if (ex.ResultCode.Code == SharpDX.DXGI.ResultCode.WaitTimeout.Result.Code)
-                {
-                    return true;
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
             using (var tempTexture = desktopResource.QueryInterface<Texture2D>())
-                mDevice.ImmediateContext.CopyResource(tempTexture, desktopImageTexture);
+            {
+                _device.ImmediateContext.CopyResource(tempTexture, _desktopImageTexture);
+            }
             desktopResource.Dispose();
-            return false;
+            return true;
         }
         
         private Bitmap ProcessFrame()
         {
-            var mapSource = mDevice.ImmediateContext.MapSubresource(desktopImageTexture, 0, MapMode.Read, MapFlags.None);
+            var mapSource = _device.ImmediateContext.MapSubresource(_desktopImageTexture, 0, MapMode.Read, MapFlags.None);
 
-            var newImage = new System.Drawing.Bitmap(mOutputDesc.DesktopBounds.Width(), mOutputDesc.DesktopBounds.Height(), PixelFormat.Format32bppRgb);
-            var boundsRect = new System.Drawing.Rectangle(0, 0, mOutputDesc.DesktopBounds.Width(), mOutputDesc.DesktopBounds.Height());
+            var newImage = new System.Drawing.Bitmap(_outputDescription.DesktopBounds.Width(), _outputDescription.DesktopBounds.Height(), PixelFormat.Format32bppRgb);
+            var boundsRect = new System.Drawing.Rectangle(0, 0, _outputDescription.DesktopBounds.Width(), _outputDescription.DesktopBounds.Height());
             var mapDest = newImage.LockBits(boundsRect, ImageLockMode.WriteOnly, newImage.PixelFormat);
             var sourcePtr = mapSource.DataPointer;
             var destPtr = mapDest.Scan0;
 
-            for (int y = 0; y < mOutputDesc.DesktopBounds.Height(); y++)
+            for (int y = 0; y < _outputDescription.DesktopBounds.Height(); y++)
             {
-                Utilities.CopyMemory(destPtr, sourcePtr, mOutputDesc.DesktopBounds.Width() * 4);
+                Utilities.CopyMemory(destPtr, sourcePtr, _outputDescription.DesktopBounds.Width() * 4);
 
                 sourcePtr = IntPtr.Add(sourcePtr, mapSource.RowPitch);
                 destPtr = IntPtr.Add(destPtr, mapDest.Stride);
             }
 
             newImage.UnlockBits(mapDest);
-            mDevice.ImmediateContext.UnmapSubresource(desktopImageTexture, 0);
+            _device.ImmediateContext.UnmapSubresource(_desktopImageTexture, 0);
             return newImage;
         }
     }

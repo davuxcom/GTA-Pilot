@@ -45,7 +45,7 @@ namespace GTAPilot
             }
 
             // TODO: Find screen from window location
-            _desktopFrameProducer = new DesktopFrameProducer(2);
+            _desktopFrameProducer = new DesktopFrameProducer(GetWindow());
             _desktopFrameProducer.FrameProduced += DesktopFrameProducer_FrameProduced;
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Controller)));
