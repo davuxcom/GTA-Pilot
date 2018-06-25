@@ -217,7 +217,8 @@ namespace GTAPilot.Indicators_v2
                 foreach (var pack in packs)
                 {
                     var ocr = GetTesseract();
-                    ocr.Recognize(pack.Item1);
+                    ocr.SetImage(pack.Item1);
+                    ocr.Recognize();
 
                  //   pack.Item1.Save($"c:\\save\\{cid++}.png");
 

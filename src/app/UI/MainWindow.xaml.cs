@@ -81,9 +81,12 @@ namespace GTAPilot
             App.Register(this);
         }
 
+        int ticks = 0;
         public void Tick()
         {
-            _viewModel.Tick();
+            // TODO: Bad solution to too much work being done.
+            ticks++;
+            if (ticks % 10 == 0) _viewModel.Tick();
         }
 
         private void Border_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
