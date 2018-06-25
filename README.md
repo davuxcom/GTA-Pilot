@@ -20,11 +20,6 @@ These modes approximate a 1950's style Auto pilot system, similar to the Boeing 
 v1 TODOs:
 - XboxApp lifecycle
 
-TODOs:
-- Switch to nuget for EmguCV (and upgrade past 3.0.1)
-- Upgrade SharpDX to latest
-- Frida nuget package?
-
 avTODOS:
 - Determine stall speed
 
@@ -58,4 +53,3 @@ Knowledgebase:
 Glossery:
 - A/P: Auto-pilot
 - LNAV: Lateral Navigation [mode]
-
