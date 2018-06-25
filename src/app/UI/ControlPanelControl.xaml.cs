@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Windows.Controls;
-using System.Windows.Threading;
 
 namespace GTAPilot
 {
-    public partial class ControlPanelControl : UserControl
+    public partial class ControlPanelControl : UserControl, ICanTick
     {
         public ObservableCollection<IndicatorViewModel> Indicators { get; }
-
-        DispatcherTimer _fpsTimer = new DispatcherTimer();
 
         public ControlPanelControl()
         {
             InitializeComponent();
+            App.Register(this);
 
             Indicators = new ObservableCollection<IndicatorViewModel>();
             Indicators.Add(new IndicatorViewModel("Roll", SystemManager.Instance.IndicatorHost.Roll));
@@ -23,13 +20,9 @@ namespace GTAPilot
             Indicators.Add(new IndicatorViewModel("Yaw", SystemManager.Instance.IndicatorHost.Compass));
 
             DataContext = this;
-
-            _fpsTimer.Interval = TimeSpan.FromMilliseconds(App.FPS);
-            _fpsTimer.Tick += FpsTimer_Tick;
-            _fpsTimer.Start();
         }
 
-        private void FpsTimer_Tick(object sender, EventArgs e)
+        public void Tick()
         {
             foreach (var i in Indicators) i.Tick();
         }

@@ -80,6 +80,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ICanTick.cs" />
     <Compile Include="UI\ControlPanelControl.xaml.cs">
       <DependentUpon>ControlPanelControl.xaml</DependentUpon>
     </Compile>

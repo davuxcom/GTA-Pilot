@@ -67,7 +67,6 @@ namespace GTAPilot
             _overlay.Width = LayoutRoot.ActualWidth;
             _overlay.Show();
             _overlay.Owner = this;
-
         }
     }
 }

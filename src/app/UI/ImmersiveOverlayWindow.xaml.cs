@@ -7,8 +7,6 @@ namespace GTAPilot
         public ImmersiveOverlayWindow()
         {
             InitializeComponent();
-
-
         }
     }
 }

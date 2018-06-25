@@ -5,22 +5,19 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace GTAPilot
 {
-    public partial class PrimaryFlightDisplayControl : UserControl
+    public partial class PrimaryFlightDisplayControl : UserControl, ICanTick
     {
         Polygon _top = new Polygon();
         Polygon _bottom = new Polygon();
-        DispatcherTimer _fpsTimer = new DispatcherTimer();
-
         List<Line> _pitchLines = new List<Line>();
-
 
         public PrimaryFlightDisplayControl()
         {
             InitializeComponent();
+            App.Register(this);
 
             _top.Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#0480D8"));
             _bottom.Fill = (SolidColorBrush)(new BrushConverter().ConvertFrom("#744C07"));
@@ -42,10 +39,6 @@ namespace GTAPilot
 
             PFDBackground.RenderTransform = group;
             PFDBackground.RenderTransformOrigin = new Point(0.5, 0.5);
-
-            _fpsTimer.Interval = TimeSpan.FromMilliseconds(App.FPS);
-            _fpsTimer.Tick += FpsTimer_Tick;
-            _fpsTimer.Start();
 
             SizeChanged += PrimaryFlightDisplayControl_SizeChanged;
         }
@@ -91,15 +84,6 @@ namespace GTAPilot
                 l4.Y2 = start + (step / 4) * 3;
                 start += step;
             }
-
-        }
-
-        private void FpsTimer_Tick(object sender, EventArgs e)
-        {
-            LayoutBackground();
-
-            AltitudeText.Text = "" + Math.Round(Timeline.Altitude);
-            SpeedText.Text = "" + Math.Round(Timeline.Speed);
         }
 
         private void LayoutBackground()
@@ -121,6 +105,14 @@ namespace GTAPilot
             {
                 rt.Angle = roll * roll_mult;
             }
+        }
+
+        public void Tick()
+        {
+            LayoutBackground();
+
+            AltitudeText.Text = "" + Math.Round(Timeline.Altitude);
+            SpeedText.Text = "" + Math.Round(Timeline.Speed);
         }
     }
 }

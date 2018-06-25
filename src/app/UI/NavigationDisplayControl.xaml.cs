@@ -9,9 +9,8 @@ using System.Windows.Threading;
 
 namespace GTAPilot
 {
-    public partial class NavigationDisplayControl : UserControl
+    public partial class NavigationDisplayControl : UserControl, ICanTick
     {
-        DispatcherTimer _fpsTimer = new DispatcherTimer();
         DispatcherTimer _locationTimer = new DispatcherTimer();
         TimelineFrame _lastRenderedFrame = null;
         Point lastPoint;
@@ -19,6 +18,7 @@ namespace GTAPilot
         public NavigationDisplayControl()
         {
             InitializeComponent();
+            App.Register(this);
 
             img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png")));
 
@@ -26,10 +26,6 @@ namespace GTAPilot
             st.ScaleX = st.ScaleY = 14;
 
             DrawFlightPlanLines();
-
-            _fpsTimer.Interval = TimeSpan.FromMilliseconds(App.FPS);
-            _fpsTimer.Tick += FpsTimer_Tick;
-            _fpsTimer.Start();
 
             _locationTimer.Interval = TimeSpan.FromSeconds(2);
             _locationTimer.Tick += LocationTimer_Tick;
@@ -92,18 +88,6 @@ namespace GTAPilot
             lastPoint = pt;
         }
 
-        private void FpsTimer_Tick(object sender, EventArgs e)
-        {
-            var pt = Timeline.CurrentLocation;
-            imgHost.RenderTransformOrigin = new Point(
-            pt.X / (double)5500,
-            pt.Y / (double)6000);
-
-            var rt = imgHost.Get<RotateTransform>();
-            rt.Angle = -1 * Timeline.Heading;
-
-        }
-
         private void RenderFrame(TimelineFrame frame)
         {
             Line l = new Line();
@@ -125,6 +109,17 @@ namespace GTAPilot
             }
 
             canvas.Children.Add(l);
+        }
+
+        public void Tick()
+        {
+            var pt = Timeline.CurrentLocation;
+            imgHost.RenderTransformOrigin = new Point(
+            pt.X / (double)5500,
+            pt.Y / (double)6000);
+
+            var rt = imgHost.Get<RotateTransform>();
+            rt.Angle = -1 * Timeline.Heading;
         }
     }
 }

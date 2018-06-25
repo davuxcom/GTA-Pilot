@@ -27,7 +27,6 @@ namespace GTAPilot
         }
 
         MainWindowViewModel _viewModel;
-        DispatcherTimer _fpsTimer = new DispatcherTimer();
         SaveFrameConsumer _captureSink;
         TimelineFrame _lastRenderedFrame = null;
 
@@ -97,10 +96,6 @@ namespace GTAPilot
 
             _viewModel = new MainWindowViewModel(mgr, _captureSink, fridaController);
             DataContext = _viewModel;
-
-            _fpsTimer.Interval = TimeSpan.FromMilliseconds(App.FPS);
-            _fpsTimer.Tick += FpsTimer_Tick;
-            _fpsTimer.Start();
 
             if (dlg.Result == SourceType.Capture)
             {
