@@ -10,17 +10,19 @@
                 Background="Gray"
                 ClipToBounds="True">
 
+            <Viewbox>
+                <Grid Name="imgHost">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform />
+                            <RotateTransform />
+                        </TransformGroup>
+                    </Grid.RenderTransform>
+                    <Image Name="img" Stretch="None" />
+                    <Canvas Name="canvas" />
+                </Grid>
+            </Viewbox>
 
-            <Grid Name="imgHost">
-                <Grid.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform />
-                        <RotateTransform />
-                    </TransformGroup>
-                </Grid.RenderTransform>
-                <Image Name="img" Stretch="Fill" />
-                <Canvas Name="canvas" />
-            </Grid>
 
         </Border>
         <Grid>
