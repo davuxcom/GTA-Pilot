@@ -49,25 +49,6 @@
                     </ItemContainerTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-
-            <Button Click="Button_Click">Map</Button>
-
-            <ToggleButton Command="{Binding MCP.LNAVToggle}" IsChecked="{Binding MCP.LNAV, Mode=TwoWay, UpdateSourceTrigger=Explicit}">LNAV</ToggleButton>
-
-            <TextBox Tag="HDG" Text="{Binding MCP.HDG, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <ToggleButton Command="{Binding MCP.HeadingToggle}" IsChecked="{Binding MCP.HeadingHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">HDG HOLD</ToggleButton>
-
-            <TextBox Text="{Binding MCP.IAS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <ToggleButton Command="{Binding MCP.IASToggle}" IsChecked="{Binding MCP.SpeedHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">IAS HOLD</ToggleButton>
-
-            <TextBox Tag="ALT" Text="{Binding MCP.ALT, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <ToggleButton Command="{Binding MCP.ALTToggle}" IsChecked="{Binding MCP.AltitudeHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">ALT HOLD</ToggleButton>
-
-            <TextBox Text="{Binding MCP.VS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <ToggleButton Command="{Binding MCP.VSToggle}" IsChecked="{Binding MCP.VSHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">VS</ToggleButton>
-
-            <TextBox Text="{Binding MCP.Bank, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <ToggleButton Command="{Binding MCP.BankToggle}" IsChecked="{Binding MCP.BankHold, Mode=TwoWay, UpdateSourceTrigger=Explicit}">WINGS LEVEL</ToggleButton>
         </StackPanel>
 
         <ListView Grid.Column="1" ItemsSource="{Binding Indicators}">
@@ -88,9 +69,6 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
-
-
-
 
                         <Border Grid.Row="3"
                                 Background="Gray"
@@ -123,9 +101,6 @@
                             </Grid>
 
                         </Border>
-
-
-
 
                         <Border Grid.Row="4" Margin="1">
                             <local:IndicatorChart Width="200"

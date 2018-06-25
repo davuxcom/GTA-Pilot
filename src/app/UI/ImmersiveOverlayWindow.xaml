@@ -23,26 +23,35 @@
         <Menu Grid.ColumnSpan="2" Background="Transparent">
             <MenuItem Background="Transparent"
                       Foreground="White"
-                      Header="File">
-                <MenuItem Header="Exit" />
+                      Header="Flight Plan">
+                <MenuItem Command="{Binding FlightPlanOpen}"
+                          Foreground="Black"
+                          Header="Open" />
+                <MenuItem Command="{Binding FlightPlanSave}"
+                          Foreground="Black"
+                          Header="Save as..." />
+                <MenuItem Command="{Binding FlightPlanEdit}"
+                          Foreground="Black"
+                          Header="Edit on map" />
             </MenuItem>
+
+            <MenuItem Background="Transparent"
+                      Command="{Binding Analyze}"
+                      Foreground="White"
+                      Header="Analyze" />
         </Menu>
 
         <Border Grid.Row="1"
                 Grid.Column="1"
                 Margin="200,0,0,0"
                 HorizontalAlignment="Center"
-                VerticalAlignment="Bottom"
-                BorderBrush="Red"
-                BorderThickness="1">
+                VerticalAlignment="Bottom">
             <local:MCPControl />
         </Border>
 
         <Border Grid.Row="2"
                 Grid.Column="1"
-                Background="Black"
-                BorderBrush="Yellow"
-                BorderThickness="1">
+                Background="Black">
             <local:ControlPanelControl />
         </Border>
 

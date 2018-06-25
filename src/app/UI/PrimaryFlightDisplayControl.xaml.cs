@@ -132,7 +132,7 @@ namespace GTAPilot
 
                 VSLine.Y1 = 250 - pitch;
 
-                VSLine.Stroke = Math.Abs(Timeline.Pitch) > 30 ? Brushes.Yellow : Brushes.White;
+                VSLine.Stroke = Math.Abs(Timeline.Pitch) > 60 ? Brushes.Yellow : Brushes.White;
             }
         }
     }

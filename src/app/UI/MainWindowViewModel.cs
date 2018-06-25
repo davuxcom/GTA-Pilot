@@ -34,7 +34,7 @@ namespace GTAPilot
         {
             get
             {
-                switch(Name)
+                switch (Name)
                 {
                     case "Roll": return IndicatorType.Roll;
                     case "Pitch": return IndicatorType.Pitch;
@@ -63,7 +63,7 @@ namespace GTAPilot
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BadFrameCount)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CachedTuningValue)));
-            
+
         }
     }
 
@@ -95,52 +95,36 @@ namespace GTAPilot
         public ObservableCollection<FpsCounterViewModel> Counters { get; }
         public ObservableCollection<IndicatorViewModel> Indicators { get; }
 
-        public ModeControlPanel MCP => _inputManager.MCP;
         public PID.Gain RollPID => FlightComputerConfig.Roll.Gain;
         public PID.Gain VSPID => FlightComputerConfig.Pitch.Gain;
 
-        SaveFrameConsumer _captureSink;
-        SystemManager _inputManager;
-        FridaAppConnector _controller;
-
-        internal MainWindowViewModel(SystemManager inputManager, SaveFrameConsumer captureSink, FridaAppConnector controller)
+        internal MainWindowViewModel()
         {
-            _controller = controller;
-            _captureSink = captureSink;
-            _inputManager = inputManager;
 
             Counters = new ObservableCollection<FpsCounterViewModel>();
             Indicators = new ObservableCollection<IndicatorViewModel>();
 
-        //    Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Enqueue), "Capture"));
-           // Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Capture_Dequeue), "Dispatch"));
+            Counters.Add(new FpsCounterViewModel(SystemManager.Instance.Capture, "Capture"));
 
-            if (_captureSink != null)
-            {
-                Counters.Add(new FpsCounterViewModel(_captureSink.FPS, "Flush"));
-            }
-            else
-            {
-                /*
-                Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Roll), "Roll"));
-                Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Pitch), "Pitch"));
-                Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Airspeed), "Speed"));
-                Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Altitude), "Altitude"));
-                Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Yaw), "Yaw"));
-                */
-                if (_controller != null)
-                {
-                 //   Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.XInput), "XInput-In"));
-                    Counters.Add(new FpsCounterViewModel(_controller.Counter, "XInput-Out"));
-                }
+            /*
+            Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Roll), "Roll"));
+            Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Pitch), "Pitch"));
+            Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Airspeed), "Speed"));
+            Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Altitude), "Altitude"));
+            Counters.Add(new FpsCounterViewModel(_inputManager.GetCounter(FpsCounterType.Yaw), "Yaw"));
+            */
 
-                
-                Indicators.Add(new IndicatorViewModel("Roll", _inputManager.IndicatorHost.Roll));
-                Indicators.Add(new IndicatorViewModel("Pitch", _inputManager.IndicatorHost.Pitch));
-                Indicators.Add(new IndicatorViewModel("Speed", _inputManager.IndicatorHost.Airspeed));
-                Indicators.Add(new IndicatorViewModel("Altitude", _inputManager.IndicatorHost.Altitude));
-                Indicators.Add(new IndicatorViewModel("Yaw", _inputManager.IndicatorHost.Compass));
-            }
+
+            Counters.Add(new FpsCounterViewModel(SystemManager.Instance.App.Controller.XInput_In, "XInput-In"));
+            Counters.Add(new FpsCounterViewModel(SystemManager.Instance.App.Controller.XInput_Out, "XInput-Out"));
+
+
+
+            Indicators.Add(new IndicatorViewModel("Roll", SystemManager.Instance.IndicatorHost.Roll));
+            Indicators.Add(new IndicatorViewModel("Pitch", SystemManager.Instance.IndicatorHost.Pitch));
+            Indicators.Add(new IndicatorViewModel("Speed", SystemManager.Instance.IndicatorHost.Airspeed));
+            Indicators.Add(new IndicatorViewModel("Altitude", SystemManager.Instance.IndicatorHost.Altitude));
+            Indicators.Add(new IndicatorViewModel("Yaw", SystemManager.Instance.IndicatorHost.Compass));
         }
 
         public void Tick()

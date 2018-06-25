@@ -27,8 +27,7 @@ namespace GTAPilot
             DrawFlightPlanLines();
 
             var st = imgHost.Get<ScaleTransform>();
-            st.ScaleX = st.ScaleY = 8;
-
+            st.ScaleX = st.ScaleY = 4;
 
             _locationTimer.Interval = TimeSpan.FromSeconds(2);
             _locationTimer.Tick += LocationTimer_Tick;

@@ -10,7 +10,8 @@ namespace GTAPilot
 {
     public class XboxController : INotifyPropertyChanged
     {
-        public FpsCounter XInputFPS { get; private set; }
+        public FpsCounter XInput_In { get; }
+        public FpsCounter XInput_Out => _controller.Counter;
         public event EventHandler<XInputButtons> ButtonPressed;
 
         [Flags]
@@ -62,7 +63,7 @@ namespace GTAPilot
             _controller = fridaController;
 
             fridaController.OnMessage += FridaController_OnMessage;
-            XInputFPS = new FpsCounter();
+            XInput_In = new FpsCounter();
         }
 
         private void FridaController_OnMessage(string payload)
@@ -77,8 +78,8 @@ namespace GTAPilot
                 switch(msg.Type)
                 {
                     case "XInputFPS":
-                        XInputFPS.Fps = msg.Value;
-                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(XInputFPS)));
+                        XInput_In.Fps = msg.Value;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(XInput_In)));
                         break;
                     case "InputData":
                         {

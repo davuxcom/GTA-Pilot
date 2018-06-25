@@ -160,7 +160,7 @@ namespace GTAPilot
                         var ad = Math.Abs(d);
                         if (ad > 4)
                         {
-                            var roll_angle = Math.Min(ad, 25);
+                            var roll_angle = Math.Min(ad / 2, 25);
                             var newRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
 
                             if (DesiredRoll > newRoll)

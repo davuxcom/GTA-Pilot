@@ -9,6 +9,8 @@ namespace GTAPilot
         public FlightPlan FlightPlan => _computer.FlightPlan;
         public IndicatorHandler IndicatorHost;
         public ModeControlPanel MCP = new ModeControlPanel();
+        public FpsCounter Capture = new FpsCounter();
+        public XboxApp App => _app;
 
         XboxApp _app;
         FrameInputCoordinator _coordinator;
@@ -19,7 +21,7 @@ namespace GTAPilot
             Instance = this;
 
             _app = new XboxApp();
-            _coordinator = new FrameInputCoordinator(_app, f => IndicatorHost.HandleFrameArrived(f));
+            _coordinator = new FrameInputCoordinator(_app, OnFrameArrived);
 
             _app.Controller.ButtonPressed += Controler_ButtonPressed;
             _app.PropertyChanged += XboxApp_PropertyChanged;
@@ -30,6 +32,12 @@ namespace GTAPilot
 
             _coordinator.Begin();
             Timeline.Begin();
+        }
+
+        private void OnFrameArrived(FrameData data)
+        {
+            IndicatorHost.HandleFrameArrived(data);
+            Capture.GotFrame();
         }
 
         private void Controler_ButtonPressed(object sender, XboxController.XInputButtons e)
