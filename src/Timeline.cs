@@ -40,14 +40,13 @@ namespace GTAPilot
         public TimelineValue Pitch = new TimelineValue();
         public TimelineValue Altitude = new TimelineValue();
 
+        // TODO: Factor into TimelineValue.Tag or some such.
         public CompassExtendedFrame Extended = new CompassExtendedFrame();
+        internal CircleF RollHint;
 
         public PointF Location;
-
-        internal bool IsComplete;
-
-        internal bool LocationComplete;
-        internal CircleF RollHint;
+        public bool IsDataComplete;
+        public bool IsLocationCalculated;
     }
 
     class Timeline
@@ -75,7 +74,7 @@ namespace GTAPilot
         {
             Duration = Stopwatch.StartNew();
 
-            new Thread(() =>
+            var t = new Thread(() =>
             {
                 int lastDoneFrame = -1;
 
@@ -83,7 +82,7 @@ namespace GTAPilot
                 {
                     for (var i = lastDoneFrame + 1; i <= LastFrameId; i++)
                     {
-                        if (Data[i] != null && Data[i].IsComplete)
+                        if (Data[i] != null && Data[i].IsDataComplete)
                         {
                             CompleteFrame(i);
                             lastDoneFrame = i;
@@ -93,10 +92,12 @@ namespace GTAPilot
                             break; // bail on first non-complete frame, try next time
                         }
                     }
-                    
+
                     Thread.Sleep(10);
                 }
-            }).Start();
+            });
+            t.IsBackground = true;
+            t.Start();
         }
 
         private static double Latest(Func<TimelineFrame, double> finder)
@@ -156,7 +157,7 @@ namespace GTAPilot
             var newFrame = Data[id];
             if (id == 0)
             {
-                newFrame.LocationComplete = true;
+                newFrame.IsLocationCalculated = true;
                 newFrame.Location = StartLocation;
             }
             else
@@ -170,30 +171,28 @@ namespace GTAPilot
                     {
                         var dx = ComputePositionChange(oldFrame, newFrame);
                         newFrame.Location = oldFrame.Location.Add(dx);
-                        newFrame.LocationComplete = true;
+                        newFrame.IsLocationCalculated = true;
                         CurrentLocation = newFrame.Location;
-
                         return;
                     }
                 }
 
                 oldFrame = LatestFrame((f) => f.Location == default(PointF) ? double.NaN : 0, id);
                 newFrame.Location = oldFrame.Location;
-                newFrame.LocationComplete = true;
+                newFrame.IsLocationCalculated = true;
                 CurrentLocation = newFrame.Location;
             }
-            
         }
 
         private static PointF ComputePositionChange(TimelineFrame oldFrame, TimelineFrame newFrame)
         {
             var timeDelta = newFrame.Seconds - oldFrame.Seconds;
 
-            var speed = newFrame.Speed.Value;
-
-            var knotsPerHour = speed;
+            var speedInKnotsPerHour = newFrame.Speed.Value;
+            // TODO: Factor into a const
             var KnotsPerSecondToMetersPerSecond = 0.51444444444;
-            var MetersPerSecond = knotsPerHour * KnotsPerSecondToMetersPerSecond;
+            var MetersPerSecond = speedInKnotsPerHour * KnotsPerSecondToMetersPerSecond;
+            // TODO: Scale factor for 'world' to Zoom4_FULL?
             var scale = 1 / 3.32;
 
             double heading = newFrame.Heading.Value;

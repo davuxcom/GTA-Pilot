@@ -88,8 +88,8 @@ namespace GTAPilot
 
         private void LayoutBackground()
         {
-            var rt = PFDBackground.Get<RotateTransform>();
-            var tt = PFDBackground.Get<TranslateTransform>();
+            var rt = PFDBackground.GetTransform<RotateTransform>();
+            var tt = PFDBackground.GetTransform<TranslateTransform>();
 
             var pitch_mult = 1.5;
             var roll_mult = -1;

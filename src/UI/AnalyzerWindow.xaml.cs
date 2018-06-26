@@ -14,7 +14,7 @@ using System.Windows.Threading;
 
 namespace GTAPilot
 {
-    public partial class MainWindow : Window, ICanTick
+    public partial class AnalyzerWindow : Window, ICanTick
     {
         class LocalTraceListener : TraceListener
         {
@@ -28,7 +28,7 @@ namespace GTAPilot
 
         MainWindowViewModel _viewModel;
 
-        internal MainWindow()
+        internal AnalyzerWindow()
         {
             InitializeComponent();
 

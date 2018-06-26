@@ -13,7 +13,6 @@ namespace GTAPilot
         Roll, Pitch, Speed, Altitude, Yaw,
     }
 
-
     public class IndicatorViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -45,7 +44,7 @@ namespace GTAPilot
             }
         }
 
-        Indicator _indicator;
+        private Indicator _indicator;
 
         internal IndicatorViewModel(string name, Indicator indicator)
         {
@@ -64,5 +63,4 @@ namespace GTAPilot
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CachedTuningValue)));
         }
     }
-
 }

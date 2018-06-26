@@ -80,6 +80,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
+    <Compile Include="Interop\Gdi32.cs" />
+    <Compile Include="RelayCommand.cs" />
     <Compile Include="UI\FpsCounterViewModel.cs" />
     <Compile Include="UI\IndicatorViewModel.cs" />
     <Compile Include="Interop\RECT.cs" />
@@ -111,8 +113,8 @@
     <Compile Include="UI\PrimaryFlightDisplayControl.xaml.cs">
       <DependentUpon>PrimaryFlightDisplayControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\FlightPlanBuidler.xaml.cs">
-      <DependentUpon>FlightPlanBuidler.xaml</DependentUpon>
+    <Compile Include="UI\FlightPlanMap.xaml.cs">
+      <DependentUpon>FlightPlanMap.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\IndicatorChart.cs" />
     <Compile Include="UI\ModeControlPanel.cs" />
@@ -165,7 +167,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\FlightPlanBuidler.xaml">
+    <Page Include="UI\FlightPlanMap.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -173,7 +175,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\MainWindow.xaml">
+    <Page Include="UI\AnalyzerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -186,13 +188,12 @@
     <Compile Include="Input\DesktopDuplicator.cs" />
     <Compile Include="Input\DesktopFrameProducer.cs" />
     <Compile Include="Input\FrameData.cs" />
-    <Compile Include="Input\FrameInputCoordinator.cs" />
     <Compile Include="Input\IFrameProducer.cs" />
     <Compile Include="Math2.cs" />
     <Compile Include="PID.cs" />
     <Compile Include="SystemManager.cs" />
-    <Compile Include="UI\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="UI\AnalyzerWindow.xaml.cs">
+      <DependentUpon>AnalyzerWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

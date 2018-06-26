@@ -36,17 +36,15 @@ namespace GTAPilot
 
             var props = new DWM_THUMBNAIL_PROPERTIES
             {
-                dwFlags =
-                    DWM_THUMBNAIL_PROPERTIES.DWM_TNP_VISIBLE +
-                    DWM_THUMBNAIL_PROPERTIES.DWM_TNP_RECTSOURCE + 
-                    DWM_THUMBNAIL_PROPERTIES.DWM_TNP_RECTDESTINATION,
+                dwFlags = DWM_TNP.DWM_TNP_VISIBLE |
+                          DWM_TNP.DWM_TNP_RECTSOURCE |
+                          DWM_TNP.DWM_TNP_RECTDESTINATION,
                 fVisible = true
             };
 
-            // TODO: should reference Metrics
-            var captionHeight = 1200 - (int)LayoutRoot.ActualHeight;
-            props.rcSource = new RECT(0, captionHeight, 1920, 1200);
-            props.rcDestination = new RECT(0, 0, 1920, (int)LayoutRoot.ActualHeight);
+            var captionHeight = Metrics.Frame.Height - (int)LayoutRoot.ActualHeight;
+            props.rcSource = new RECT(0, captionHeight, Metrics.Frame.Width, Metrics.Frame.Height);
+            props.rcDestination = new RECT(0, 0, Metrics.Frame.Width, (int)LayoutRoot.ActualHeight);
 
             DwmUpdateThumbnailProperties(handle, props);
             DwmQueryThumbnailSourceSize(handle, out var sz);

@@ -6,37 +6,38 @@ namespace GTAPilot
     {
         public static SystemManager Instance = null;
 
-        public FlightPlan FlightPlan => _computer.FlightPlan;
-        public IndicatorHandler IndicatorHost;
-        public ModeControlPanel MCP = new ModeControlPanel();
-        public FpsCounter Capture = new FpsCounter();
-        public XboxApp App => _app;
+        public FlightPlan FlightPlan { get; }
+        public IndicatorHandler IndicatorHost { get; }
+        public ModeControlPanel MCP { get; }
+        public XboxApp App { get; }
 
-        XboxApp _app;
-        FrameInputCoordinator _coordinator;
+        public FpsCounter Capture = new FpsCounter();
+
         FlightDataComputer _computer;
 
         public SystemManager()
         {
             Instance = this;
 
-            _app = new XboxApp();
-            _coordinator = new FrameInputCoordinator(_app, OnFrameArrived);
+            FlightPlan = new FlightPlan();
+            FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
+            MCP = new ModeControlPanel();
 
-            _app.Controller.ButtonPressed += Controler_ButtonPressed;
-            _app.PropertyChanged += XboxApp_PropertyChanged;
+            App = new XboxApp();
+            App.FrameProduced += XboxApp_FrameProduced;
+            App.Controller.ButtonPressed += Controler_ButtonPressed;
+            App.PropertyChanged += XboxApp_PropertyChanged;
 
-            _computer = new FlightDataComputer(MCP, _app.Controller);
-            _computer.FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
+            _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
             IndicatorHost = new IndicatorHandler(_computer);
 
-            _coordinator.Begin();
             Timeline.Begin();
         }
 
-        private void OnFrameArrived(FrameData data)
+        private void XboxApp_FrameProduced(int frameId, System.Drawing.Bitmap frame)
         {
-            IndicatorHost.HandleFrameArrived(data);
+            IndicatorHost.HandleFrameArrived(new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds));
+
             Capture.GotFrame();
         }
 
@@ -67,16 +68,15 @@ namespace GTAPilot
 
         private void XboxApp_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            // crappy, won't work for reconnect
             if (e.PropertyName == "IsConnected")
             {
-                _app.Controller.HoldRightThumbY();
+                App.Controller.HoldRightThumbY();
             }
         }
 
         internal void StopCapture()
         {
-            _app.Stop();
+            App.Stop();
         }
     }
 }

@@ -15,7 +15,12 @@ namespace GTAPilot
         public PointF Target => Points[CurrentIndex];
         public double TargetHeading => Math2.GetPolarHeadingFromLine(Target, Timeline.CurrentLocation);
 
-        public ObservableCollection<PointF> Points = new ObservableCollection<PointF>();
+        public ObservableCollection<PointF> Points { get; }
+
+        public FlightPlan()
+        {
+            Points = new ObservableCollection<PointF>();
+        }
 
         public void Load(IEnumerable<PointF> collection)
         {

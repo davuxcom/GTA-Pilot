@@ -21,10 +21,7 @@ namespace GTAPilot
 
             Directory.CreateDirectory(dir);
 
-            StartFlushThread();
-            StartFlushThread();
-            StartFlushThread();
-            StartFlushThread();
+            for (var i = 0; i < 4; i++) StartFlushThread();
         }
 
         private void StartFlushThread()

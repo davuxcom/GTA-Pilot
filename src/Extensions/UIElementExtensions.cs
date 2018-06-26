@@ -10,7 +10,7 @@ namespace GTAPilot.Extensions
 {
     public static class UIElementExtensions
     {
-        public static T Get<T>(this UIElement element) where T : Transform
+        public static T GetTransform<T>(this UIElement element) where T : Transform
         {
             return (T)((TransformGroup)element.RenderTransform).Children.First(tr => tr is T);
         }

@@ -3,19 +3,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 namespace GTAPilot
 {
-
-    public class IndicatorChart : Canvas
+    public class IndicatorChart : Canvas, ICanTick
     {
-
         public enum IndicatorChartType
         {
             Value, Delay, InputOutput
         }
-
 
         public IndicatorViewModel Indicator
         {
@@ -33,9 +29,7 @@ namespace GTAPilot
         public static readonly DependencyProperty TypeProperty = DependencyProperty.Register(
           "Type", typeof(IndicatorChartType), typeof(IndicatorChart), new PropertyMetadata());
 
-
         int NUM_FRAMES = 200 / 2 + 1; // even with Width, hack
-        private static DispatcherTimer _tickTimer;
         private Line zeroLine;
         private Line topLine;
         private Line bottomLine;
@@ -46,14 +40,7 @@ namespace GTAPilot
 
         public IndicatorChart()
         {
-
-
-
-            if (_tickTimer == null)
-            {
-                _tickTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(App.FPS) };
-                _tickTimer.Start();
-            }
+            App.Register(this);
 
             {
                 var l = new Line();
@@ -96,11 +83,6 @@ namespace GTAPilot
                 l.StrokeThickness = 1;
                 Children.Add(l);
             }
-
-
-
-
-            _tickTimer.Tick += TickTimer_Tick;
         }
 
         private TimelineValue GetTimelineValueForIndicator(TimelineFrame frame)
@@ -181,7 +163,7 @@ namespace GTAPilot
             throw new NotImplementedException();
         }
 
-        private void TickTimer_Tick(object sender, EventArgs e)
+        public void Tick()
         {
             if (Indicator != null)
             {

@@ -7,24 +7,27 @@ namespace GTAPilot.Interop
     class DwmApi
     {
         [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern IntPtr DwmRegisterThumbnail(
-    IntPtr dest, IntPtr source);
+        internal static extern IntPtr DwmRegisterThumbnail(
+            IntPtr dest, 
+            IntPtr source);
 
         [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern void DwmUnregisterThumbnail(IntPtr hThumbnail);
+        internal static extern void DwmUnregisterThumbnail(IntPtr hThumbnail);
 
         [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern void DwmUpdateThumbnailProperties(
-            IntPtr hThumbnail, DWM_THUMBNAIL_PROPERTIES props);
+        internal static extern void DwmUpdateThumbnailProperties(
+            IntPtr hThumbnail, 
+            DWM_THUMBNAIL_PROPERTIES props);
 
         [DllImport("dwmapi.dll", PreserveSig = false)]
-        public static extern void DwmQueryThumbnailSourceSize(
-            IntPtr hThumbnail, out Size size);
+        internal static extern void DwmQueryThumbnailSourceSize(
+            IntPtr hThumbnail, 
+            out Size size);
 
         [StructLayout(LayoutKind.Sequential)]
-        public class DWM_THUMBNAIL_PROPERTIES
+        internal class DWM_THUMBNAIL_PROPERTIES
         {
-            public uint dwFlags;
+            public DWM_TNP dwFlags;
             public RECT rcDestination;
             public RECT rcSource;
             public byte opacity;
@@ -32,11 +35,16 @@ namespace GTAPilot.Interop
             public bool fVisible;
             [MarshalAs(UnmanagedType.Bool)]
             public bool fSourceClientAreaOnly;
-            public const uint DWM_TNP_RECTDESTINATION = 0x00000001;
-            public const uint DWM_TNP_RECTSOURCE = 0x00000002;
-            public const uint DWM_TNP_OPACITY = 0x00000004;
-            public const uint DWM_TNP_VISIBLE = 0x00000008;
-            public const uint DWM_TNP_SOURCECLIENTAREAONLY = 0x00000010;
         }
+
+        [Flags]
+        internal enum DWM_TNP : uint
+        {
+            DWM_TNP_RECTDESTINATION = 0x00000001,
+            DWM_TNP_RECTSOURCE = 0x00000002,
+            DWM_TNP_OPACITY = 0x00000004,
+            DWM_TNP_VISIBLE = 0x00000008,
+            DWM_TNP_SOURCECLIENTAREAONLY = 0x00000010,
+        };
     }
 }

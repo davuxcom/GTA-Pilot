@@ -1,8 +1,8 @@
-﻿<Window x:Class="GTAPilot.MainWindow"
+﻿<Window x:Class="GTAPilot.AnalyzerWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:GTAPilot"
-        Title="MainWindow"
+        Title="GTAPilot Analyzer"
         Width="800"
         Height="450"
         WindowStartupLocation="CenterScreen"
@@ -127,20 +127,6 @@
                 </ItemContainerTemplate>
             </ListView.ItemTemplate>
         </ListView>
-
-        <local:ZoomBorder x:Name="border"
-                          Grid.Column="2"
-                          Width="600"
-                          Height="600"
-                          Background="Gray"
-                          ClipToBounds="True">
-            <Viewbox>
-                <Grid>
-                    <Image Name="img" Stretch="None" />
-                    <Canvas Name="canvas" />
-                </Grid>
-            </Viewbox>
-        </local:ZoomBorder>
 
         <DockPanel Grid.Row="1"
                    Grid.Column="1"

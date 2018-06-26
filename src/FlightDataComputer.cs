@@ -7,46 +7,43 @@ namespace GTAPilot
     {
         private ModeControlPanel _mcp;
         private XboxController _control;
-        public FlightPlan FlightPlan;
+        private FlightPlan _plan;
+        private double _desiredPitch;
+        private double _desiredRoll;
+        private double _desiredHeading;
+        private double _desiredSpeed;
+        private double _desiredAltitude;
+        private PID _pitchPid;
+        private PID _rollPid;
+        private PID _speedPid;
 
-        double DesiredPitch;
-        double DesiredRoll;
-        double DesiredHeading;
-        double DesiredSpeed;
-        double DesiredAltitude;
-
-        public PID _pitch_pid;
-        public PID _roll_pid;
-        public PID _airspeed_pid;
-
-        public FlightDataComputer(ModeControlPanel mcp, XboxController control)
+        public FlightDataComputer(ModeControlPanel mcp, XboxController control, FlightPlan plan)
         {
+            _plan = plan;
             _control = control;
             _mcp = mcp;
             _mcp.PropertyChanged += MCP_PropertyChanged;
 
-            _roll_pid = new PID
+            _rollPid = new PID
             {
                 Gains = FlightComputerConfig.Roll.Gain,
                 PV = FlightComputerConfig.Roll.PV,
                 OV = FlightComputerConfig.Roll.OV,
             };
 
-            _pitch_pid = new PID
+            _pitchPid = new PID
             {
                 Gains = FlightComputerConfig.Pitch.Gain,
                 PV = FlightComputerConfig.Pitch.PV,
                 OV = FlightComputerConfig.Pitch.OV,
             };
 
-            _airspeed_pid = new PID
+            _speedPid = new PID
             {
                 Gains = FlightComputerConfig.Speed.Gain,
                 PV = FlightComputerConfig.Speed.PV,
                 OV = FlightComputerConfig.Speed.OV,
             };
-
-            FlightPlan = new FlightPlan();
         }
 
         private void MCP_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -54,61 +51,61 @@ namespace GTAPilot
             switch (e.PropertyName)
             {
                 case nameof(_mcp.VSHold) when (_mcp.VSHold):
-                    DesiredPitch = Timeline.Pitch;
-                    _mcp.VS = (int)DesiredPitch;
+                    _desiredPitch = Timeline.Pitch;
+                    _mcp.VS = (int)_desiredPitch;
                     _mcp.AltitudeHold = false;
-                    _pitch_pid.ClearError();
-                    Trace.WriteLine($"A/P: Pitch: {DesiredPitch}");
+                    _pitchPid.ClearError();
+                    Trace.WriteLine($"A/P: Pitch: {_desiredPitch}");
                     break;
                 case nameof(_mcp.BankHold) when (_mcp.BankHold):
-                    DesiredRoll = 0;
+                    _desiredRoll = 0;
                     _mcp.Bank = 0;
                     _mcp.HeadingHold = false;
                     _mcp.LNAV = false;
-                    _roll_pid.ClearError();
-                    Trace.WriteLine($"A/P: Roll: {DesiredRoll}");
+                    _rollPid.ClearError();
+                    Trace.WriteLine($"A/P: Roll: {_desiredRoll}");
                     break;
                 case nameof(_mcp.LNAV) when (_mcp.LNAV):
                     _mcp.HeadingHold = false;
                     _mcp.BankHold = false;
-                    _roll_pid.ClearError();
+                    _rollPid.ClearError();
                     Trace.WriteLine($"A/P: LNAV: On");
                     break;
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
-                    DesiredHeading = Timeline.Heading;
-                    _mcp.HDG = (int)DesiredHeading;
+                    _desiredHeading = Timeline.Heading;
+                    _mcp.HDG = (int)_desiredHeading;
                     _mcp.BankHold = false;
                     _mcp.LNAV = false;
-                    Trace.WriteLine($"A/P: Heading: {DesiredHeading}");
+                    Trace.WriteLine($"A/P: Heading: {_desiredHeading}");
                     break;
                 case nameof(_mcp.IASHold) when (_mcp.IASHold):
-                    DesiredSpeed = Timeline.Speed;
-                    _mcp.IAS = (int)DesiredSpeed;
-                    _airspeed_pid.ClearError();
-                    Trace.WriteLine($"A/P: Speed: {DesiredSpeed}");
+                    _desiredSpeed = Timeline.Speed;
+                    _mcp.IAS = (int)_desiredSpeed;
+                    _speedPid.ClearError();
+                    Trace.WriteLine($"A/P: Speed: {_desiredSpeed}");
                     break;
 
                 case nameof(_mcp.AltitudeHold) when (_mcp.AltitudeHold):
-                    DesiredAltitude = Timeline.Altitude;
-                    _mcp.ALT = (int)DesiredAltitude;
+                    _desiredAltitude = Timeline.Altitude;
+                    _mcp.ALT = (int)_desiredAltitude;
                     _mcp.VSHold = false;
-                    Trace.WriteLine($"A/P: Altitude: {DesiredAltitude}");
+                    Trace.WriteLine($"A/P: Altitude: {_desiredAltitude}");
                     break;
 
                 case nameof(_mcp.HDG):
-                    DesiredHeading = _mcp.HDG;
+                    _desiredHeading = _mcp.HDG;
                     break;
                 case nameof(_mcp.VS):
-                    DesiredPitch = _mcp.VS;
+                    _desiredPitch = _mcp.VS;
                     break;
                 case nameof(_mcp.ALT):
-                    DesiredAltitude = _mcp.ALT;
+                    _desiredAltitude = _mcp.ALT;
                     break;
                 case nameof(_mcp.IAS):
-                    DesiredSpeed = _mcp.IAS;
+                    _desiredSpeed = _mcp.IAS;
                     break;
                 case nameof(_mcp.Bank):
-                    DesiredRoll = _mcp.Bank;
+                    _desiredRoll = _mcp.Bank;
                     break;
             }
         }
@@ -138,9 +135,9 @@ namespace GTAPilot
         {
             if (double.IsNaN(Timeline.Heading)) return;
 
-            if (FlightPlan != null)
+            if (_plan != null)
             {
-                FlightPlan.UpdateLocation();
+                _plan.UpdateLocation();
             }
 
             if (_mcp.BankHold | _mcp.HeadingHold | _mcp.LNAV)
@@ -151,11 +148,11 @@ namespace GTAPilot
                     {
                         if (_mcp.LNAV)
                         {
-                            DesiredHeading = FlightPlan.TargetHeading;
-                            _mcp.HDG = DesiredHeading;
+                            _desiredHeading = _plan.TargetHeading;
+                            _mcp.HDG = _desiredHeading;
                         }
 
-                        var d = Math2.DiffAngles(Timeline.Heading, DesiredHeading);
+                        var d = Math2.DiffAngles(Timeline.Heading, _desiredHeading);
                         var sign = Math.Sign(d);
                         var ad = Math.Abs(d);
                         if (ad > 4)
@@ -163,26 +160,26 @@ namespace GTAPilot
                             var roll_angle = Math.Min(ad / 2, 25);
                             var newRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
 
-                            if (DesiredRoll > newRoll)
+                            if (_desiredRoll > newRoll)
                             {
-                                DesiredRoll -= 0.25;
+                                _desiredRoll -= 0.25;
                             }
                             else
                             {
-                                DesiredRoll += 0.25;
+                                _desiredRoll += 0.25;
                             }
 
                         }
                         else
                         {
-                            DesiredRoll = 0;
+                            _desiredRoll = 0;
                         }
                     }
 
                     Timeline.Data[id].Roll.OutputValue = Handle_Roll(
-                        _roll_pid.Compute(0, DesiredRoll - Timeline.Data[id].Roll.Value, ComputeDTForFrameId(id, (f) => f.Roll.Value)));
+                        _rollPid.Compute(0, _desiredRoll - Timeline.Data[id].Roll.Value, ComputeDTForFrameId(id, (f) => f.Roll.Value)));
                 }
-                Timeline.Data[id].Roll.SetpointValue = DesiredRoll;
+                Timeline.Data[id].Roll.SetpointValue = _desiredRoll;
             }
         }
 
@@ -192,23 +189,23 @@ namespace GTAPilot
             {
                 if (_mcp.AltitudeHold)
                 {
-                    var dx = DesiredAltitude - Timeline.Altitude;
+                    var dx = _desiredAltitude - Timeline.Altitude;
 
                     var desiredPitch = dx / 10;
 
                     if (desiredPitch > 20) desiredPitch = 20;
                     if (desiredPitch < -10) desiredPitch = -10;
 
-                    DesiredPitch = desiredPitch;
-                    _mcp.VS = DesiredPitch;
+                    _desiredPitch = desiredPitch;
+                    _mcp.VS = _desiredPitch;
                 }
 
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
                     Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(
-                        _pitch_pid.Compute(0, DesiredPitch - Timeline.Data[id].Pitch.Value, ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
+                        _pitchPid.Compute(0, _desiredPitch - Timeline.Data[id].Pitch.Value, ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
                 }
-                Timeline.Data[id].Pitch.SetpointValue = DesiredPitch;
+                Timeline.Data[id].Pitch.SetpointValue = _desiredPitch;
             }
         }
 
@@ -219,9 +216,9 @@ namespace GTAPilot
                 if (!double.IsNaN(Timeline.Data[id].Speed.Value))
                 {
                     Timeline.Data[id].Speed.OutputValue = Handle_Throttle(
-                        _airspeed_pid.Compute(Timeline.Speed, DesiredSpeed, ComputeDTForFrameId(id, (f) => f.Speed.Value)));
+                        _speedPid.Compute(Timeline.Speed, _desiredSpeed, ComputeDTForFrameId(id, (f) => f.Speed.Value)));
                 }
-                Timeline.Data[id].Speed.SetpointValue = DesiredSpeed;
+                Timeline.Data[id].Speed.SetpointValue = _desiredSpeed;
             }
         }
 
@@ -229,7 +226,7 @@ namespace GTAPilot
         {
             if (_mcp.AltitudeHold)
             {
-                Timeline.Data[id].Heading.SetpointValue = DesiredAltitude;
+                Timeline.Data[id].Heading.SetpointValue = _desiredAltitude;
             }
         }
 
@@ -242,7 +239,7 @@ namespace GTAPilot
                     var val = Timeline.Data[id].Heading.Value;
                     if (!double.IsNaN(val))
                     {
-                        var diff = Math2.DiffAngles(val, DesiredHeading);
+                        var diff = Math2.DiffAngles(val, _desiredHeading);
                         var aDiff = Math.Abs(diff);
                         if (aDiff < 4 && aDiff > 2)
                         {
@@ -259,13 +256,9 @@ namespace GTAPilot
                                 Timeline.Data[id].Heading.OutputValue = aDiff;
                             }
                         }
-                        else
-                        {
-                            // Timeline.Data[id].Heading.OutputValue = 0;
-                        }
                     }
                 }
-                Timeline.Data[id].Heading.SetpointValue = DesiredHeading;
+                Timeline.Data[id].Heading.SetpointValue = _desiredHeading;
             }
         }
 
@@ -293,6 +286,5 @@ namespace GTAPilot
             }
             return power;
         }
-
     }
 }

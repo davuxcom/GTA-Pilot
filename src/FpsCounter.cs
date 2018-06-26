@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace GTAPilot
 {
+    // TODO: Should use high performance counters!
     public class FpsCounter
     {
         public DateTime LastFrameTime = DateTime.Now;
@@ -12,6 +13,8 @@ namespace GTAPilot
 
         private List<DateTime> Frames = new List<DateTime>();
 
+        // TODO: This design is really bad, find a high performance threadsafe version.
+        // This is poor due to wanting to avoid a lock
         public int CalculateFps()
         {
             try

@@ -34,6 +34,7 @@ namespace GTAPilot
                     FrameProduced(frameId++, frame);
                 }
             });
+            t.IsBackground = true;
             t.Priority = System.Threading.ThreadPriority.Highest;
             t.Start();
         }

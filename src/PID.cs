@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GTAPilot
+﻿namespace GTAPilot
 {
     public class PID
     {
@@ -24,11 +22,11 @@ namespace GTAPilot
         double error_prior;
         double integral;
 
-        private double ScaleValue(double value, double valuemin, double valuemax, double scalemin, double scalemax)
+        private double ScaleValue(double value, double valueMin, double valueMax, double scaleMin, double scaleMax)
         {
-            double vPerc = (value - valuemin) / (valuemax - valuemin);
-            double bigSpan = vPerc * (scalemax - scalemin);
-            return scalemin + bigSpan;
+            double vPerc = (value - valueMin) / (valueMax - valueMin);
+            double bigSpan = vPerc * (scaleMax - scaleMin);
+            return scaleMin + bigSpan;
         }
 
         private double Clamp(double value, double min, double max)

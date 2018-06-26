@@ -25,27 +25,30 @@ namespace DesktopDuplication
             User32.GetWindowRect(window, out var rectNative);
             var windowRect = rectNative.ToRect();
 
-            // NOTE: We only search the first graphics adapter!
-            var adapter = new Factory1().GetAdapter1(0);
-
-            for(var i = 0; i < adapter.GetOutputCount(); i++)
+            // Search all outputs on all adapters and find the window rect.
+            var factory = new Factory1();
+            for (var j = 0; j < factory.GetAdapterCount1(); j++)
             {
-                var output = adapter.GetOutput(i);
-                var bounds = output.Description.DesktopBounds.ToRectangle();
-                if (bounds.Contains(windowRect))
+                var adapter = factory.GetAdapter1(j);
+
+                for (var i = 0; i < adapter.GetOutputCount(); i++)
                 {
-                    Initialize(0, i);
-                    return;
+                    var output = adapter.GetOutput(i);
+                    var bounds = output.Description.DesktopBounds.ToRectangle();
+                    if (bounds.Contains(windowRect))
+                    {
+                        Initialize(0, i);
+                        return;
+                    }
                 }
             }
 
-            throw new Exception("Didn't find the XboxApp window on any monitor on the first graphics card.");
+            throw new Exception($"Didn't find the {window} window on any display output.");
         }
 
         private DesktopDuplicator(int whichGraphicsCardAdapter, int whichOutputDevice)
         {
             Initialize(whichGraphicsCardAdapter, whichOutputDevice);
-
         }
 
         private void Initialize(int whichGraphicsCardAdapter, int whichOutputDevice)
@@ -76,7 +79,17 @@ namespace DesktopDuplication
 
         public Bitmap GetLatestFrame()
         {
-            if (!RetrieveFrame()) return null;
+            if (_desktopDuplication.TryAcquireNextFrame(-1, out var frameInfo, out var desktopResource) == SharpDX.DXGI.ResultCode.WaitTimeout.Result)
+            {
+                return null;
+            }
+
+            using (var tempTexture = desktopResource.QueryInterface<Texture2D>())
+            {
+                _device.ImmediateContext.CopyResource(tempTexture, _desktopImageTexture);
+            }
+            desktopResource.Dispose();
+
             try
             {
                 return ProcessFrame();
@@ -87,21 +100,6 @@ namespace DesktopDuplication
             }
         }
 
-        private bool RetrieveFrame()
-        {
-            if (_desktopDuplication.TryAcquireNextFrame(-1, out var frameInfo, out var desktopResource) == SharpDX.DXGI.ResultCode.WaitTimeout.Result)
-            {
-                return false;
-            }
-
-            using (var tempTexture = desktopResource.QueryInterface<Texture2D>())
-            {
-                _device.ImmediateContext.CopyResource(tempTexture, _desktopImageTexture);
-            }
-            desktopResource.Dispose();
-            return true;
-        }
-        
         private Bitmap ProcessFrame()
         {
             var mapSource = _device.ImmediateContext.MapSubresource(_desktopImageTexture, 0, MapMode.Read, MapFlags.None);

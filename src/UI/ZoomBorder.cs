@@ -8,7 +8,7 @@ namespace GTAPilot
 {
     public class ZoomBorder : Border
     {
-        private UIElement child = null;
+        private UIElement child;
         private Point origin;
         private Point start;
 
@@ -43,7 +43,7 @@ namespace GTAPilot
 
         public void ScaleTo(double scale)
         {
-            var st = child.Get<ScaleTransform>();
+            var st = child.GetTransform<ScaleTransform>();
             st.ScaleX = scale;
             st.ScaleY = scale;
         }
@@ -52,8 +52,8 @@ namespace GTAPilot
         {
             if (child != null)
             {
-                var st = child.Get<ScaleTransform>();
-                var tt = child.Get<TranslateTransform>();
+                var st = child.GetTransform<ScaleTransform>();
+                var tt = child.GetTransform<TranslateTransform>();
 
                 double zoom = e.Delta > 0 ? .2 : -.2;
                 if (!(e.Delta > 0) && (st.ScaleX < .4 || st.ScaleY < .4))
@@ -78,7 +78,7 @@ namespace GTAPilot
         {
             if (child != null)
             {
-                var tt = child.Get<TranslateTransform>();
+                var tt = child.GetTransform<TranslateTransform>();
                 start = e.GetPosition(this);
                 origin = new Point(tt.X, tt.Y);
                 this.Cursor = Cursors.Hand;
@@ -101,7 +101,7 @@ namespace GTAPilot
             {
                 if (child.IsMouseCaptured)
                 {
-                    var tt = child.Get<TranslateTransform>();
+                    var tt = child.GetTransform<TranslateTransform>();
                     Vector v = start - e.GetPosition(this);
                     tt.X = origin.X - v.X;
                     tt.Y = origin.Y - v.Y;

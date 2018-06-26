@@ -9,7 +9,7 @@ We use Frida to inject a Javascript hook into XboxApp.exe, and EmguCV to interpr
 
 To control the movements of the airplane, there is a flight planner and auto-pilot modes for vertical and lateral movement.
 
-Control outputs are dictated by simple PID with the a deadzone removed and a maximum bound set.
+Control outputs are dictated by simple PID with the a dead-zone removed and a maximum bound set.
 
 ### A/P Modes:
 - HDG SEL: Heading Select, turn to and hold a heading
@@ -20,16 +20,13 @@ Control outputs are dictated by simple PID with the a deadzone removed and a max
 
 These modes approximate a 1950's style Auto pilot system, similar to the Boeing 707.
 
-### Code Quality:
-- Lots and lots of cleanup, most of the indicator code came from the prorotype and is a mess.
-
 ### Requirements:
-- 1920x1200 Screen
-- Additional screen for GTAPilot window (1920x1200)
-- 100% System DPI
-- Xbox Controller plugged in to PC
+- Display with resolution of 1920x1200
+- Additional display for GTAPilot window
+- 100% system DPI
+- Xbox Controller, plugged in to PC via USB
 - Xbox One GTA V (Xbox 360 doesn't have streaming and thus can't be used)
-- XboxApp must be streaming quality set to Very High
+- Xbox app must have streaming quality set to 'Very High'
 - Franklin must have access to Los Santos Airport
 - Must be in the Buckingham Luxor or Buckingham Shamal airplane, other types have differnet indicator positions.
 - Save point starting at LS RW3
@@ -40,8 +37,7 @@ These modes approximate a 1950's style Auto pilot system, similar to the Boeing 
 - Configure Xbox app for streaming, connect controller to PC
 - Start GTA and proceed to LS RW3 start position.
 - Start GTAPilot app
-
-The view will lock and you are ready to go.
+- The view will lock and you are ready to go.
 
 ### Knowledgebase:
 - The attitude indicator is backwards, possibly the non-Western variant.
@@ -49,6 +45,6 @@ The view will lock and you are ready to go.
 - the VS indicator doesn't match the ALT indicator, suspect the ALT is not correct and VS is.  Devise a test for this (stopwatch + constant climb/VS)
 - There are no flaps but LT=235 will give you maximum spoilers
 
-### Glossery:
+### Glossary:
 - A/P: Auto-pilot
 - LNAV: Lateral Navigation [mode]

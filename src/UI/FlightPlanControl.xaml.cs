@@ -10,7 +10,6 @@ namespace GTAPilot
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-
         public ObservableCollection<System.Drawing.PointF> Points => _plan.Points;
 
         private FlightPlan _plan;

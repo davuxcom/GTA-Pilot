@@ -1,20 +1,17 @@
-﻿using System;
+﻿using GTAPilot.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using GTAPilot.Extensions;
 
 namespace GTAPilot
 {
-    public partial class FlightPlanBuidler : Window
+    public partial class FlightPlanMap : Window
     {
-        public static int FlightPlanScaleFactor = 5;
-
         public class Position
         {
             public Point pt;
@@ -28,16 +25,16 @@ namespace GTAPilot
         public ObservableCollection<Position> Positions { get; }
         public List<System.Drawing.PointF> Points { get; }
 
-        public FlightPlanBuidler(System.Drawing.PointF[] points)
+        public FlightPlanMap(System.Drawing.PointF[] points)
         {
             InitializeComponent();
 
-            img.Source = new BitmapImage(new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png")));
+            img.Source = new BitmapImage(Metrics.Map_Zoom4_Full_20);
 
             Positions = new ObservableCollection<Position>();
             Points = new List<System.Drawing.PointF>();
 
-            foreach (var p in points) AddPosition(new Point(p.X / FlightPlanScaleFactor, p.Y / FlightPlanScaleFactor));
+            foreach (var p in points) AddPosition(new Point(p.X / Metrics.SCALE_Map_20_TO_100, p.Y / Metrics.SCALE_Map_20_TO_100));
 
             DataContext = this;
         }
@@ -77,7 +74,7 @@ namespace GTAPilot
             lastPoint = pt;
 
             Positions.Add(new Position { pt = pt });
-            Points.Add(new System.Drawing.PointF((float)pt.X * FlightPlanScaleFactor, (float)pt.Y * FlightPlanScaleFactor));
+            Points.Add(new System.Drawing.PointF((float)pt.X * Metrics.SCALE_Map_20_TO_100, (float)pt.Y * Metrics.SCALE_Map_20_TO_100));
         }
     }
 }

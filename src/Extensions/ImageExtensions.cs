@@ -1,22 +1,18 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GTAPilot.Extensions
 {
     public static class ImageExtensions
     {
+        // Same as Copy but with a check that the ROI is in the bounds, and if not, to adjust it such that
+        // it doesn't copy past the edge of the image.
         public static Image<TColor, TDepth> SafeCopy<TColor, TDepth>(this Image<TColor, TDepth> img, Rectangle roi)
             where TColor : struct, IColor
             where TDepth : new()
         {
-            // Verify roi fits
             if (roi.Location.X + roi.Width > img.Size.Width)
             {
                 roi.Location = new Point(img.Size.Width - roi.Width, roi.Location.Y);
@@ -35,12 +31,12 @@ namespace GTAPilot.Extensions
         where TDepth : new()
         {
             var ct = img.CountNonzero()[0];
-
             var sz = img.Size.Width * img.Size.Height;
-
             return (double)ct / (double)sz;
         }
 
+        // InRange but with a dynamic low bound that is tied to the DynHsv which tunes a value to reach
+        // a certain number of ON pixels as a precent of image size.
         public static Image<Gray, byte> DynLowInRange(this Image<Hsv, byte> img, DynHsv lower, Hsv higher)
         {
             var ret = img.InRange(lower.GetHsv(), higher);
@@ -48,20 +44,14 @@ namespace GTAPilot.Extensions
             int rev = 0;
             while (lower.RespondToResult(ret.CountNonzeroAsPercentage()))
             {
-                rev++;
-
                 ret = img.InRange(lower.GetHsv(), higher);
 
-                var ct = ret.CountNonzeroAsPercentage();
-              //  Trace.WriteLine("ADJUST: " + ct);
-
-                if (rev > 100)
+                if (++rev > 100)
                 {
-                    Trace.WriteLine("ERROR: DynLowInRange exceeded 100");
+                    Trace.WriteLine("ERROR: DynLowInRange exceeded 100 attempts.");
                     break;
                 }
             }
-
             return ret;
         }
     }

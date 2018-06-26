@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Timers;
 using System.Windows;
 
@@ -24,6 +23,8 @@ namespace GTAPilot
 
         private void TickTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
+            // We do this with a background thread and synchronously in order to avoid queue starvation
+            // on the dispatcher. Bindings were observed to be unserviced indefinitely.
             App.Current.Dispatcher.Invoke(() =>
             {
                 foreach (var t in _ticks)

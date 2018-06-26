@@ -11,7 +11,7 @@ namespace GTAPilot
         public RelayCommand FlightPlanEdit { get; }
         public RelayCommand Analyze { get; }
 
-        private MainWindow _analyze = new MainWindow();
+        private AnalyzerWindow _analyze = new AnalyzerWindow();
 
         public ImmersiveOverlayWindow()
         {
@@ -20,7 +20,7 @@ namespace GTAPilot
             var plan = SystemManager.Instance.FlightPlan;
             FlightPlanEdit = new RelayCommand(() =>
             {
-                var editor = new FlightPlanBuidler(plan.Points.ToArray());
+                var editor = new FlightPlanMap(plan.Points.ToArray());
                 editor.ShowDialog();
 
                 plan.Load(editor.Points);

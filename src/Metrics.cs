@@ -13,5 +13,7 @@ namespace GTAPilot
         public static readonly PointF WorldSize = new PointF(6000, 6000);
 
         public static Uri Map_Zoom4_Full_20 => new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png"));
+
+        public static readonly int SCALE_Map_20_TO_100 = 5;
     }
 }

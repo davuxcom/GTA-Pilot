@@ -26,8 +26,6 @@ namespace GTAPilot.Indicators
             Value = _indicator.ReadValue(data, ref debugState);
             Image = debugState;
 
-            
-
             if (double.IsNaN(Value))
             {
                 BadFrames.Add(data.Id);

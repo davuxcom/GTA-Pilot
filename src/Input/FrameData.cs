@@ -1,13 +1,12 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 
 namespace GTAPilot
 {
     class FrameData
     {
-        public Bitmap Frame { get; set; }
-        public int FrameId { get; set; }
-        public double Seconds { get; set; }
+        public Bitmap Frame { get; }
+        public int FrameId { get; }
+        public double Seconds { get; }
 
         public FrameData(int frameId, Bitmap frame, double seconds)
         {

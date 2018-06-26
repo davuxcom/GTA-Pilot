@@ -7,9 +7,9 @@ namespace GTAPilot
         public event PropertyChangedEventHandler PropertyChanged;
 
         public int FPS => _counter.Fps;
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        FpsCounter _counter;
+        private FpsCounter _counter;
 
         public FpsCounterViewModel(FpsCounter counter, string name)
         {

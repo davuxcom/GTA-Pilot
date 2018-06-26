@@ -158,7 +158,7 @@ namespace GTAPilot
                 }
             }
 
-            Timeline.Data[data.Id].IsComplete = true;
+            Timeline.Data[data.Id].IsDataComplete = true;
         }
     }
 }

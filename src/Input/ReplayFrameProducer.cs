@@ -29,6 +29,7 @@ namespace GTAPilot
                     if (_currentId >= _frames.Length) _currentId = 0;
                 }
             });
+            t.IsBackground = true;
             t.Priority = ThreadPriority.Highest;
             t.Start();
         }
