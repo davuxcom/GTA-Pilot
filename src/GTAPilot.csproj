@@ -89,9 +89,6 @@
       <DependentUpon>FlightPlanControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="ICanTick.cs" />
-    <Compile Include="UI\ControlPanelControl.xaml.cs">
-      <DependentUpon>ControlPanelControl.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Extensions\UIElementExtensions.cs" />
     <Compile Include="FlightComputerConfig.cs" />
     <Compile Include="FlightDataComputer.cs" />
@@ -140,10 +137,6 @@
     <Compile Include="UI\ZoomBorder.cs" />
     <Compile Include="XboxApp.cs" />
     <Page Include="UI\FlightPlanControl.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\ControlPanelControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
