@@ -1,5 +1,5 @@
-﻿using Emgu.CV.Structure;
-using GTAPilot.Extensions;
+﻿using GTAPilot.Extensions;
+using GTAPilot.Indicators;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,24 +9,19 @@ using System.Threading;
 
 namespace GTAPilot
 {
-    public class CompassExtendedFrame
-    {
-        public double LastN = double.NaN;
-        public double LastE = double.NaN;
-        public double LastS = double.NaN;
-        public double LastW = double.NaN;
-        public double Bias = double.NaN;
-        public double RollBias = double.NaN;
-    }
-
     public class TimelineValue
     {
+        // Sampled data value from the indicator image.
         public double Value = double.NaN;
         public double SecondsWhenComputed = double.NaN;
-
+        // Controller output we are sending.
         public double OutputValue = double.NaN;
+        // Controller input read from XInputGetState in XboxApp.exe (controller values from manually manipulating it)
         public double InputValue = double.NaN;
+        // Desired state value at the time.
         public double SetpointValue = double.NaN;
+
+        public object ForIndicatorUse;
     }
 
     public class TimelineFrame
@@ -39,10 +34,6 @@ namespace GTAPilot
         public TimelineValue Roll = new TimelineValue();
         public TimelineValue Pitch = new TimelineValue();
         public TimelineValue Altitude = new TimelineValue();
-
-        // TODO: Factor into TimelineValue.Tag or some such.
-        public CompassExtendedFrame Extended = new CompassExtendedFrame();
-        internal CircleF RollHint;
 
         public PointF Location;
         public bool IsDataComplete;
@@ -162,6 +153,8 @@ namespace GTAPilot
             }
             else
             {
+                // TODO: something is wonky below, if we aren't in high-FPS on all indicators we are not using all
+                // available data to compute the location change.
                 TimelineFrame oldFrame;
                 if (!double.IsNaN(newFrame.Heading.Value) && !double.IsNaN(newFrame.Speed.Value))
                 {
@@ -188,19 +181,20 @@ namespace GTAPilot
         {
             var timeDelta = newFrame.Seconds - oldFrame.Seconds;
 
-            var speedInKnotsPerHour = newFrame.Speed.Value;
-            // TODO: Factor into a const
-            var KnotsPerSecondToMetersPerSecond = 0.51444444444;
-            var MetersPerSecond = speedInKnotsPerHour * KnotsPerSecondToMetersPerSecond;
+            double speedInKnotsPerHour = newFrame.Speed.Value;
+            const double KnotsPerSecondToMetersPerSecond = 0.51444444444;
+            double MetersPerSecond = speedInKnotsPerHour * KnotsPerSecondToMetersPerSecond;
             // TODO: Scale factor for 'world' to Zoom4_FULL?
-            var scale = 1 / 3.32;
+            const double scale = 1 / 3.32;
 
             double heading = newFrame.Heading.Value;
+            var extended = (YawIndicator.CompassExtendedFrame)newFrame.Heading.ForIndicatorUse;
 
-            if (!double.IsNaN(newFrame.Extended.Bias) &&
-                !double.IsNaN(newFrame.Extended.RollBias))
+            // TODO: Figure out/remove/fix/verify all this bias stuff.
+            if (!double.IsNaN(extended.Bias) &&
+                !double.IsNaN(extended.RollBias))
             {
-                heading = heading - newFrame.Extended.Bias + (newFrame.Extended.RollBias + 1.4);
+                heading = heading - extended.Bias + (extended.RollBias + 1.4);
             }
 
             return new PointF((float)(Math.Sin(Math2.ToRad(heading)) * (scale * MetersPerSecond * timeDelta)),

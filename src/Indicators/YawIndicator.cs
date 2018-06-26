@@ -15,6 +15,17 @@ namespace GTAPilot.Indicators
 {
     class YawIndicator : ISimpleIndicator
     {
+        public class CompassExtendedFrame
+        {
+            public double LastN = double.NaN;
+            public double LastE = double.NaN;
+            public double LastS = double.NaN;
+            public double LastW = double.NaN;
+            public double Bias = double.NaN;
+            public double RollBias = double.NaN;
+        }
+
+
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Heading;
 
@@ -185,6 +196,7 @@ namespace GTAPilot.Indicators
 
         double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame)
         {
+            
             var my_frameref = Timeline.Data[frameId];
             TimelineFrame last_frameref = null;
 
@@ -270,17 +282,17 @@ namespace GTAPilot.Indicators
                     if (last_frameref != null &&
                        (my_frameref.Seconds - last_frameref.Seconds) < 1000)
                     {
-
+                        var extended = (CompassExtendedFrame)last_frameref.Heading.ForIndicatorUse;
                         if (str != "N" &&
                             str != "E" &&
                             str != "S" &&
                             str != "W")
                         {
 
-                            var dN = Math.Abs(Math2.DiffAngles(pack.Item2, last_frameref.Extended.LastN));
-                            var dE = Math.Abs(Math2.DiffAngles(pack.Item2, last_frameref.Extended.LastE));
-                            var dS = Math.Abs(Math2.DiffAngles(pack.Item2, last_frameref.Extended.LastS));
-                            var dW = Math.Abs(Math2.DiffAngles(pack.Item2, last_frameref.Extended.LastW));
+                            var dN = Math.Abs(Math2.DiffAngles(pack.Item2, extended.LastN));
+                            var dE = Math.Abs(Math2.DiffAngles(pack.Item2, extended.LastE));
+                            var dS = Math.Abs(Math2.DiffAngles(pack.Item2, extended.LastS));
+                            var dW = Math.Abs(Math2.DiffAngles(pack.Item2, extended.LastW));
 
                             //  var diffs = new List<double> { dN, dE, dS, dW };
 
@@ -317,28 +329,30 @@ namespace GTAPilot.Indicators
 
                         b.Inflate(2, 2);
 
+                        var extended = (CompassExtendedFrame)last_frameref.Heading.ForIndicatorUse;
+
                         switch (str)
                         {
                             case "N":
-                                my_frameref.Extended.LastN = pack.Item2;
+                                extended.LastN = pack.Item2;
                                 new_heading = small_angle;
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Blue).MCvScalar, 1);
 
                                 break;
                             case "E":
-                                my_frameref.Extended.LastE = pack.Item2;
+                                extended.LastE = pack.Item2;
                                 new_heading = (small_angle + 90);
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Yellow).MCvScalar, 1);
 
                                 break;
                             case "S":
-                                my_frameref.Extended.LastS = pack.Item2;
+                                extended.LastS = pack.Item2;
                                 new_heading = (small_angle + 180);
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Red).MCvScalar, 1);
 
                                 break;
                             case "W":
-                                my_frameref.Extended.LastW = pack.Item2;
+                                extended.LastW = pack.Item2;
                                 new_heading = (small_angle + 270);
                                 CvInvoke.Rectangle(compass_frame, b, new Bgr(Color.Lime).MCvScalar, 1);
 
@@ -384,28 +398,30 @@ namespace GTAPilot.Indicators
                     var o_angle = unused_angle;
                     unused_angle = 360 - Math.Abs(unused_angle);
 
+                    var extended = (CompassExtendedFrame)last_frameref.Heading.ForIndicatorUse;
+
                     double new_heading = 0;
                     switch (str)
                     {
                         case "N":
-                            my_frameref.Extended.LastN = o_angle;
+                            extended.LastN = o_angle;
                             new_heading = unused_angle;
 
                             break;
                         case "E":
-                            my_frameref.Extended.LastE = o_angle;
+                            extended.LastE = o_angle;
 
                             new_heading = (unused_angle + 90);
 
                             break;
                         case "S":
-                            my_frameref.Extended.LastS = o_angle;
+                            extended.LastS = o_angle;
 
                             new_heading = (unused_angle + 180);
 
                             break;
                         case "W":
-                            my_frameref.Extended.LastW = o_angle;
+                            extended.LastW = o_angle;
 
                             new_heading = (unused_angle + 270);
 

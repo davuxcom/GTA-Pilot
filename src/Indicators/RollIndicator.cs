@@ -202,9 +202,11 @@ namespace GTAPilot.Indicators
         {
             ret = default(CircleF);
 
-            if (!Timeline.Data[data.Id].RollHint.Equals(ret))
+            var hint = (CircleF)Timeline.Data[data.Id].Roll.ForIndicatorUse;
+
+            if (!ret.Equals(hint))
             {
-                ret = Timeline.Data[data.Id].RollHint;
+                ret = hint;
                 return true;
             }
 
@@ -227,7 +229,7 @@ namespace GTAPilot.Indicators
             rollIndicatorCicle.Radius = 64;
             rollIndicatorCicle.Center = rollIndicatorCicle.Center.Add(MovementRect.Location);
             ret = rollIndicatorCicle;
-            Timeline.Data[data.Id].RollHint = ret;
+            Timeline.Data[data.Id].Roll.ForIndicatorUse = ret;
             return true;
         }
     }

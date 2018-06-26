@@ -58,6 +58,7 @@ namespace GTAPilot
                 _stage5.Enqueue(d);
             });
 
+            // TOD: Yaw needs better performance such that two threads aren't required.
             StartWorkerThread(_stage5, (d) =>
             {
                 Tick5(d);
@@ -143,6 +144,7 @@ namespace GTAPilot
             _computer.OnCompassDataSampled(data.Id);
             Timeline.Data[data.Id].Heading.SecondsWhenComputed = doneTime;
 
+            // TODO: This is a hack, should be part of the indicator logic itself.
             var prev = Timeline.LatestFrame(d => d.Heading.Value, data.Id);
             if (prev != null && !double.IsNaN(Timeline.Data[data.Id].Heading.Value))
             {
