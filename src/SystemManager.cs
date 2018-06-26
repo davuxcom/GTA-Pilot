@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using GTAPilot.Interop;
+using System;
+using System.Diagnostics;
 
 namespace GTAPilot
 {
@@ -13,7 +15,7 @@ namespace GTAPilot
 
         public FpsCounter Capture = new FpsCounter();
 
-        FlightDataComputer _computer;
+        private FlightDataComputer _computer;
 
         public SystemManager()
         {
@@ -26,12 +28,33 @@ namespace GTAPilot
             App = new XboxApp();
             App.FrameProduced += XboxApp_FrameProduced;
             App.Controller.ButtonPressed += Controler_ButtonPressed;
+            App.Controller.ControllerInput += Controller_ControllerInput;
             App.PropertyChanged += XboxApp_PropertyChanged;
 
             _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
             IndicatorHost = new IndicatorHandler(_computer);
 
             Timeline.Begin();
+        }
+
+        private void Controller_ControllerInput(object sender, XboxController.ControllerMessage controllerMsg)
+        {
+            var frameId = Timeline.LastFrameId;
+
+            SetValueAndHistory(frameId, (id) => Timeline.Data[id].Roll, controllerMsg.LEFT_THUMB_X + ushort.MaxValue / 2);
+            SetValueAndHistory(frameId, (id) => Timeline.Data[id].Pitch, controllerMsg.LEFT_THUMB_Y + ushort.MaxValue / 2);
+            SetValueAndHistory(frameId, (id) => Timeline.Data[id].Speed, controllerMsg.RIGHT_TRIGGER);
+        }
+
+        private void SetValueAndHistory(int frameId, Func<int, TimelineValue> getFrame, double value)
+        {
+            var thisFrame = getFrame(frameId);
+
+            do
+            {
+                thisFrame.InputValue = value;
+                thisFrame = getFrame(--frameId);
+            } while (frameId > 1 && double.IsNaN(thisFrame.InputValue));
         }
 
         private void XboxApp_FrameProduced(int frameId, System.Drawing.Bitmap frame)
@@ -41,11 +64,11 @@ namespace GTAPilot
             Capture.GotFrame();
         }
 
-        private void Controler_ButtonPressed(object sender, XboxController.XInputButtons e)
+        private void Controler_ButtonPressed(object sender, XINPUT_GAMEPAD_BUTTONS e)
         {
             switch (e)
             {
-                case XboxController.XInputButtons.BACK:
+                case XINPUT_GAMEPAD_BUTTONS.BACK:
                     if (MCP.BankHold || MCP.HeadingHold || MCP.VSHold || MCP.AltitudeHold || MCP.IASHold | MCP.LNAV)
                     {
                         MCP.BankHold = false;

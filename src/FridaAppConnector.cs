@@ -44,13 +44,15 @@ namespace GTAPilot
 
         public void ConnectAsync(uint processId, string scriptContent)
         {
-            new Thread(() =>
+            var t = new Thread(() =>
             {
-                WorkerThread(processId, scriptContent);
-            }).Start();
+                WorkerThreadProc(processId, scriptContent);
+            });
+            t.IsBackground = true;
+            t.Start();
         }
 
-        private void WorkerThread(uint processId, string scriptContent)
+        private void WorkerThreadProc(uint processId, string scriptContent)
         {
             try
             {
@@ -68,7 +70,7 @@ namespace GTAPilot
 
                 Dispatcher.Run();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 TraceLine(ex.ToString());
                 OnDisconnected();
@@ -89,7 +91,6 @@ namespace GTAPilot
                 else if (msg.type == "error")
                 {
                     OnErrorMessage(msg);
-
                     OnDisconnected();
                 }
                 else if (msg.type == "send")
@@ -130,6 +131,8 @@ namespace GTAPilot
         {
             IsConnected = false;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
+
+            Dispatcher.CurrentDispatcher.InvokeShutdown();
         }
     }
 }
