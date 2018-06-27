@@ -41,7 +41,7 @@ var Struct = function (structInfo) {
     };
 
     function LookupType(stringType) {
-        for (var type in TypeMap) { if (stringType == type) { return TypeMap[type]; } }
+        for (var type in TypeMap) { if (stringType === type) { return TypeMap[type]; } }
         throw Error("Didn't find " + JSON.stringify(stringType) + " in TypeMap");
     }
 
@@ -58,7 +58,7 @@ var Struct = function (structInfo) {
     var base_ptr_size = 0;
     for (var member in structInfo) {
         var member_size = 0;
-        if (member == "union") {
+        if (member === "union") {
             var union = structInfo[member];
             for (var union_member in union) {
                 var union_member_type = union[union_member];
@@ -185,13 +185,13 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
         })
         controllerStateData.base_ptr = pState;
 
-        for (var input in SavedState) {
-            SavedState[input] = controllerStateData[input];
+        for (var entry in SavedState) {
+            SavedState[entry] = controllerStateData[entry];
         }
 
-        for (var btn in ButtonTicksBackoff) {
-            if (ButtonTicksBackoff[btn]) {
-                ButtonTicksBackoff[btn]--;
+        for (var btnTicks in ButtonTicksBackoff) {
+            if (ButtonTicksBackoff[btnTicks]) {
+                ButtonTicksBackoff[btnTicks]--;
             }
         }
 
@@ -200,11 +200,11 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
         //send(JSON.stringify(SavedState));
 
         for (var input in SavedState) {
-            if (input == "Buttons") {
+            if (input === "Buttons") {
                 for (var btn in XInputButtons) {
                     // Collect buttons and send events.
                     if (controllerStateData.Buttons & XInputButtons[btn]) {
-                        if (ButtonTicksBackoff[btn] == 0) {
+                        if (ButtonTicksBackoff[btn] === 0) {
                             ButtonTicksBackoff[btn] = 20;
                             OnButtonPressed(XInputButtons[btn]);
                         }
@@ -214,11 +214,11 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
                 // Disable back/view.
                 controllerStateData.Buttons &= ~XInputButtons.BACK;
 
-                for (var btn in XInputButtons) {
+                for (var replaceBtn in XInputButtons) {
                     // Replace buttons
-                    if (NextState[btn]) {
-                        controllerStateData.Buttons |= XInputButtons[btn]
-                        NextState[btn]--;
+                    if (NextState[replaceBtn]) {
+                        controllerStateData.Buttons |= XInputButtons[replaceBtn]
+                        NextState[replaceBtn]--;
                     }
                 }
             } else {

@@ -82,7 +82,7 @@
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
     <Compile Include="Interop\Gdi32.cs" />
     <Compile Include="Interop\XINPUT_GAMEPAD.cs" />
-    <Compile Include="RelayCommand.cs" />
+    <Compile Include="UI\RelayCommand.cs" />
     <Compile Include="UI\FpsCounterViewModel.cs" />
     <Compile Include="UI\IndicatorViewModel.cs" />
     <Compile Include="Interop\RECT.cs" />
@@ -115,7 +115,7 @@
       <DependentUpon>FlightPlanMap.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\IndicatorChart.cs" />
-    <Compile Include="UI\ModeControlPanel.cs" />
+    <Compile Include="ModeControlPanel.cs" />
     <Compile Include="XboxController.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />

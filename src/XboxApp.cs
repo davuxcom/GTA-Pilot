@@ -8,16 +8,20 @@ using System.Reflection;
 
 namespace GTAPilot
 {
+    // XboxApp locates the window/app and maintains the Frida connection.
+    // We capture frames from the display containing the window, and 
+    // send/receive controller input.
     class XboxApp : INotifyPropertyChanged, IFrameProducer
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event Action<int, Bitmap> FrameProduced;
 
-        public IntPtr WindowHandle { get; private set; }
         public bool IsConnected { get; private set; }
-        public XboxController Controller { get; private set; }
-        public FpsCounter Capture { get; private set; }
+        public IntPtr WindowHandle { get; }
+        public XboxController Controller { get; }
+        public FpsCounter Capture { get; }
 
+        private static readonly string s_scriptResourceName = "GTAPilot.XboxApp.js";
         private DesktopFrameProducer _desktopFrameProducer;
         private FridaAppConnector _fridaConnector;
 
@@ -27,27 +31,29 @@ namespace GTAPilot
             _fridaConnector.PropertyChanged += FridaAppConnector_PropertyChanged;
             Controller = new XboxController(_fridaConnector);
             Capture = new FpsCounter();
-
             WindowHandle = GetWindow();
-            if (WindowHandle != IntPtr.Zero)
-            {
-                ConnectAsync();
-            }
 
-            // TODO: Listen for window changes and connect/disconnect
+            if (WindowHandle == IntPtr.Zero) throw new Exception("Xbox app is not running.");
+
+            ConnectAsync();
+        }
+
+        public void Begin()
+        {
+            _desktopFrameProducer.Begin();
+        }
+
+        public void Stop()
+        {
+            _desktopFrameProducer.Stop();
         }
 
         private void ConnectAsync()
         {
             _fridaConnector.ConnectAsync((uint)Process.GetProcessesByName("xboxapp")[0].Id, GetScriptContent());
 
-            if (_desktopFrameProducer != null)
-            {
-                _desktopFrameProducer.FrameProduced -= DesktopFrameProducer_FrameProduced;
-                _desktopFrameProducer = null;
-            }
+            Debug.Assert(_desktopFrameProducer == null);
 
-            // TODO: Find screen from window location
             _desktopFrameProducer = new DesktopFrameProducer(GetWindow());
             _desktopFrameProducer.FrameProduced += DesktopFrameProducer_FrameProduced;
 
@@ -58,18 +64,8 @@ namespace GTAPilot
         {
             if (e.PropertyName == nameof(_fridaConnector.IsConnected))
             {
-                if (_fridaConnector.IsConnected)
-                {
-                    IsConnected = true;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
-                }
-                else
-                {
-                    // TODO: reconnect logic
-
-                    IsConnected = false;
-                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
-                }
+                IsConnected = _fridaConnector.IsConnected;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsConnected)));
             }
         }
 
@@ -83,21 +79,11 @@ namespace GTAPilot
 
         private static string GetScriptContent()
         {
-            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GTAPilot.XboxApp.js"))
+            using (Stream stream = Assembly.GetExecutingAssembly().GetManifestResourceStream(s_scriptResourceName))
             using (StreamReader reader = new StreamReader(stream))
             {
                 return reader.ReadToEnd();
             }
-        }
-
-        public void Begin()
-        {
-            _desktopFrameProducer.Begin();
-        }
-
-        public void Stop()
-        {
-            _desktopFrameProducer.Stop();
         }
     }
 }
