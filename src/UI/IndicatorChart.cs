@@ -102,7 +102,15 @@ namespace GTAPilot
         {
             if (Type == IndicatorChartType.Delay)
             {
-                return GetTimelineValueForIndicator(frame).SecondsWhenComputed;
+                switch (Indicator.Type)
+                {
+                    case IndicatorType.Roll: return frame.Roll.SecondsWhenComputed;
+                    case IndicatorType.Pitch: return frame.Pitch.SecondsWhenComputed - frame.Roll.SecondsWhenComputed;
+                    case IndicatorType.Speed: return frame.Speed.SecondsWhenComputed - frame.Pitch.SecondsWhenComputed;
+                    case IndicatorType.Altitude: return frame.Altitude.SecondsWhenComputed - frame.Speed.SecondsWhenComputed;
+                    case IndicatorType.Yaw: return frame.Heading.SecondsWhenComputed - frame.Altitude.SecondsWhenComputed ;
+                    default: throw new NotImplementedException();
+                }
             }
             else if (Type == IndicatorChartType.Value)
             {

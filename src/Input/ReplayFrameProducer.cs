@@ -2,7 +2,6 @@
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace GTAPilot
@@ -12,23 +11,55 @@ namespace GTAPilot
         public event Action<int, Bitmap> FrameProduced;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public int FrameCount => _frames.Length;
+        public int FrameCount => _framePaths.Length;
         public int CurrentFrame => _currentId;
         public bool IsPaused => _isPaused;
 
-        string[] _frames;
+        string[] _framePaths;
+        Bitmap[] _frames;
         int _currentId = 0;
         bool _isPaused;
 
         public ReplayFrameProducer(string dir)
         {
-            _frames = Directory.GetFiles(dir);
+            _framePaths = Directory.GetFiles(dir);
+            _frames = new Bitmap[_framePaths.Length];
         }
 
         public void Begin()
         {
             var t = new Thread(() =>
             {
+                int loadId = 1;
+                while (true)
+                {
+                    _frames[loadId] = new Bitmap(_framePaths[loadId+=2]);
+
+                    if (loadId >= _framePaths.Length) return;
+                }
+            });
+            t.IsBackground = true;
+            t.Priority = ThreadPriority.Highest;
+            t.Start();
+
+            t = new Thread(() =>
+            {
+                int loadId = 0;
+                while (true)
+                {
+                    _frames[loadId] = new Bitmap(_framePaths[loadId+=2]);
+
+                    if (loadId >= _framePaths.Length) return;
+                }
+            });
+            t.IsBackground = true;
+            t.Priority = ThreadPriority.Highest;
+            t.Start();
+
+            t = new Thread(() =>
+            {
+                int initialDelay = 10;
+
                 while (true)
                 {
                     if (_isPaused)
@@ -37,9 +68,23 @@ namespace GTAPilot
                         continue;
                     }
 
-                    FrameProduced(_currentId, new Bitmap(_frames[_currentId++]));
+                    while (_frames[_currentId] == null) Thread.Sleep(1);
 
-                    if (_currentId >= _frames.Length) _currentId = 0;
+                    FrameProduced(_currentId, _frames[_currentId]);
+
+                    _frames[_currentId] = null;
+
+                    _currentId++;
+
+                    if (_currentId >= _framePaths.Length) _currentId = 0;
+
+                    if (initialDelay > 0)
+                    {
+                        initialDelay--;
+                        Thread.Sleep(100);
+                    }
+
+                    Thread.Sleep(1);
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentFrame)));
                 }
@@ -62,7 +107,7 @@ namespace GTAPilot
 
         internal void Seek(int value)
         {
-            _currentId = value;
+         //   _currentId = value;
         }
     }
 }

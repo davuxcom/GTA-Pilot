@@ -140,17 +140,16 @@ namespace GTAPilot
 
         void Tick5(IndicatorData data)
         {
-            var doneTime = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
             Timeline.Data[data.Id].Heading.Value = Compass.Tick(data);
 
             _computer.OnCompassDataSampled(data.Id);
-            Timeline.Data[data.Id].Heading.SecondsWhenComputed = doneTime;
+            Timeline.Data[data.Id].Heading.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
 
             // TODO: This is a hack, should be part of the indicator logic itself.
             var prev = Timeline.LatestFrame(d => d.Heading.Value, data.Id);
             if (prev != null && !double.IsNaN(Timeline.Data[data.Id].Heading.Value))
             {
-                var dT = doneTime - prev.Heading.SecondsWhenComputed;
+                var dT = Timeline.Data[data.Id].Heading.SecondsWhenComputed - prev.Heading.SecondsWhenComputed;
                 if (dT < 1)
                 {
                     var dX = Math2.DiffAngles(Timeline.Data[data.Id].Heading.Value, prev.Heading.Value);
