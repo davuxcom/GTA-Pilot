@@ -91,7 +91,7 @@ namespace GTAPilot
             var rt = PFDBackground.GetTransform<RotateTransform>();
             var tt = PFDBackground.GetTransform<TranslateTransform>();
 
-            var pitch_mult = 1.5;
+            var pitch_mult = 1.8;
             var roll_mult = -1;
 
             tt.Y = Timeline.PitchAvg * pitch_mult;

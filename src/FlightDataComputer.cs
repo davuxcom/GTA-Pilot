@@ -80,15 +80,11 @@ namespace GTAPilot
                     Trace.WriteLine($"A/P: Heading: {_desiredHeading}");
                     break;
                 case nameof(_mcp.IASHold) when (_mcp.IASHold):
-                    _desiredSpeed = Timeline.Speed;
-                    _mcp.IAS = (int)_desiredSpeed;
                     _speedPid.ClearError();
                     Trace.WriteLine($"A/P: Speed: {_desiredSpeed}");
                     break;
 
                 case nameof(_mcp.AltitudeHold) when (_mcp.AltitudeHold):
-                    _desiredAltitude = Timeline.Altitude;
-                    _mcp.ALT = (int)_desiredAltitude;
                     _mcp.VSHold = false;
                     Trace.WriteLine($"A/P: Altitude: {_desiredAltitude}");
                     break;
@@ -113,15 +109,22 @@ namespace GTAPilot
 
         double Handle_Roll(double power)
         {
-            power = RemoveDeadZone(power, 4000, 10000);
+            power = RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE);
             _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)power);
             return power;
         }
 
         double Handle_Pitch(double power)
         {
-            power = RemoveDeadZone(power, 4000, 12000);
+            // Trim:
+            //if (Timeline.Altitude > 100)
+            {
+                power += Math.Abs(Timeline.RollAvg) * 20;
+            }
+
+            power = RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE);
             power = -1 * power;
+
             _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)power);
             return power;
         }
@@ -156,24 +159,17 @@ namespace GTAPilot
                         var d = Math2.DiffAngles(Timeline.Heading, _desiredHeading);
                         var sign = Math.Sign(d);
                         var ad = Math.Abs(d);
-                        if (ad > 4)
+
+                        var roll_angle = Math.Min(ad, 25);
+                        var newRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
+
+                        if (_desiredRoll > newRoll)
                         {
-                            var roll_angle = Math.Min(ad / 2, 25);
-                            var newRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
-
-                            if (_desiredRoll > newRoll)
-                            {
-                                _desiredRoll -= 0.25;
-                            }
-                            else
-                            {
-                                _desiredRoll += 0.25;
-                            }
-
+                            _desiredRoll -= 0.25;
                         }
                         else
                         {
-                            _desiredRoll = 0;
+                            _desiredRoll += 0.25;
                         }
                     }
 
@@ -182,7 +178,6 @@ namespace GTAPilot
                 }
                 Timeline.Data[id].Roll.SetpointValue = _desiredRoll;
             }
-          //  _control.Flush();
         }
 
         internal void OnPitchDataSampled(int id)
@@ -238,34 +233,29 @@ namespace GTAPilot
         {
             if (_mcp.HeadingHold | _mcp.LNAV)
             {
-                if (_mcp.HeadingHold)
+                var val = Timeline.Data[id].Heading.Value;
+                if (!double.IsNaN(val))
                 {
-                    var val = Timeline.Data[id].Heading.Value;
-                    if (!double.IsNaN(val))
+                    var diff = Math2.DiffAngles(val, _desiredHeading);
+                    var aDiff = Math.Abs(diff);
+                    if (aDiff > 2)
                     {
-                        var diff = Math2.DiffAngles(val, _desiredHeading);
-                        var aDiff = Math.Abs(diff);
-                        if (aDiff < 4 && aDiff > 2)
-                        {
-                            aDiff = Math.Min(aDiff, 50) / 4;
+                        aDiff = Math.Min(aDiff / 4, 25);
 
-                            if (diff < 0)
-                            {
-                                _control.Press(XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER, (int)aDiff);
-                                Timeline.Data[id].Heading.OutputValue = -1 * aDiff;
-                            }
-                            else
-                            {
-                                _control.Press(XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER, (int)aDiff);
-                                Timeline.Data[id].Heading.OutputValue = aDiff;
-                            }
+                        if (diff < 0)
+                        {
+                            _control.Press(XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER, (int)aDiff);
+                            Timeline.Data[id].Heading.OutputValue = -1 * aDiff;
+                        }
+                        else
+                        {
+                            _control.Press(XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER, (int)aDiff);
+                            Timeline.Data[id].Heading.OutputValue = aDiff;
                         }
                     }
                 }
                 Timeline.Data[id].Heading.SetpointValue = _desiredHeading;
             }
-
-          //  _control.Flush();
         }
 
         private double GetTimeBetweenThisFrameAndLastGoodFrame(int thisFrameId, Func<TimelineFrame, double> finder)
@@ -278,15 +268,15 @@ namespace GTAPilot
             return 0;
         }
 
-        double RemoveDeadZone(double power, double deadzone = 4000, double max = 12000)
+        double RemoveDeadZone(double power, double deadzone, double max)
         {
             if (power > 0)
             {
-                power = Math2.MapValue(0, 12000, deadzone, max, power);
+                power = Math2.MapValue(0, FlightComputerConfig.MAX_AXIS_VALUE, deadzone, max, power);
             }
             else if (power < 0)
             {
-                power = Math2.MapValue(-1 * 12000, 0, -1 * max, -1 * deadzone, power);
+                power = Math2.MapValue(FlightComputerConfig.MIN_AXIS_VALUE, 0, -1 * max, -1 * deadzone, power);
             }
             return power;
         }

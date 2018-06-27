@@ -48,8 +48,12 @@ namespace GTAPilot
             StartWorkerThread(_stage2, (d) =>
             {
                 Tick2(d);
-                _stage3.Enqueue(d);
+                Tick3(d);
+                Tick4(d);
+
+                _stage5.Enqueue(d);
             });
+            /*
             StartWorkerThread(_stage3, (d) =>
             {
                 Tick3(d);
@@ -60,7 +64,7 @@ namespace GTAPilot
                 Tick4(d);
                 _stage5.Enqueue(d);
             });
-
+            */
             // TOD: Yaw needs better performance such that two threads aren't required.
             StartWorkerThread(_stage5, (d) =>
             {

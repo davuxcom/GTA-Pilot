@@ -8,6 +8,8 @@ namespace GTAPilot
     {
         public static SystemManager Instance = null;
 
+        public event Action<FrameData> FrameProduced;
+
         public FlightPlan FlightPlan { get; }
         public IndicatorHandler IndicatorHost { get; }
         public ModeControlPanel MCP { get; }
@@ -29,12 +31,16 @@ namespace GTAPilot
             App = new XboxApp();
 
             _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
+
+            MCP.IAS = 130;
+            MCP.ALT = 1500;
+
             IndicatorHost = new IndicatorHandler(_computer);
             Timeline.Begin();
 
             if (App.IsRunning)
             {
-                App.FrameProduced += XboxApp_FrameProduced;
+                App.FrameProduced += OnFrameProduced;
                 App.Controller.ButtonPressed += Controler_ButtonPressed;
                 App.Controller.ControllerInput += Controller_ControllerInput;
                 App.PropertyChanged += XboxApp_PropertyChanged;
@@ -43,7 +49,7 @@ namespace GTAPilot
             else
             {
                 Replay = new ReplayFrameProducer(@"C:\save\recording1");
-                Replay.FrameProduced += XboxApp_FrameProduced;
+                Replay.FrameProduced += OnFrameProduced;
                 Replay.Begin();
             }
         }
@@ -68,10 +74,13 @@ namespace GTAPilot
             } while (frameId > 1 && double.IsNaN(thisFrame.InputValue));
         }
 
-        private void XboxApp_FrameProduced(int frameId, System.Drawing.Bitmap frame)
+        private void OnFrameProduced(int frameId, System.Drawing.Bitmap frame)
         {
-            IndicatorHost.HandleFrameArrived(new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds));
+            var data = new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds);
+            IndicatorHost.HandleFrameArrived(data);
             Capture.GotFrame();
+
+            FrameProduced?.Invoke(data);
         }
 
         private void Controler_ButtonPressed(object sender, XINPUT_GAMEPAD_BUTTONS e)
@@ -90,8 +99,9 @@ namespace GTAPilot
                     }
                     else
                     {
-                        MCP.VSHold = true;
+                        MCP.AltitudeHold = true;
                         MCP.LNAV = true;
+                        MCP.IASHold = true;
                     }
                     break;
             }

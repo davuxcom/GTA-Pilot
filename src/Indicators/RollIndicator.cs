@@ -131,6 +131,7 @@ namespace GTAPilot.Indicators
                         last = current;
                     }
 
+                    // NOTE: saw this crash with boundaries.count==0
                     if (state == boundaries[0].state)
                     {
                         boundaries.Add(new PointAndCount { point = last, count = found_count, state = state });

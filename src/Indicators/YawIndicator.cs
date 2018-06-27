@@ -189,7 +189,9 @@ namespace GTAPilot.Indicators
                     if (!double.IsNaN(ret))
                     {
                         // Account for the panel view skew.
-                        ret += 1.5;
+                        ret -= 1;
+                        if (ret < 0) ret = 360 - ret;
+                        // ret += 0.5;
                         if (ret > 360)
                         {
                             ret -= 360;

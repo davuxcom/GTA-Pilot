@@ -21,7 +21,7 @@ namespace GTAPilot
         // location is los santos runway 3
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);
 
-        public static double Roll => LatestAvg(1,f => f.Roll.Value);
+        public static double Roll => LatestAvg(1, f => f.Roll.Value);
         public static double Pitch => LatestAvg(1, f => f.Pitch.Value);
         public static double Speed => LatestAvg(1, f => f.Speed.Value);
         public static double Altitude => LatestAvg(1, f => f.Altitude.Value);
@@ -107,40 +107,36 @@ namespace GTAPilot
             }
             else
             {
-                // TODO: something is wonky below, if we aren't in high-FPS on all indicators we are not using all
-                // available data to compute the location change.
-                TimelineFrame oldFrame;
-                if (!double.IsNaN(newFrame.Heading.Value) && !double.IsNaN(newFrame.Speed.Value))
-                {
-                    // Find a frame with valid speed and heading
-                    oldFrame = LatestFrame((f) => f.Heading.Value + f.Speed.Value, id - 1);
-                    if (oldFrame != null && oldFrame != newFrame)
-                    {
-                        var dx = ComputePositionChange(oldFrame, newFrame);
-                        newFrame.Location = oldFrame.Location.Add(dx);
-                        newFrame.IsLocationCalculated = true;
-                        CurrentLocation = newFrame.Location;
-                        return;
-                    }
-                }
+                var lastFrame = Data[id - 1];
 
-                // Copy from old frame
-                oldFrame = LatestFrame((f) => f.Location == default(PointF) ? double.NaN : 0, id);
-                newFrame.Location = oldFrame.Location;
-                newFrame.IsLocationCalculated = true;
-                CurrentLocation = newFrame.Location;
+                var hdg = LatestAvg(1, f => f.Heading.Value);
+                var spd = LatestAvg(1, f => f.Speed.Value);
+
+                if (!double.IsNaN(hdg) && !double.IsNaN(spd))
+                {
+                    var dx = ComputePositionChange(hdg, spd, newFrame.Seconds - lastFrame.Seconds);
+                    newFrame.Location = lastFrame.Location.Add(dx);
+                    newFrame.IsLocationCalculated = true;
+                    CurrentLocation = newFrame.Location;
+                }
+                else
+                {
+                    // We don't have a Heading or Speed, so all we can do is copy forward.
+                    newFrame.Location = lastFrame.Location;
+                    newFrame.IsLocationCalculated = true;
+                }
             }
         }
 
-        private static PointF ComputePositionChange(TimelineFrame oldFrame, TimelineFrame newFrame)
+        private static PointF ComputePositionChange(double newHeading, double newSpeed, double dT)
         {
-            var timeDeltaInSeconds = newFrame.Seconds - oldFrame.Seconds;
-            double speedInKnotsPerHour = newFrame.Speed.Value;
+            var timeDeltaInSeconds = dT;
+            double speedInKnotsPerHour = newSpeed;
             const double KnotsPerSecondToMetersPerSecond = 0.51444444444;
             double MetersPerSecond = speedInKnotsPerHour * KnotsPerSecondToMetersPerSecond;
 
-            return new PointF((float)(Math.Sin(Math2.ToRad(newFrame.Heading.Value)) * (Metrics.SCALE_METERS_TO_MAP4 * MetersPerSecond * timeDeltaInSeconds)),
-                              (float)(Math.Cos(Math2.ToRad(newFrame.Heading.Value)) * (Metrics.SCALE_METERS_TO_MAP4 * MetersPerSecond * timeDeltaInSeconds * -1)));
+            return new PointF((float)(Math.Sin(Math2.ToRad(newHeading)) * (Metrics.SCALE_METERS_TO_MAP4 * MetersPerSecond * timeDeltaInSeconds)),
+                              (float)(Math.Cos(Math2.ToRad(newHeading)) * (Metrics.SCALE_METERS_TO_MAP4 * MetersPerSecond * timeDeltaInSeconds * -1)));
         }
     }
 }

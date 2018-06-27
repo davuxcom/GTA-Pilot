@@ -84,8 +84,8 @@ namespace GTAPilot
                         Thread.Sleep(50);
                     }
 
+                    // This is manually tuned such that we don't fall behind.
                     Thread.Sleep(12);
-
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentFrame)));
                 }
