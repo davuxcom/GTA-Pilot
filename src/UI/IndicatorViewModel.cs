@@ -21,10 +21,7 @@ namespace GTAPilot
         public double Value => Math.Round(_indicator.LastGoodValue, 1);
         public double BadFrameCount => _indicator.BadFrames.Count;
         public double CachedTuningValue => _indicator.CachedTuningValue;
-        public ImageSource Img => ((Bitmap)_indicator.Image[0]?.ToBitmap()).ToImageSource();
-        public ImageSource Img2 => ((Bitmap)_indicator.Image[1]?.ToBitmap()).ToImageSource();
-        public ImageSource Img3 => ((Bitmap)_indicator.Image[2]?.ToBitmap()).ToImageSource();
-        public ImageSource Img4 => ((Bitmap)_indicator.Image[3]?.ToBitmap()).ToImageSource();
+        public ImageSource[] Img { get; }
 
         public HashSet<int> BadFrames => _indicator.BadFrames;
 
@@ -50,16 +47,20 @@ namespace GTAPilot
         {
             Name = name;
             _indicator = indicator;
+
+            Img = new ImageSource[] { null, null, null, null, null };
         }
 
         public void Tick()
         {
             if (SystemManager.Instance.IsReplay)
             {
+                for(var i = 0; i < 5; i++)
+                {
+                    Img[i] = ((Bitmap)_indicator.Image[i]?.ToBitmap()).ToImageSource();
+                }
+
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img2)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img3)));
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img4)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BadFrameCount)));
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CachedTuningValue)));

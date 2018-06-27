@@ -80,7 +80,7 @@
                             <Grid>
                                 <Image Width="250"
                                        Height="250"
-                                       Source="{Binding Img}" />
+                                       Source="{Binding Img[0]}" />
 
                                 <TextBlock Margin="4"
                                            HorizontalAlignment="Left"
@@ -141,11 +141,11 @@
 
             <Slider Name="ReplaySlider"
                     Margin="8"
-                    Value="{Binding CurrentFrame,Mode=OneWay}"
-                    ValueChanged="ReplaySlider_ValueChanged"
                     Maximum="{Binding FrameCount}"
                     Minimum="0"
-                    Orientation="Horizontal" />
+                    Orientation="Horizontal"
+                    ValueChanged="ReplaySlider_ValueChanged"
+                    Value="{Binding CurrentFrame, Mode=OneWay}" />
 
             <StackPanel Grid.Row="1"
                         HorizontalAlignment="Center"

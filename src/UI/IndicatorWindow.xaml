@@ -4,46 +4,32 @@
         xmlns:local="clr-namespace:GTAPilot"
         Title="IndicatorWindow"
         Width="1200"
+        SizeToContent="WidthAndHeight"
         Height="900">
     <Grid>
         <Grid Margin="6">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Column="0"
-                       FontSize="30"
-                       Text="{Binding Name}" />
-            <TextBlock Grid.Column="0"
-                       HorizontalAlignment="Right"
-                       FontSize="30"
-                       Text="{Binding Value}" />
-
-            <Image Grid.Row="1"
-                   Width="200"
-                   Height="200"
-                   Source="{Binding Img}" />
-            <Image Grid.Row="2"
-                   Width="200"
-                   Height="200"
-                   Source="{Binding Img2}" />
-            <Image Grid.Row="3"
-                   Width="200"
-                   Height="200"
-                   Source="{Binding Img3}" />
-            <Image Grid.Row="4"
-                   Width="200"
-                   Height="200"
-                   Source="{Binding Img4}" />
+            <WrapPanel Grid.Row="1" Orientation="Horizontal">
+                <Image Width="200"
+                       Height="200"
+                       Source="{Binding Img[0]}" />
+                <Image Width="200"
+                       Height="200"
+                       Source="{Binding Img[1]}" />
+                <Image Width="200"
+                       Height="200"
+                       Source="{Binding Img[2]}" />
+                <Image Width="200"
+                       Height="200"
+                       Source="{Binding Img[3]}" />
+                <Image Width="200"
+                       Height="200"
+                       Source="{Binding Img[4]}" />
+            </WrapPanel>
         </Grid>
     </Grid>
 </Window>

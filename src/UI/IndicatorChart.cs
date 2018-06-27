@@ -29,7 +29,7 @@ namespace GTAPilot
         public static readonly DependencyProperty TypeProperty = DependencyProperty.Register(
           "Type", typeof(IndicatorChartType), typeof(IndicatorChart), new PropertyMetadata());
 
-        int NUM_FRAMES = 250 / 4 + 1; // even with Width, hack
+        int NUM_FRAMES = 250 / 4 -1; // even with Width, hack
         private Line zeroLine;
         private Line topLine;
         private Line bottomLine;
@@ -168,7 +168,7 @@ namespace GTAPilot
             if (Indicator != null)
             {
                 double current_x = Width - 1;
-                double x_size = 250 / NUM_FRAMES; // Width / NUM_FRAMES;
+                double x_size = 250f / NUM_FRAMES;
 
                 zeroLine.X1 = 0;
                 zeroLine.X2 = Width;
