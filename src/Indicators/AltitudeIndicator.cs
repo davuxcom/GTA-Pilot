@@ -141,7 +141,7 @@ namespace GTAPilot.Indicators
                             double nextValue = GetNextValue(LastBig);
 
 
-                            var max_change = 400;
+                            var max_change = 300;
 
                             if (Math.Abs(nextValue - last_value) > max_change)
                             {

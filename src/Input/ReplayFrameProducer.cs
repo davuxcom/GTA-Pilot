@@ -35,7 +35,7 @@ namespace GTAPilot
                 {
                     _frames[loadId] = new Bitmap(_framePaths[loadId+=2]);
 
-                    if (loadId >= _framePaths.Length) return;
+                    if (loadId+2 >= _framePaths.Length) return;
                 }
             });
             t.IsBackground = true;
@@ -49,7 +49,7 @@ namespace GTAPilot
                 {
                     _frames[loadId] = new Bitmap(_framePaths[loadId+=2]);
 
-                    if (loadId >= _framePaths.Length) return;
+                    if (loadId+2 >= _framePaths.Length) return;
                 }
             });
             t.IsBackground = true;

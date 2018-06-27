@@ -101,37 +101,40 @@ namespace GTAPilot
                 case nameof(_mcp.IAS):
                     _desiredSpeed = _mcp.IAS;
                     break;
-                case nameof(_mcp.Bank):
-                    _desiredRoll = _mcp.Bank;
-                    break;
             }
         }
 
         double Handle_Roll(double power)
         {
-            power = RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE);
-            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)power);
+            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE));
             return power;
         }
 
         double Handle_Pitch(double power)
         {
             // Trim:
-            //if (Timeline.Altitude > 100)
             {
-                power += Math.Abs(Timeline.RollAvg) * 20;
+                power += Math.Abs(Timeline.RollAvg) * 30;
             }
 
-            power = RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE);
             power = -1 * power;
-
-            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)power);
+            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE));
             return power;
         }
 
         double Handle_Throttle(double throttle)
         {
-            _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, (int)throttle);
+            if (throttle > 235)
+            {
+                _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, (int)throttle - 235);
+                _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 0);
+            }
+            else
+            {
+                _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 235 - (int)throttle);
+                _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, 0);
+            }
+
             return throttle;
         }
 
@@ -141,7 +144,45 @@ namespace GTAPilot
 
             if (_plan != null)
             {
-                _plan.UpdateLocation();
+                var didAdvanceWaypoint = _plan.UpdateLocation();
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 7)
+                {
+                    _mcp.ALT = 600;
+                    _mcp.IAS = 80;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 6)
+                {
+                    _mcp.ALT = 500;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 5)
+                {
+                    _mcp.ALT = 400;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 4)
+                {
+                    _mcp.ALT = 300;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
+                {
+                    _mcp.ALT = 200;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 2)
+                {
+                    _mcp.ALT = 100;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 1)
+                {
+                    _mcp.IAS = 40;
+                    _mcp.VSHold = true;
+                    _mcp.VS = 14;
+                }
             }
 
             if (_mcp.BankHold | _mcp.HeadingHold | _mcp.LNAV)
@@ -160,8 +201,8 @@ namespace GTAPilot
                         var sign = Math.Sign(d);
                         var ad = Math.Abs(d);
 
-                        var roll_angle = Math.Min(ad, 25);
-                        var newRoll = _mcp.Bank = (int)(-1 * sign * roll_angle);
+                        var roll_angle = Math.Min(ad, 20);
+                        var newRoll = (int)(-1 * sign * roll_angle);
 
                         if (_desiredRoll > newRoll)
                         {
@@ -234,13 +275,14 @@ namespace GTAPilot
             if (_mcp.HeadingHold | _mcp.LNAV)
             {
                 var val = Timeline.Data[id].Heading.Value;
-                if (!double.IsNaN(val))
+                if (!double.IsNaN(val) && Timeline.Speed > 10)
                 {
                     var diff = Math2.DiffAngles(val, _desiredHeading);
                     var aDiff = Math.Abs(diff);
-                    if (aDiff > 2)
+
+                    if (aDiff > 1)
                     {
-                        aDiff = Math.Min(aDiff / 4, 25);
+                        aDiff = Math.Min(aDiff / 5, 10);
 
                         if (diff < 0)
                         {

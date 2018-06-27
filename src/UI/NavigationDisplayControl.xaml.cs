@@ -144,7 +144,7 @@ namespace GTAPilot
            var rt = rotHost.GetTransform<RotateTransform>();
            rt.Angle = -1 * Timeline.Heading;
 
-            HeadingText.Text = "" + Math.Round(Timeline.Heading);
+            HeadingText.Text = "" + Math.Round(Timeline.Heading,1);
         }
     }
 }

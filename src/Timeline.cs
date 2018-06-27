@@ -109,8 +109,8 @@ namespace GTAPilot
             {
                 var lastFrame = Data[id - 1];
 
-                var hdg = LatestAvg(1, f => f.Heading.Value);
-                var spd = LatestAvg(1, f => f.Speed.Value);
+                var hdg = LatestAvg(2, f => f.Heading.Value);
+                var spd = LatestAvg(4, f => f.Speed.Value);
 
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd))
                 {

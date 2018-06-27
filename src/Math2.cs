@@ -75,6 +75,16 @@ namespace GTAPilot
             return angle1 - angle2;
         }
 
+        public static double angleBetween2Lines(LineSegment2DF line1, LineSegment2DF line2)
+        {
+            double angle1 = Math.Atan2(line1.P1.Y - line1.P2.Y,
+                                       line1.P1.X - line1.P2.X);
+            double angle2 = Math.Atan2(line2.P1.Y - line2.P2.Y,
+                                       line2.P1.X - line2.P2.X);
+            //  return Math.Abs(angle1) - Math.Abs(angle2);
+            return angle1 - angle2;
+        }
+
 
         public static double MapValue(double a0, double a1, double b0, double b1, double a)
         {

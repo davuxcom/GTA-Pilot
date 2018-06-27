@@ -13,6 +13,13 @@ namespace GTAPilot
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            /*
+            var a = Math2.GetPolarHeadingFromLine(new System.Drawing.PointF(
+3624, 736), new System.Drawing.PointF(
+
+3636, 857));
+*/
+
             new SystemManager();
 
             if (SystemManager.Instance.App.IsRunning)

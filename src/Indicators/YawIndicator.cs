@@ -151,16 +151,12 @@ namespace GTAPilot.Indicators
                         {
                             LineSegment2D small_line = new LineSegment2D(Point.Round(b.Centroid), v_center_point);
                             var ang = Math2.angleBetween2Lines(small_line, baseLine);
-                            var small_angle = Math2.FixAngle(ang, v_center_point, Point.Round(b.Centroid));
-                            var biased_angle = small_angle;
-                            var angle = small_angle;
-
+                            var rotationAngle = Math2.FixAngle(ang, v_center_point, Point.Round(b.Centroid));
 
 
                             // CvInvoke.Rectangle(ProcessedFrame, box, new Bgr(Color.White).MCvScalar, 1);
 
-
-                            var rotated_frame = only_blobs.Rotate(-1 * angle, new Gray(0));
+                            var rotated_frame = only_blobs.Rotate(-1 * rotationAngle, new Gray(0));
                             {
                                 lastRotatedFrame = rotated_frame.Size;
                                 lastRect = new Rectangle(rotated_frame.Width / 2 - 30, 0, 60, 60);
@@ -171,12 +167,8 @@ namespace GTAPilot.Indicators
                                 {
                                     debugState[3] = rotated_letter_only;
                                 }
-                                else if (debugState[4] == null)
-                                {
-                                    debugState[4] = rotated_letter_only;
-                                }
 
-                                parts.Add(new CompassPack { Item1 = rotated_letter_only, Item2 = biased_angle, BlobBox = b.BoundingBox, BlobArea = b.Area });
+                                parts.Add(new CompassPack { Item1 = rotated_letter_only, Item2 = rotationAngle, BlobBox = b.BoundingBox, BlobArea = b.Area });
                             }
                         }
                         catch (Exception ex)
@@ -185,17 +177,39 @@ namespace GTAPilot.Indicators
                         }
                     }
 
-                    var ret = CompassProcFrame(data.Id, parts, focus);
+                    var ret = CompassProcFrame(data.Id, parts, focus, ref debugState);
                     if (!double.IsNaN(ret))
                     {
-                        // Account for the panel view skew.
-                        ret -= 1;
+
+                        var compass_frame = only_blobs.Rotate(ret, new Gray(0));
+                        
+                        blobs = new CvBlobs();
+                        GetBlobDetector().Detect(compass_frame, blobs);
+                        blobs.FilterByArea(25, 250);
+                        list_blobs = new List<CvBlob>();
+
+                        var list = blobs.Values.OrderBy(b => b.Centroid.Y);
+
+                        var top = list.First().Centroid;
+                        var bottom = list.Last().Centroid;
+
+                        var verticalLine = new LineSegment2DF(new PointF(focus.Size.Width / 2, 0), new PointF(focus.Size.Width / 2, focus.Size.Height));
+                        var lineFromNorthToSouth = new LineSegment2DF(top, bottom);
+                        var skewAngle = Math2.angleBetween2Lines(lineFromNorthToSouth, verticalLine);
+                        skewAngle = (skewAngle * (180 / Math.PI));
+      
+                        ret -= skewAngle;
+
+                        compass_frame = only_blobs.Rotate(ret, new Gray(0));
+
+                        debugState[4] = compass_frame;
+
+                        // Skew angle calculated from dots in the corner of the indicator.
+                        ret -= 5.66 / 2;
+
                         if (ret < 0) ret = 360 - ret;
-                        // ret += 0.5;
-                        if (ret > 360)
-                        {
-                            ret -= 360;
-                        }
+                        if (ret > 360) ret -= 360;
+
                         return ret;
                     }
                 }
@@ -203,7 +217,7 @@ namespace GTAPilot.Indicators
             return double.NaN;
         }
 
-        double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame)
+        double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame, ref object[] debugState)
         {
             
             var my_frameref = Timeline.Data[frameId];
@@ -471,16 +485,10 @@ namespace GTAPilot.Indicators
                     if (choices.Where(ct => ct.Item3 == "W").Count() > 1) return double.NaN;
 
                     var p1 = Math2.AddAngles(choices[0].Item1, choices[1].Item1);
-                    var p2 = Math2.AddAngles(choices[2].Item1, choices[3].Item1);
-                    var nextHeading = Math2.AddAngles(p1, p2);
+                     var p2 = Math2.AddAngles(choices[2].Item1, choices[3].Item1);
+                     var nextHeading = Math2.AddAngles(p1, p2);
 
-                    var copy_frame = compass_frame; //.Copy();
-
-                    compass_frame = copy_frame.Rotate(360 - nextHeading, new Bgr(Color.Black));
-
-
-
-
+                    //var nextHeading = choices.First(ct => ct.Item3 == "S").Item1;
 
                     return nextHeading;
 

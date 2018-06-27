@@ -49,12 +49,12 @@ namespace GTAPilot
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentIndex)));
         }
 
-        internal void UpdateLocation()
+        internal bool UpdateLocation()
         {
-            if (Points.Count == 0) return;
+            if (Points.Count == 0) return false;
 
             var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
-            bool isCloseToPoint = dist < 120;
+            bool isCloseToPoint = dist < 50;
             if (isCloseToPoint)
             {
                 CurrentIndex++;
@@ -70,7 +70,10 @@ namespace GTAPilot
                 {
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentIndex)));
                 }));
+                return true;
             }
+
+            return false;
         }
     }
 }

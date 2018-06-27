@@ -159,28 +159,24 @@
                      Grid.Row="2"
                      FontSize="22" />
 
-            <StackPanel Orientation="Horizontal"
-                        Grid.Row="3">
+            <StackPanel Grid.Row="3" Orientation="Horizontal">
 
                 <StackPanel Orientation="Vertical">
                     <TextBlock>VS:</TextBlock>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>P:</TextBlock>
-                        <TextBox Tag="PID"
-                                 Text="{Binding VSPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Tag="PID" Text="{Binding VSPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>I:</TextBlock>
-                        <TextBox Tag="PID"
-                                 Text="{Binding VSPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Tag="PID" Text="{Binding VSPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>D:</TextBlock>
-                        <TextBox Tag="PID"
-                                 Text="{Binding VSPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Tag="PID" Text="{Binding VSPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </StackPanel>
 
@@ -190,20 +186,17 @@
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>P:</TextBlock>
-                        <TextBox Tag="PID"
-                                 Text="{Binding RollPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Tag="PID" Text="{Binding RollPID.P, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>I:</TextBlock>
-                        <TextBox Tag="PID"
-                                 Text="{Binding RollPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Tag="PID" Text="{Binding RollPID.I, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
 
                     <StackPanel Orientation="Horizontal">
                         <TextBlock>D:</TextBlock>
-                        <TextBox Tag="PID"
-                                 Text="{Binding RollPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBox Tag="PID" Text="{Binding RollPID.D, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

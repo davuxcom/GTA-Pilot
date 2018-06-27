@@ -29,7 +29,7 @@
             Gain = new PID.Gain
             {
                 P = 1.4,
-                I = 0.2,
+                I = 0.25,
                 D = 0
             },
             PV = new PID.Range { Min = -90, Max = 90 },
@@ -44,7 +44,7 @@
                 D = 0,
             },
             PV = new PID.Range { Min = 0, Max = 175 },
-            OV = new PID.Range { Min = 0, Max = 255 },
+            OV = new PID.Range { Min = 0, Max = 255+235 },
         };
     }
 }

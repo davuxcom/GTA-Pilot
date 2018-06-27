@@ -4,8 +4,8 @@
         xmlns:local="clr-namespace:GTAPilot"
         Title="IndicatorWindow"
         Width="1200"
-        SizeToContent="WidthAndHeight"
-        Height="900">
+        Height="900"
+        SizeToContent="WidthAndHeight">
     <Grid>
         <Grid Margin="6">
             <Grid.ColumnDefinitions>
