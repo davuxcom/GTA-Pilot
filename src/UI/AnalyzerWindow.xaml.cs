@@ -108,5 +108,11 @@ namespace GTAPilot
 
             txt.Text = next.ToString();
         }
+
+        private void ReplaySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var slider = (Slider)sender;
+            SystemManager.Instance.Replay.Seek((int)slider.Value);
+        }
     }
 }

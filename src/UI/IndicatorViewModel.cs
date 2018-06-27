@@ -54,13 +54,16 @@ namespace GTAPilot
 
         public void Tick()
         {
-          //  PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img)));
-          //  PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img2)));
-          //  PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img3)));
-          //  PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img4)));
-          //  PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
-           // PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BadFrameCount)));
-          //  PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CachedTuningValue)));
+            if (SystemManager.Instance.IsReplay)
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img2)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img3)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Img4)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(BadFrameCount)));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CachedTuningValue)));
+            }
         }
     }
 }

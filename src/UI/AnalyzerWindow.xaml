@@ -17,19 +17,21 @@
             <EventSetter Event="MouseWheel" Handler="TextBox_MouseWheel" />
         </Style>
 
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="FontSize" Value="18" />
+            <Setter Property="Margin" Value="6" />
+            <Setter Property="MinWidth" Value="80" />
+        </Style>
+
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
 
-        <StackPanel Grid.RowSpan="2" Orientation="Vertical">
+        <StackPanel Orientation="Vertical">
             <ListView ItemsSource="{Binding Counters}">
                 <ListView.ItemTemplate>
                     <ItemContainerTemplate>
@@ -51,7 +53,9 @@
             </ListView>
         </StackPanel>
 
-        <ListView Grid.Column="1" ItemsSource="{Binding Indicators}">
+        <ListView Grid.Column="1"
+                  VerticalAlignment="Top"
+                  ItemsSource="{Binding Indicators}">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal" />
@@ -102,25 +106,25 @@
 
                         </Border>
 
-                        <Border Grid.Row="4" Margin="1">
+                        <Border Grid.Row="4" Margin="4">
                             <local:IndicatorChart Width="250"
-                                                  Height="250"
+                                                  Height="200"
                                                   Indicator="{Binding}"
                                                   Type="Value" />
                         </Border>
 
-                        <Border Grid.Row="5" Margin="1">
+                        <Border Grid.Row="5" Margin="4">
                             <local:IndicatorChart Width="250"
-                                                  Height="250"
-                                                  Indicator="{Binding}"
-                                                  Type="Delay" />
-                        </Border>
-
-                        <Border Grid.Row="6" Margin="1">
-                            <local:IndicatorChart Width="250"
-                                                  Height="250"
+                                                  Height="200"
                                                   Indicator="{Binding}"
                                                   Type="InputOutput" />
+                        </Border>
+
+                        <Border Grid.Row="6" Margin="4">
+                            <local:IndicatorChart Width="250"
+                                                  Height="400"
+                                                  Indicator="{Binding}"
+                                                  Type="Delay" />
                         </Border>
 
                     </Grid>
@@ -128,7 +132,35 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <DockPanel Grid.Row="1"
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Slider Name="ReplaySlider"
+                    Margin="8"
+                    Value="{Binding CurrentFrame,Mode=OneWay}"
+                    ValueChanged="ReplaySlider_ValueChanged"
+                    Maximum="{Binding FrameCount}"
+                    Minimum="0"
+                    Orientation="Horizontal" />
+
+            <StackPanel Grid.Row="1"
+                        HorizontalAlignment="Center"
+                        Orientation="Horizontal">
+                <Button Command="{Binding PlayPause}">Play / Pause</Button>
+            </StackPanel>
+
+            <ListBox Name="lstLog"
+                     Grid.Row="2"
+                     FontSize="22" />
+        </Grid>
+
+
+        <!--
+                <DockPanel Grid.Row="1"
                    Grid.Column="1"
                    LastChildFill="True">
 
@@ -172,12 +204,8 @@
 
             </StackPanel>
 
-            <ListBox Name="lstLog"
-                     Grid.Row="1"
-                     Grid.Column="1"
-                     FontSize="25" />
+
         </DockPanel>
-
-
+        -->
     </Grid>
 </Window>

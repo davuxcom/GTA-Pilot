@@ -134,7 +134,7 @@ namespace GTAPilot
         {
             if (Type == IndicatorChartType.Delay)
             {
-                return new double[] { 0, 0.1 }; // seconds
+                return new double[] { 0, 0.2 }; // seconds
             }
             else if (Type == IndicatorChartType.Value)
             {

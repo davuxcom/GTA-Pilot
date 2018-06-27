@@ -13,10 +13,10 @@ namespace GTAPilot
         public ModeControlPanel MCP { get; }
         public XboxApp App { get; }
         public FpsCounter Capture { get; }
-        public bool IsReplay => _replay != null;
+        public bool IsReplay => Replay != null;
+        public ReplayFrameProducer Replay { get; }
 
         private FlightDataComputer _computer;
-        private ReplayFrameProducer _replay;
 
         public SystemManager()
         {
@@ -42,9 +42,9 @@ namespace GTAPilot
             }
             else
             {
-                _replay = new ReplayFrameProducer(@"C:\save\recording1");
-                _replay.FrameProduced += XboxApp_FrameProduced;
-                _replay.Begin();
+                Replay = new ReplayFrameProducer(@"C:\save\recording1");
+                Replay.FrameProduced += XboxApp_FrameProduced;
+                Replay.Begin();
             }
         }
 
