@@ -17,12 +17,12 @@ namespace GTAPilot.Indicators
         {
             Counter = new FpsCounter();
             _indicator = indicator;
-            Image = new object[] { null, null, null, null };
+            Image = new object[] { null, null, null, null, null };
         }
 
         public double Tick(IndicatorData data)
         {
-            object[] debugState = new object[] { null, null, null, null };
+            object[] debugState = new object[] { null, null, null, null, null };
             Value = _indicator.ReadValue(data, ref debugState);
             Image = debugState;
 

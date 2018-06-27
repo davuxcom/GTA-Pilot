@@ -26,8 +26,7 @@ namespace GTAPilot.Indicators
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Heading;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.03, 100);
-
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.025, 100);
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
@@ -50,14 +49,14 @@ namespace GTAPilot.Indicators
 
                     debugState[0] = focus;
 
-                    vs_hsv = focus.PyrUp().PyrDown().Convert<Hsv, byte>();
+                    vs_hsv = focus.Convert<Hsv, byte>();
 
                     var vs_text = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
                     var vs_mask = vs_hsv.InRange(new Hsv(0, 0, 0), new Hsv(180, 140, 255));
                     var vs_textonly = vs_text.Copy(vs_mask);
                     var markedup_textonly = vs_textonly.Convert<Bgr, byte>();
 
-                  //  debugState[1] = markedup_textonly;
+                    debugState[1] = markedup_textonly;
 
                     CvBlobs blobs = new CvBlobs();
                     GetBlobDetector().Detect(vs_textonly, blobs);
@@ -68,7 +67,18 @@ namespace GTAPilot.Indicators
                     // Select 4 largest
                     var list_blobs = new List<CvBlob>();
                     foreach (var b in blobs) list_blobs.Add(b.Value);
+
+                    for(var i = list_blobs.Count - 1; i >= 0; i--)
+                    {
+                        var b = list_blobs[i];
+                        if (b.Centroid.Y < 5)
+                        {
+                            list_blobs.Remove(b);
+                        }
+                    }
+
                     list_blobs = list_blobs.OrderByDescending(bx => bx.Area).Take(Math.Min(4, blobs.Count)).ToList();
+
 
                     for (int i_blob = 0; i_blob < list_blobs.Count; i_blob++)
                     {
@@ -118,7 +128,7 @@ namespace GTAPilot.Indicators
                     var parts = new List<CompassPack>();
                     var only_blobs = vs_textonly.Copy(blobMask.ToImage<Gray, byte>());
 
-                    debugState[1] = only_blobs;
+                    debugState[2] = only_blobs;
 
 
                     Point v_center_point = new Point(focus.Width / 2, focus.Height / 2);
@@ -157,13 +167,13 @@ namespace GTAPilot.Indicators
 
                                 var rotated_letter_only = rotated_frame.Copy(lastRect);
 
-                                if (debugState[2] == null)
-                                {
-                                    debugState[2] = rotated_letter_only;
-                                }
-                                else if (debugState[3] == null)
+                                if (debugState[3] == null)
                                 {
                                     debugState[3] = rotated_letter_only;
+                                }
+                                else if (debugState[4] == null)
+                                {
+                                    debugState[4] = rotated_letter_only;
                                 }
 
                                 parts.Add(new CompassPack { Item1 = rotated_letter_only, Item2 = biased_angle, BlobBox = b.BoundingBox, BlobArea = b.Area });

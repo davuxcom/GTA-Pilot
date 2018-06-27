@@ -11,8 +11,8 @@ namespace GTAPilot
         public ObservableCollection<IndicatorViewModel> Indicators { get; }
 
         public RelayCommand PlayPause { get; }
-        public int FrameCount => SystemManager.Instance.Replay.FrameCount;
-        public int CurrentFrame => SystemManager.Instance.Replay.CurrentFrame;
+        public int FrameCount => SystemManager.Instance.Replay != null ? SystemManager.Instance.Replay.FrameCount : 0;
+        public int CurrentFrame => SystemManager.Instance.Replay != null ? SystemManager.Instance.Replay.CurrentFrame : 0;
 
         public PID.Gain RollPID => FlightComputerConfig.Roll.Gain;
         public PID.Gain VSPID => FlightComputerConfig.Pitch.Gain;
@@ -30,6 +30,7 @@ namespace GTAPilot
             }
             else
             {
+                PlayPause = new RelayCommand(SystemManager.Instance.Replay.PlayPause);
                 SystemManager.Instance.Replay.PropertyChanged += Replay_PropertyChanged;
             }
 
@@ -38,8 +39,6 @@ namespace GTAPilot
             Indicators.Add(new IndicatorViewModel("Speed", SystemManager.Instance.IndicatorHost.Airspeed));
             Indicators.Add(new IndicatorViewModel("Altitude", SystemManager.Instance.IndicatorHost.Altitude));
             Indicators.Add(new IndicatorViewModel("Yaw", SystemManager.Instance.IndicatorHost.Compass));
-
-            PlayPause = new RelayCommand(SystemManager.Instance.Replay.PlayPause);
         }
 
         private void Replay_PropertyChanged(object sender, PropertyChangedEventArgs e)
