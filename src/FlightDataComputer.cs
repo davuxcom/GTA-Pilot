@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GTAPilot.Interop;
+using System;
 using System.Diagnostics;
 
 namespace GTAPilot
@@ -113,7 +114,7 @@ namespace GTAPilot
         double Handle_Roll(double power)
         {
             power = RemoveDeadZone(power, 4000, 10000);
-            _control.SetLeftThumbX(power);
+            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)power);
             return power;
         }
 
@@ -121,13 +122,13 @@ namespace GTAPilot
         {
             power = RemoveDeadZone(power, 4000, 12000);
             power = -1 * power;
-            _control.SetLeftThumbY(power);
+            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)power);
             return power;
         }
 
         double Handle_Throttle(double throttle)
         {
-            _control.SetRightTrigger(throttle);
+            _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, (int)throttle);
             return throttle;
         }
 
@@ -181,6 +182,7 @@ namespace GTAPilot
                 }
                 Timeline.Data[id].Roll.SetpointValue = _desiredRoll;
             }
+          //  _control.Flush();
         }
 
         internal void OnPitchDataSampled(int id)
@@ -207,6 +209,8 @@ namespace GTAPilot
                 }
                 Timeline.Data[id].Pitch.SetpointValue = _desiredPitch;
             }
+
+            _control.Flush();
         }
 
         internal void OnSpeedDataSampled(int id)
@@ -247,12 +251,12 @@ namespace GTAPilot
 
                             if (diff < 0)
                             {
-                                _control.SetRightShoulder(aDiff);
+                                _control.Press(XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER, (int)aDiff);
                                 Timeline.Data[id].Heading.OutputValue = -1 * aDiff;
                             }
                             else
                             {
-                                _control.SetLeftShoulder(aDiff);
+                                _control.Press(XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER, (int)aDiff);
                                 Timeline.Data[id].Heading.OutputValue = aDiff;
                             }
                         }
@@ -260,6 +264,8 @@ namespace GTAPilot
                 }
                 Timeline.Data[id].Heading.SetpointValue = _desiredHeading;
             }
+
+          //  _control.Flush();
         }
 
         private double GetTimeBetweenThisFrameAndLastGoodFrame(int thisFrameId, Func<TimelineFrame, double> finder)

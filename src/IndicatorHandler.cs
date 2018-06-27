@@ -71,7 +71,7 @@ namespace GTAPilot
 
         private void StartWorkerThread(ConcurrentQueue<IndicatorData> target, Action<IndicatorData> next)
         {
-            new Thread(() =>
+            var t = new Thread(() =>
             {
                 while (true)
                 {
@@ -84,7 +84,9 @@ namespace GTAPilot
                         Thread.Sleep(1);
                     }
                 }
-            }).Start();
+            });
+            t.IsBackground = true;
+            t.Start();
         }
 
         internal void HandleFrameArrived(FrameData data)

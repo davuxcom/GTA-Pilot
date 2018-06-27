@@ -154,14 +154,17 @@ var ButtonTicksBackoff = {
     Y: 0,
 }
 
+var DefaultAxisTicks = 28;
+var ViewAxisTicks = 5000000;
+
 // Inputs missing from DefaultTicks will have their ticks set to their value.
 var DefaultTicks = {
-    RIGHT_TRIGGER: 12,
-    LEFT_TRIGGER: 12,
-    RIGHT_THUMB_X: 5000000, // View
-    RIGHT_THUMB_Y: 5000000, // View
-    LEFT_THUMB_X: 12,
-    LEFT_THUMB_Y: 12
+    RIGHT_TRIGGER: DefaultAxisTicks,
+    LEFT_TRIGGER: DefaultAxisTicks,
+    RIGHT_THUMB_X: ViewAxisTicks,
+    RIGHT_THUMB_Y: ViewAxisTicks,
+    LEFT_THUMB_X: DefaultAxisTicks,
+    LEFT_THUMB_Y: DefaultAxisTicks
 }
 
 Kernel32.LoadLibrary(Memory.allocUtf16String("XInputUAP.dll"));
@@ -206,7 +209,8 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
                     if (controllerStateData.Buttons & XInputButtons[btn]) {
                         if (ButtonTicksBackoff[btn] === 0) {
                             ButtonTicksBackoff[btn] = 20;
-                            OnButtonPressed(XInputButtons[btn]);
+
+                            send(JSON.stringify({ Type: "ButtonPress", Value: XInputButtons[btn] }));
                         }
                     }
                 }
@@ -235,13 +239,6 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
     return retValFromOriginal;
 }, 'uint', ['uint', 'pointer']));
 
-function OnButtonPressed(btn) {
-    send(JSON.stringify({
-        Type: "ButtonPress",
-        Value: btn
-    }));
-}
-
 // NOTE/BUG: When using frida node.js bindings, recv takes a string, using C# bindings it's an object
 function recv_one_message(packet) {
     try {
@@ -262,20 +259,17 @@ function recv_one_message(packet) {
     recv(recv_one_message);
 }
 
-function printInputFpsEachMinute() {
+function sendInputFpsEachMinute() {
     setTimeout(function () {
         var fps = (ticks / 60);
         ticks = 0;
 
-        send(JSON.stringify({
-            Type: "XInputFPS",
-            Value: parseInt(fps, 10)
-        }));
+        send(JSON.stringify({ Type: "XInputFPS", Value: parseInt(fps, 10) }));
 
-        printInputFpsEachMinute();
+        sendInputFpsEachMinute();
     }, 60 * 1000);
 }
 
 recv(recv_one_message);
-printInputFpsEachMinute();
+sendInputFpsEachMinute();
 console.log("Ready.");

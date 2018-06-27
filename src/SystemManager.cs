@@ -26,7 +26,6 @@ namespace GTAPilot
             FlightPlan = new FlightPlan();
             FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
             MCP = new ModeControlPanel();
-
             App = new XboxApp();
 
             _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
@@ -104,8 +103,14 @@ namespace GTAPilot
         {
             if (e.PropertyName == "IsConnected")
             {
-                App.Controller.HoldRightThumbY();
+                LockView();
             }
+        }
+
+        private void LockView()
+        {
+            App.Controller.Set(XINPUT_GAMEPAD_AXIS.RIGHT_THUMB_Y, -17700);
+            App.Controller.Set(XINPUT_GAMEPAD_AXIS.RIGHT_THUMB_X, 0);
         }
 
         internal void StopCapture()

@@ -396,7 +396,7 @@ namespace GTAPilot.Indicators
                     var o_angle = unused_angle;
                     unused_angle = 360 - Math.Abs(unused_angle);
 
-                    var extended = (CompassExtendedFrame)last_frameref.Heading.ForIndicatorUse;
+                    var extended = (CompassExtendedFrame)my_frameref.Heading.ForIndicatorUse;
 
                     double new_heading = 0;
                     switch (str)

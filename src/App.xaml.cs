@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Windows;
 
@@ -8,7 +9,7 @@ namespace GTAPilot
 {
     public partial class App : Application
     {
-        private List<ICanTick> _ticks = new List<ICanTick>();
+        private Dictionary<System.Windows.Threading.Dispatcher, List<ICanTick>> _ticks = new Dictionary<System.Windows.Threading.Dispatcher, List<ICanTick>>();
 
         private void Application_Startup(object sender, StartupEventArgs e)
         {
@@ -18,17 +19,33 @@ namespace GTAPilot
             {
                 new ImmersiveWindow().Show();
             }
-            else
-            {
-                new AnalyzerWindow().Show();
-            }
 
             var t = new Thread(TickThreadProc);
             t.IsBackground = true;
             t.Start();
+
+            t = new Thread(() =>
+            {
+                new AnalyzerWindow().Show();
+                System.Windows.Threading.Dispatcher.Run();
+            });
+            t.IsBackground = true;
+            t.SetApartmentState(ApartmentState.STA);
+            t.Start();
         }
 
-        internal static void Register(ICanTick tick) => ((App)App.Current)._ticks.Add(tick);
+        internal static void Register(ICanTick tick)
+        {
+            var ticks = ((App)App.Current)._ticks;
+
+            if (!ticks.TryGetValue(System.Windows.Threading.Dispatcher.CurrentDispatcher, out var bucket))
+            {
+                ticks[System.Windows.Threading.Dispatcher.CurrentDispatcher] = new List<ICanTick>();
+                bucket = ticks[System.Windows.Threading.Dispatcher.CurrentDispatcher];
+            }
+
+            bucket.Add(tick);
+        }
 
         private void TickThreadProc()
         {
@@ -38,16 +55,17 @@ namespace GTAPilot
                 var start = w.Elapsed.TotalMilliseconds;
                 // We do this with a background thread and synchronously in order to avoid queue starvation
                 // on the dispatcher. Bindings were observed to be unserviced indefinitely.
-                App.Current.Dispatcher.Invoke(() =>
+
+                foreach(var bucket in _ticks.Keys.ToArray())
                 {
-                    foreach (var t in _ticks)
+                    bucket.Invoke(() =>
                     {
-                        t.Tick();
-                    }
-                }, System.Windows.Threading.DispatcherPriority.Background);
+                        foreach (var t in _ticks[bucket]) t.Tick();
+                    });
+                }
 
                 var dt = w.Elapsed.TotalMilliseconds - start;
-                Thread.Sleep(Math.Max(1, (int)(dt - (1000 / 30))));
+                Thread.Sleep(Math.Max(1, (int)((1000 / 10) - dt)));
             }
         }
     }

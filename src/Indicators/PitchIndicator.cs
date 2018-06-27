@@ -39,7 +39,6 @@ namespace GTAPilot.Indicators
 
                     vs_hsv = focus.Convert<Hsv, byte>();
 
-                    // TODO: Tunelow ?
                     var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
 
                     debugState[1] = vs_blackimg;

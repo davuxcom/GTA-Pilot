@@ -1,5 +1,6 @@
 ﻿using GTAPilot.Interop;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -9,12 +10,6 @@ namespace GTAPilot
 {
     public class XboxController
     {
-        public event EventHandler<XINPUT_GAMEPAD_BUTTONS> ButtonPressed;
-        public event EventHandler<ControllerMessage> ControllerInput;
-
-        public FpsCounter XInput_In { get; }
-        public FpsCounter XInput_Out { get; }
-
         [DataContract]
         class BaseMessage
         {
@@ -34,9 +29,18 @@ namespace GTAPilot
             [DataMember] public int LEFT_THUMB_Y { get; set; }
         }
 
+        public event EventHandler<XINPUT_GAMEPAD_BUTTONS> ButtonPressed;
+        public event EventHandler<ControllerMessage> ControllerInput;
+
+        public FpsCounter XInput_In { get; }
+        public FpsCounter XInput_Out { get; }
+
         private DataContractJsonSerializer _baseDeserializer = new DataContractJsonSerializer(typeof(BaseMessage));
         private DataContractJsonSerializer _controlInputdeserializer = new DataContractJsonSerializer(typeof(ControllerMessage));
         private FridaAppConnector _controller;
+        private Dictionary<XINPUT_GAMEPAD_AXIS, int> _nextAxis = new Dictionary<XINPUT_GAMEPAD_AXIS, int>();
+        private Dictionary<XINPUT_GAMEPAD_BUTTONS, int> _nextButtons = new Dictionary<XINPUT_GAMEPAD_BUTTONS, int>();
+        private object _outputlock = new object();
 
         internal XboxController(FridaAppConnector fridaController)
         {
@@ -76,65 +80,50 @@ namespace GTAPilot
             }
         }
 
-        private void SendMessage(string msg)
+        public void Press(XINPUT_GAMEPAD_BUTTONS btn, int ticks = 0)
         {
+            lock (_outputlock)
+            {
+                _nextButtons[btn] = ticks;
+
+                // Zero opposite shoulder button
+                if (btn == XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER)
+                {
+                    _nextButtons[XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER] = 0;
+                }
+                else if (btn == XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER)
+                {
+                    _nextButtons[XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER] = 0;
+                }
+            }
+        }
+
+        // LEFT_TRIGGER max = 235, past is engine shutoff
+        public void Set(XINPUT_GAMEPAD_AXIS axis, int value)
+        {
+            lock (_outputlock)
+            {
+                _nextAxis[axis] = value;
+            }
+        }
+
+        public void Flush()
+        {
+            string msg = "{";
+
+            lock (_outputlock)
+            {
+                if (_nextButtons.Count == 0 && _nextAxis.Count == 0) return;
+
+                foreach (var a in _nextAxis) msg += $"\"{a.Key.ToString()}\": {a.Value},";
+                foreach (var a in _nextButtons) msg += $"\"{a.Key.ToString()}\": {a.Value},";
+
+                _nextAxis.Clear();
+                _nextButtons.Clear();
+            }
+
+            msg = msg.TrimEnd(',') + "}";
             _controller.SendMessage(msg);
-        }
-
-        public void PressLeftThumb()
-        {
-            SendMessage("{\"LEFT_THUMB\":\"0\"}");
-        }
-
-        public void HoldRightThumbY(int value = -17700)
-        {
-            SendMessage("{\"RIGHT_THUMB_Y\":\"" + value + "\",\"RIGHT_THUMB_X\":\"0\"}");
-        }
-
-        internal void PressA()
-        {
-            SendMessage("{\"A\":\"0\"}");
-        }
-
-        internal void HoldLefTrigger(int value)
-        {
-            // flaps max = 235, past is engine shutoff
-            SendMessage("{\"LEFT_TRIGGER\":\"" + value + "\"}");
-        }
-
-        internal void PressB()
-        {
-            SendMessage("{\"B\":\"0\"}");
-        }
-
-        internal void PressStart()
-        {
-            SendMessage("{\"START\":\"0\"}");
-        }
-
-        public void SetLeftThumbX(double value)
-        {
-            SendMessage("{\"LEFT_THUMB_X\":\"" + value + "\"}");
-        }
-
-        public void SetLeftThumbY(double value)
-        {
-            SendMessage("{\"LEFT_THUMB_Y\":\"" + value + "\"}");
-        }
-
-        public void SetRightTrigger(double value)
-        {
-            SendMessage("{\"RIGHT_TRIGGER\":\"" + (int)value + "\"}");
-        }
-
-        public void SetLeftShoulder(double ticks)
-        {
-            SendMessage("{\"LEFT_SHOULDER\":\"" + ticks + "\", \"RIGHT_SHOULDER\":\"0\"}");
-        }
-
-        public void SetRightShoulder(double ticks)
-        {
-            SendMessage("{\"RIGHT_SHOULDER\":\"" + ticks + "\", \"LEFT_SHOULDER\":\"0\"}");
         }
     }
 }
