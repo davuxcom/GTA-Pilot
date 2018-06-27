@@ -95,7 +95,7 @@ namespace GTAPilot
                 Id = data.FrameId,
             };
 
-            Timeline.LastFrameId = data.FrameId;
+            Timeline.LatestFrameId = data.FrameId;
 
             var frame = new IndicatorData
             {

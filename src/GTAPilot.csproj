@@ -82,6 +82,8 @@
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
     <Compile Include="Interop\Gdi32.cs" />
     <Compile Include="Interop\XINPUT_GAMEPAD.cs" />
+    <Compile Include="TimelineFrame.cs" />
+    <Compile Include="TimelineValue.cs" />
     <Compile Include="UI\RelayCommand.cs" />
     <Compile Include="UI\FpsCounterViewModel.cs" />
     <Compile Include="UI\IndicatorViewModel.cs" />
@@ -192,7 +194,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="UI\MainWindowViewModel.cs" />
+    <Compile Include="UI\AnalyzerViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -14,6 +14,8 @@ namespace GTAPilot
 
         public static Uri Map_Zoom4_Full_20 => new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png"));
 
-        public static readonly int SCALE_Map_20_TO_100 = 5;
+        public static readonly int SCALE_Map4_20_TO_100 = 5;
+        
+        public static readonly double SCALE_METERS_TO_MAP4 = 1 / 3.32;
     }
 }

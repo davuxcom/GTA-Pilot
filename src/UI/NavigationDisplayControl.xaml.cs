@@ -50,7 +50,7 @@ namespace GTAPilot
         private void LocationTimer_Tick(object sender, EventArgs e)
         {
             var startId = _lastRenderedFrame != null ? _lastRenderedFrame.Id : 0;
-            for (var i = startId; i < Timeline.LastFrameId; i++)
+            for (var i = startId; i < Timeline.LatestFrameId; i++)
             {
                 if (Timeline.Data[i] != null && Timeline.Data[i].IsLocationCalculated)
                 {
@@ -69,7 +69,7 @@ namespace GTAPilot
         {
             foreach(var p in SystemManager.Instance.FlightPlan.Points)
             {
-                AddPosition(new Point(p.X / Metrics.SCALE_Map_20_TO_100, p.Y / Metrics.SCALE_Map_20_TO_100));
+                AddPosition(new Point(p.X / Metrics.SCALE_Map4_20_TO_100, p.Y / Metrics.SCALE_Map4_20_TO_100));
             }
         }
 
@@ -110,16 +110,16 @@ namespace GTAPilot
 
             if (_lastRenderedFrame != null)
             {
-                l.X1 = _lastRenderedFrame.Location.X / Metrics.SCALE_Map_20_TO_100;
-                l.X2 = frame.Location.X / Metrics.SCALE_Map_20_TO_100;
-                l.Y1 = _lastRenderedFrame.Location.Y / Metrics.SCALE_Map_20_TO_100;
-                l.Y2 = frame.Location.Y / Metrics.SCALE_Map_20_TO_100;
+                l.X1 = _lastRenderedFrame.Location.X / Metrics.SCALE_Map4_20_TO_100;
+                l.X2 = frame.Location.X / Metrics.SCALE_Map4_20_TO_100;
+                l.Y1 = _lastRenderedFrame.Location.Y / Metrics.SCALE_Map4_20_TO_100;
+                l.Y2 = frame.Location.Y / Metrics.SCALE_Map4_20_TO_100;
             }
             else
             {
 
-                l.X1 = l.X2 = frame.Location.X / Metrics.SCALE_Map_20_TO_100;
-                l.Y1 = l.Y2 = frame.Location.Y / Metrics.SCALE_Map_20_TO_100;
+                l.X1 = l.X2 = frame.Location.X / Metrics.SCALE_Map4_20_TO_100;
+                l.Y1 = l.Y2 = frame.Location.Y / Metrics.SCALE_Map4_20_TO_100;
             }
 
             canvas.Children.Add(l);
@@ -129,7 +129,7 @@ namespace GTAPilot
         {
             var pt = Timeline.CurrentLocation;
             // Convert from map cords to 20% cords
-            pt = new System.Drawing.PointF(pt.X / Metrics.SCALE_Map_20_TO_100, pt.Y / Metrics.SCALE_Map_20_TO_100);
+            pt = new System.Drawing.PointF(pt.X / Metrics.SCALE_Map4_20_TO_100, pt.Y / Metrics.SCALE_Map4_20_TO_100);
 
             var st = imgHost.GetTransform<ScaleTransform>();
 

@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace GTAPilot
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class AnalyzerViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -13,7 +13,7 @@ namespace GTAPilot
         public PID.Gain RollPID => FlightComputerConfig.Roll.Gain;
         public PID.Gain VSPID => FlightComputerConfig.Pitch.Gain;
 
-        internal MainWindowViewModel()
+        internal AnalyzerViewModel()
         {
             Counters = new ObservableCollection<FpsCounterViewModel>();
             Indicators = new ObservableCollection<IndicatorViewModel>();

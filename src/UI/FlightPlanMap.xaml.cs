@@ -34,7 +34,7 @@ namespace GTAPilot
             Positions = new ObservableCollection<Position>();
             Points = new List<System.Drawing.PointF>();
 
-            foreach (var p in points) AddPosition(new Point(p.X / Metrics.SCALE_Map_20_TO_100, p.Y / Metrics.SCALE_Map_20_TO_100));
+            foreach (var p in points) AddPosition(new Point(p.X / Metrics.SCALE_Map4_20_TO_100, p.Y / Metrics.SCALE_Map4_20_TO_100));
 
             DataContext = this;
         }
@@ -74,7 +74,7 @@ namespace GTAPilot
             lastPoint = pt;
 
             Positions.Add(new Position { pt = pt });
-            Points.Add(new System.Drawing.PointF((float)pt.X * Metrics.SCALE_Map_20_TO_100, (float)pt.Y * Metrics.SCALE_Map_20_TO_100));
+            Points.Add(new System.Drawing.PointF((float)pt.X * Metrics.SCALE_Map4_20_TO_100, (float)pt.Y * Metrics.SCALE_Map4_20_TO_100));
         }
     }
 }

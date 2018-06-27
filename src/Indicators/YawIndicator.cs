@@ -21,10 +21,7 @@ namespace GTAPilot.Indicators
             public double LastE = double.NaN;
             public double LastS = double.NaN;
             public double LastW = double.NaN;
-            public double Bias = double.NaN;
-            public double RollBias = double.NaN;
         }
-
 
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Heading;

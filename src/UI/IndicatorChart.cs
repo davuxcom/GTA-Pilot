@@ -196,7 +196,7 @@ namespace GTAPilot
 
                 int childIndex = SKIP_LINES + NUM_FRAMES;
                 TimelineFrame last = null;
-                for (var i = Timeline.LastFrameId; i >= 0 && i > Timeline.LastFrameId - NUM_FRAMES; i--)
+                for (var i = Timeline.LatestFrameId; i >= 0 && i > Timeline.LatestFrameId - NUM_FRAMES; i--)
                 {
                     var current = Timeline.Data[i];
                     if (last == null)

@@ -177,7 +177,7 @@ namespace GTAPilot
                     }
 
                     Timeline.Data[id].Roll.OutputValue = Handle_Roll(
-                        _rollPid.Compute(0, _desiredRoll - Timeline.Data[id].Roll.Value, ComputeDTForFrameId(id, (f) => f.Roll.Value)));
+                        _rollPid.Compute(0, _desiredRoll - Timeline.Data[id].Roll.Value, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Roll.Value)));
                 }
                 Timeline.Data[id].Roll.SetpointValue = _desiredRoll;
             }
@@ -203,7 +203,7 @@ namespace GTAPilot
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
                     Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(
-                        _pitchPid.Compute(0, _desiredPitch - Timeline.Data[id].Pitch.Value, ComputeDTForFrameId(id, (f) => f.Pitch.Value)));
+                        _pitchPid.Compute(0, _desiredPitch - Timeline.Data[id].Pitch.Value, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Pitch.Value)));
                 }
                 Timeline.Data[id].Pitch.SetpointValue = _desiredPitch;
             }
@@ -216,7 +216,7 @@ namespace GTAPilot
                 if (!double.IsNaN(Timeline.Data[id].Speed.Value))
                 {
                     Timeline.Data[id].Speed.OutputValue = Handle_Throttle(
-                        _speedPid.Compute(Timeline.Speed, _desiredSpeed, ComputeDTForFrameId(id, (f) => f.Speed.Value)));
+                        _speedPid.Compute(Timeline.Speed, _desiredSpeed, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Speed.Value)));
                 }
                 Timeline.Data[id].Speed.SetpointValue = _desiredSpeed;
             }
@@ -262,16 +262,14 @@ namespace GTAPilot
             }
         }
 
-        private double ComputeDTForFrameId(int id, Func<TimelineFrame, double> finder)
+        private double GetTimeBetweenThisFrameAndLastGoodFrame(int thisFrameId, Func<TimelineFrame, double> finder)
         {
-            double dT = 0;
-
-            var lastGoodFrame = Timeline.LatestFrame(finder, id);
+            var lastGoodFrame = Timeline.LatestFrame(finder, thisFrameId);
             if (lastGoodFrame != null)
             {
-                dT = Timeline.Data[id].Seconds - lastGoodFrame.Seconds;
+                return Timeline.Data[thisFrameId].Seconds - lastGoodFrame.Seconds;
             }
-            return dT;
+            return 0;
         }
 
         double RemoveDeadZone(double power, double deadzone = 4000, double max = 12000)

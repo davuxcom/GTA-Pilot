@@ -37,7 +37,7 @@ namespace GTAPilot
 
         private void Controller_ControllerInput(object sender, XboxController.ControllerMessage controllerMsg)
         {
-            var frameId = Timeline.LastFrameId;
+            var frameId = Timeline.LatestFrameId;
 
             SetValueAndHistory(frameId, (id) => Timeline.Data[id].Roll, controllerMsg.LEFT_THUMB_X + ushort.MaxValue / 2);
             SetValueAndHistory(frameId, (id) => Timeline.Data[id].Pitch, controllerMsg.LEFT_THUMB_Y + ushort.MaxValue / 2);

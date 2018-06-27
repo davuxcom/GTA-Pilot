@@ -26,7 +26,7 @@ namespace GTAPilot
             public override void WriteLine(string message) => _handler(message);
         }
 
-        MainWindowViewModel _viewModel;
+        AnalyzerViewModel _viewModel;
 
         internal AnalyzerWindow()
         {
@@ -75,7 +75,7 @@ namespace GTAPilot
             Topmost = true;
             Topmost = false;
 
-            _viewModel = new MainWindowViewModel();
+            _viewModel = new AnalyzerViewModel();
             DataContext = _viewModel;
 
             App.Register(this);
