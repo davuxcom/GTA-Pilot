@@ -20,4 +20,14 @@ namespace GTAPilot.Interop
         X = 0x4000,
         Y = 0x8000,
     };
+
+    public enum XINPUT_GAMEPAD_AXIS : int
+    {
+        RIGHT_TRIGGER = 0,
+        LEFT_TRIGGER = 1,
+        RIGHT_THUMB_X = 2,
+        RIGHT_THUMB_Y = 3,
+        LEFT_THUMB_X = 4,
+        LEFT_THUMB_Y = 5,
+    };
 }

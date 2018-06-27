@@ -29,12 +29,11 @@ namespace GTAPilot
             [DataMember]
             public string description { get; set; }
         }
-
-        public event Action<string> OnMessage;
+        
+        public event Action<string> MessageReceived;
+        public event Action MessageSent;
         public event PropertyChangedEventHandler PropertyChanged;
-
-        public FpsCounter Counter = new FpsCounter();
-
+        
         public bool IsConnected { get; private set; }
 
         private Dispatcher _fridaDispatcher;
@@ -95,7 +94,7 @@ namespace GTAPilot
                 }
                 else if (msg.type == "send")
                 {
-                    OnMessage?.Invoke(msg.payload);
+                    MessageReceived?.Invoke(msg.payload);
                 }
             }
         }
@@ -118,7 +117,7 @@ namespace GTAPilot
             _fridaDispatcher.BeginInvoke((Action)(() =>
             {
                 _script.Post(message);
-                Counter.GotFrame();
+                MessageSent?.Invoke();
             }));
         }
 

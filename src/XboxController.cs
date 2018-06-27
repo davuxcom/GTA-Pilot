@@ -1,7 +1,5 @@
 ﻿using GTAPilot.Interop;
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -9,17 +7,16 @@ using System.Text;
 
 namespace GTAPilot
 {
-    public class XboxController : INotifyPropertyChanged
+    public class XboxController
     {
-        public event PropertyChangedEventHandler PropertyChanged;
         public event EventHandler<XINPUT_GAMEPAD_BUTTONS> ButtonPressed;
         public event EventHandler<ControllerMessage> ControllerInput;
 
         public FpsCounter XInput_In { get; }
-        public FpsCounter XInput_Out => _controller.Counter;
+        public FpsCounter XInput_Out { get; }
 
         [DataContract]
-        public class BaseMessage
+        class BaseMessage
         {
             [DataMember] public string Type { get; set; }
             [DataMember] public int Value { get; set; }
@@ -45,8 +42,15 @@ namespace GTAPilot
         {
             _controller = fridaController;
 
-            fridaController.OnMessage += FridaController_OnMessage;
+            fridaController.MessageReceived += FridaController_OnMessage;
+            fridaController.MessageSent += FridaController_MessageSent;
             XInput_In = new FpsCounter();
+            XInput_Out = new FpsCounter();
+        }
+
+        private void FridaController_MessageSent()
+        {
+            XInput_Out.GotFrame();
         }
 
         private void FridaController_OnMessage(string payload)
@@ -72,9 +76,13 @@ namespace GTAPilot
             }
         }
 
+        private void SendMessage(string msg)
+        {
+            _controller.SendMessage(msg);
+        }
+
         public void PressLeftThumb()
         {
-            Trace.WriteLine("Toggle landing gear");
             SendMessage("{\"LEFT_THUMB\":\"0\"}");
         }
 
@@ -83,14 +91,8 @@ namespace GTAPilot
             SendMessage("{\"RIGHT_THUMB_Y\":\"" + value + "\",\"RIGHT_THUMB_X\":\"0\"}");
         }
 
-        private void SendMessage(string msg)
-        {
-            _controller.SendMessage(msg);
-        }
-
         internal void PressA()
         {
-            Trace.WriteLine("Toggle A");
             SendMessage("{\"A\":\"0\"}");
         }
 
@@ -100,20 +102,13 @@ namespace GTAPilot
             SendMessage("{\"LEFT_TRIGGER\":\"" + value + "\"}");
         }
 
-        public void ResetLeftTrigger()
-        {
-            SendMessage("{\"LEFT_TRIGGER\":\"20\"}");
-        }
-
         internal void PressB()
         {
-            Trace.WriteLine("Toggle B");
             SendMessage("{\"B\":\"0\"}");
         }
 
         internal void PressStart()
         {
-            Trace.WriteLine("Toggle Start");
             SendMessage("{\"START\":\"0\"}");
         }
 

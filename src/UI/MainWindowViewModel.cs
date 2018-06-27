@@ -18,7 +18,7 @@ namespace GTAPilot
             Counters = new ObservableCollection<FpsCounterViewModel>();
             Indicators = new ObservableCollection<IndicatorViewModel>();
 
-            Counters.Add(new FpsCounterViewModel(SystemManager.Instance.Capture, "Capture"));
+            Counters.Add(new FpsCounterViewModel(SystemManager.Instance.App.Capture, "Capture"));
             Counters.Add(new FpsCounterViewModel(SystemManager.Instance.App.Controller.XInput_In, "XInput-In"));
             Counters.Add(new FpsCounterViewModel(SystemManager.Instance.App.Controller.XInput_Out, "XInput-Out"));
 

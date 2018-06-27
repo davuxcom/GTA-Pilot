@@ -16,6 +16,7 @@ namespace GTAPilot
         public IntPtr WindowHandle { get; private set; }
         public bool IsConnected { get; private set; }
         public XboxController Controller { get; private set; }
+        public FpsCounter Capture { get; private set; }
 
         private DesktopFrameProducer _desktopFrameProducer;
         private FridaAppConnector _fridaConnector;
@@ -25,6 +26,8 @@ namespace GTAPilot
             _fridaConnector = new FridaAppConnector();
             _fridaConnector.PropertyChanged += FridaAppConnector_PropertyChanged;
             Controller = new XboxController(_fridaConnector);
+            Capture = new FpsCounter();
+
             WindowHandle = GetWindow();
             if (WindowHandle != IntPtr.Zero)
             {
@@ -73,6 +76,7 @@ namespace GTAPilot
         private void DesktopFrameProducer_FrameProduced(int id, Bitmap frame)
         {
             FrameProduced?.Invoke(id, frame);
+            Capture.GotFrame();
         }
 
         private IntPtr GetWindow() => User32.FindWindow("ApplicationFrameWindow", "Xbox");

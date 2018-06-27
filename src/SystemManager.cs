@@ -13,8 +13,6 @@ namespace GTAPilot
         public ModeControlPanel MCP { get; }
         public XboxApp App { get; }
 
-        public FpsCounter Capture = new FpsCounter();
-
         private FlightDataComputer _computer;
 
         public SystemManager()
@@ -60,8 +58,6 @@ namespace GTAPilot
         private void XboxApp_FrameProduced(int frameId, System.Drawing.Bitmap frame)
         {
             IndicatorHost.HandleFrameArrived(new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds));
-
-            Capture.GotFrame();
         }
 
         private void Controler_ButtonPressed(object sender, XINPUT_GAMEPAD_BUTTONS e)
