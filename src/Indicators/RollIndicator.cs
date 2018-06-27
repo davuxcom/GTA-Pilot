@@ -23,7 +23,6 @@ namespace GTAPilot.Indicators
         public double CachedTuningValue => 0;
         public double LastGoodValue => Timeline.Roll;
 
-
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
             if (TryFindRollCircleInFullFrame(data, out CircleF rollIndicatorCicle))
