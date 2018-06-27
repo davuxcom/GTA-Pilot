@@ -326,7 +326,8 @@ namespace GTAPilot.Indicators
 
                         b.Inflate(2, 2);
 
-                        var extended = (CompassExtendedFrame)last_frameref.Heading.ForIndicatorUse;
+                        var extended = new CompassExtendedFrame();
+                        my_frameref.Heading.ForIndicatorUse = extended;
 
                         switch (str)
                         {

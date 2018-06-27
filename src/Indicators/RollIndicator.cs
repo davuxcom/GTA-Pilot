@@ -202,11 +202,10 @@ namespace GTAPilot.Indicators
         {
             ret = default(CircleF);
 
-            var hint = (CircleF)Timeline.Data[data.Id].Roll.ForIndicatorUse;
-
-            if (!ret.Equals(hint))
+            if (Timeline.Data[data.Id].Roll.ForIndicatorUse != null)
             {
-                ret = hint;
+                // We found our own hint, return it.
+                ret = (CircleF)Timeline.Data[data.Id].Roll.ForIndicatorUse;
                 return true;
             }
 

@@ -17,9 +17,9 @@ namespace GTAPilot
         public event Action<int, Bitmap> FrameProduced;
 
         public bool IsConnected { get; private set; }
+        public bool IsRunning => WindowHandle != IntPtr.Zero;
         public IntPtr WindowHandle { get; }
         public XboxController Controller { get; }
-        public FpsCounter Capture { get; }
 
         private static readonly string s_scriptResourceName = "GTAPilot.XboxApp.js";
         private DesktopFrameProducer _desktopFrameProducer;
@@ -30,12 +30,9 @@ namespace GTAPilot
             _fridaConnector = new FridaAppConnector();
             _fridaConnector.PropertyChanged += FridaAppConnector_PropertyChanged;
             Controller = new XboxController(_fridaConnector);
-            Capture = new FpsCounter();
             WindowHandle = GetWindow();
 
-            if (WindowHandle == IntPtr.Zero) throw new Exception("Xbox app is not running.");
-
-            ConnectAsync();
+            if (IsRunning) ConnectAsync();
         }
 
         public void Begin()
@@ -72,7 +69,6 @@ namespace GTAPilot
         private void DesktopFrameProducer_FrameProduced(int id, Bitmap frame)
         {
             FrameProduced?.Invoke(id, frame);
-            Capture.GotFrame();
         }
 
         private IntPtr GetWindow() => User32.FindWindow("ApplicationFrameWindow", "Xbox");

@@ -16,8 +16,6 @@ namespace GTAPilot
         {
             InitializeComponent();
 
-            new SystemManager();
-
             _overlay = new ImmersiveOverlayWindow();
 
             Activated += Window_Activated;

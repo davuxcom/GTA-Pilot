@@ -12,27 +12,41 @@ namespace GTAPilot
         public IndicatorHandler IndicatorHost { get; }
         public ModeControlPanel MCP { get; }
         public XboxApp App { get; }
+        public FpsCounter Capture { get; }
+        public bool IsReplay => _replay != null;
 
         private FlightDataComputer _computer;
+        private ReplayFrameProducer _replay;
 
         public SystemManager()
         {
             Instance = this;
 
+            Capture = new FpsCounter();
             FlightPlan = new FlightPlan();
             FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
             MCP = new ModeControlPanel();
 
             App = new XboxApp();
-            App.FrameProduced += XboxApp_FrameProduced;
-            App.Controller.ButtonPressed += Controler_ButtonPressed;
-            App.Controller.ControllerInput += Controller_ControllerInput;
-            App.PropertyChanged += XboxApp_PropertyChanged;
 
             _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
             IndicatorHost = new IndicatorHandler(_computer);
-
             Timeline.Begin();
+
+            if (App.IsRunning)
+            {
+                App.FrameProduced += XboxApp_FrameProduced;
+                App.Controller.ButtonPressed += Controler_ButtonPressed;
+                App.Controller.ControllerInput += Controller_ControllerInput;
+                App.PropertyChanged += XboxApp_PropertyChanged;
+                App.Begin();
+            }
+            else
+            {
+                _replay = new ReplayFrameProducer(@"C:\save\recording1");
+                _replay.FrameProduced += XboxApp_FrameProduced;
+                _replay.Begin();
+            }
         }
 
         private void Controller_ControllerInput(object sender, XboxController.ControllerMessage controllerMsg)
@@ -58,6 +72,7 @@ namespace GTAPilot
         private void XboxApp_FrameProduced(int frameId, System.Drawing.Bitmap frame)
         {
             IndicatorHost.HandleFrameArrived(new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds));
+            Capture.GotFrame();
         }
 
         private void Controler_ButtonPressed(object sender, XINPUT_GAMEPAD_BUTTONS e)

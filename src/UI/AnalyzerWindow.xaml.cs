@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace GTAPilot
@@ -81,12 +75,9 @@ namespace GTAPilot
             App.Register(this);
         }
 
-        int ticks = 0;
         public void Tick()
         {
-            // TODO: Bad solution to too much work being done.
-            ticks++;
-            if (ticks % 10 == 0) _viewModel.Tick();
+            _viewModel.Tick();
         }
 
         private void Border_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -97,7 +88,6 @@ namespace GTAPilot
             window.Owner = this;
             window.ShowDialog();
         }
-
 
         private void TextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {

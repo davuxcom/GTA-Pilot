@@ -29,7 +29,7 @@ namespace GTAPilot
         public static readonly DependencyProperty TypeProperty = DependencyProperty.Register(
           "Type", typeof(IndicatorChartType), typeof(IndicatorChart), new PropertyMetadata());
 
-        int NUM_FRAMES = 200 / 2 + 1; // even with Width, hack
+        int NUM_FRAMES = 250 / 2 + 1; // even with Width, hack
         private Line zeroLine;
         private Line topLine;
         private Line bottomLine;
@@ -134,7 +134,7 @@ namespace GTAPilot
         {
             if (Type == IndicatorChartType.Delay)
             {
-                return new double[] { 0, 1 }; // seconds
+                return new double[] { 0, 0.2 }; // seconds
             }
             else if (Type == IndicatorChartType.Value)
             {
