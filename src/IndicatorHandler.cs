@@ -29,6 +29,7 @@ namespace GTAPilot
         public Indicator Altitude = new Indicator(new AltitudeIndicator());
         public Indicator Compass = new Indicator(new YawIndicator());
 
+        ConcurrentQueue<IndicatorData> _stage1 = new ConcurrentQueue<IndicatorData>();
         ConcurrentQueue<IndicatorData> _stage2 = new ConcurrentQueue<IndicatorData>();
         ConcurrentQueue<IndicatorData> _stage3 = new ConcurrentQueue<IndicatorData>();
         ConcurrentQueue<IndicatorData> _stage4 = new ConcurrentQueue<IndicatorData>();
@@ -39,19 +40,21 @@ namespace GTAPilot
         {
             _computer = computer;
 
+            StartWorkerThread(_stage1, (d) =>
+            {
+                Tick1(d);
+                _stage2.Enqueue(d);
+            });
             StartWorkerThread(_stage2, (d) =>
             {
                 Tick2(d);
                 _stage3.Enqueue(d);
             });
-
             StartWorkerThread(_stage3, (d) =>
             {
                 Tick3(d);
                 _stage4.Enqueue(d);
             });
-
-
             StartWorkerThread(_stage4, (d) =>
             {
                 Tick4(d);
@@ -59,6 +62,10 @@ namespace GTAPilot
             });
 
             // TOD: Yaw needs better performance such that two threads aren't required.
+            StartWorkerThread(_stage5, (d) =>
+            {
+                Tick5(d);
+            });
             StartWorkerThread(_stage5, (d) =>
             {
                 Tick5(d);
@@ -106,8 +113,7 @@ namespace GTAPilot
                 Seconds = data.Seconds,
             };
 
-            Tick1(frame);
-            _stage2.Enqueue(frame);
+            _stage1.Enqueue(frame);
         }
 
         void Tick1(IndicatorData data)

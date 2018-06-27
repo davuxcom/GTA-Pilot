@@ -36,9 +36,9 @@
             </MenuItem>
 
             <MenuItem Background="Transparent"
-                      Command="{Binding Analyze}"
+                      Command="{Binding OpenRecorder}"
                       Foreground="White"
-                      Header="Analyze" />
+                      Header="Recorder" />
         </Menu>
 
         <Border Grid.Row="1"

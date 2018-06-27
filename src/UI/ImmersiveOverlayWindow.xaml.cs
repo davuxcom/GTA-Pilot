@@ -9,9 +9,7 @@ namespace GTAPilot
         public RelayCommand FlightPlanOpen { get; }
         public RelayCommand FlightPlanSave { get; }
         public RelayCommand FlightPlanEdit { get; }
-        public RelayCommand Analyze { get; }
-
-        private AnalyzerWindow _analyze = new AnalyzerWindow();
+        public RelayCommand OpenRecorder { get; }
 
         public ImmersiveOverlayWindow()
         {
@@ -58,9 +56,9 @@ namespace GTAPilot
                 }
             });
 
-            Analyze = new RelayCommand(() =>
+            OpenRecorder = new RelayCommand(() =>
             {
-                _analyze.Show();
+
             });
 
             DataContext = this;

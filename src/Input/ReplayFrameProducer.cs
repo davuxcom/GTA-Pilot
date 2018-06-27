@@ -58,7 +58,7 @@ namespace GTAPilot
 
             t = new Thread(() =>
             {
-                int initialDelay = 10;
+                int initialDelay = 20;
 
                 while (true)
                 {
@@ -81,10 +81,11 @@ namespace GTAPilot
                     if (initialDelay > 0)
                     {
                         initialDelay--;
-                        Thread.Sleep(100);
+                        Thread.Sleep(50);
                     }
 
-                    Thread.Sleep(1);
+                    Thread.Sleep(12);
+
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentFrame)));
                 }

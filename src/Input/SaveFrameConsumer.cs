@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
 
@@ -11,9 +7,10 @@ namespace GTAPilot
     class SaveFrameConsumer
     {
         public FpsCounter FPS = new FpsCounter();
+        public int BufferedFrames => _queue.Count;
 
-        public ConcurrentQueue<FrameData> _queue = new ConcurrentQueue<FrameData>();
-        string _dir;
+        private ConcurrentQueue<FrameData> _queue = new ConcurrentQueue<FrameData>();
+        private string _dir;
 
         public SaveFrameConsumer(string dir)
         {
