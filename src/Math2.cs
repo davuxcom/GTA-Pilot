@@ -26,6 +26,8 @@ namespace GTAPilot
             return (Math.PI / 180) * degree;
         }
 
+        // TODO: Should fix/remove this mess, almost definitely only exists because we
+        // have the wrong baseline.
         public static double FixAngle(double angle, Point center_point, Point other_point)
         {
             var v_angle = (angle * (180 / Math.PI));
@@ -71,7 +73,6 @@ namespace GTAPilot
                                        line1.P1.X - line1.P2.X);
             double angle2 = Math.Atan2(line2.P1.Y - line2.P2.Y,
                                        line2.P1.X - line2.P2.X);
-            //  return Math.Abs(angle1) - Math.Abs(angle2);
             return angle1 - angle2;
         }
 
@@ -81,16 +82,16 @@ namespace GTAPilot
                                        line1.P1.X - line1.P2.X);
             double angle2 = Math.Atan2(line2.P1.Y - line2.P2.Y,
                                        line2.P1.X - line2.P2.X);
-            //  return Math.Abs(angle1) - Math.Abs(angle2);
             return angle1 - angle2;
         }
 
-
+        // TODO: Same as ScaleValue elsewhere
         public static double MapValue(double a0, double a1, double b0, double b1, double a)
         {
             return b0 + (b1 - b0) * ((a - a0) / (a1 - a0));
         }
 
+        // TODO: not clear if this returns positive angle delta only
         public static double DiffAngles(double a, double b)
         {
             var diff = ((a - b + 180 + 360) % 360) - 180;
@@ -98,21 +99,14 @@ namespace GTAPilot
         }
 
 
+
         public static double GetDistance(PointF point1, PointF point2)
         {
-            //pythagorean theorem c^2 = a^2 + b^2
-            //thus c = square root(a^2 + b^2)
+            // pythagorean theorem c^2 = a^2 + b^2
+            // thus c = square root(a^2 + b^2)
             double a = (double)(point2.X - point1.X);
             double b = (double)(point2.Y - point1.Y);
-
             return Math.Sqrt(a * a + b * b);
-        }
-
-        public static decimal Median(decimal[] xs)
-        {
-            var ys = xs.OrderBy(x => x).ToList();
-            double mid = (ys.Count - 1) / 2.0;
-            return (ys[(int)(mid)] + ys[(int)(mid + 0.5)]) / 2;
         }
 
         public static double GetPolarHeadingFromLine(PointF pt1, PointF pt2)
@@ -140,6 +134,22 @@ namespace GTAPilot
             if (heading < 0) heading = 360 + heading;
 
             return heading;
+        }
+
+        public static double GetDistanceFromLine(PointF pt, LineSegment2DF line)
+        {
+            var a = line.P1;
+            var c = line.P2;
+            var b = pt;
+
+            // normalize points
+            var cn = new PointF(c.X - a.X, c.Y - a.Y);
+            var bn = new PointF(b.X - a.X, b.Y - a.Y);
+
+            double angle = Math.Atan2(bn.Y, bn.X) - Math.Atan2(cn.Y, cn.X);
+            double abLength = Math.Sqrt(bn.X * bn.X + bn.Y * bn.Y);
+
+            return Math.Sin(angle) * abLength;
         }
     }
 

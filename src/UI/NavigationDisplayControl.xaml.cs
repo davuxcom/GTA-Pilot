@@ -86,7 +86,7 @@ namespace GTAPilot
                     X2 = lastPoint.X,
                     Y2 = lastPoint.Y
                 };
-                l.Stroke = Brushes.Blue;
+                l.Stroke = Brushes.Magenta;
                 l.StrokeThickness = 1;
                 canvas.Children.Insert(canvas.Children.Count - 1, l);
 
@@ -94,8 +94,8 @@ namespace GTAPilot
             }
 
             Ellipse dot = new Ellipse();
-            dot.Fill = Brushes.Red;
-            dot.Height = dot.Width = 2;
+            dot.Fill = Brushes.Gray;
+            dot.Height = dot.Width = 3;
             Canvas.SetTop(dot, pt.Y - dot.Height / 2);
             Canvas.SetLeft(dot, pt.X - dot.Width / 2);
             canvas.Children.Add(dot);
@@ -106,7 +106,7 @@ namespace GTAPilot
         {
             Line l = new Line();
             l.Stroke = Brushes.Red;
-            l.StrokeThickness = 2;
+            l.StrokeThickness = 1;
 
             if (_lastRenderedFrame != null)
             {

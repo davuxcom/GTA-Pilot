@@ -53,7 +53,7 @@ namespace GTAPilot
 
         public void Tick()
         {
-            if (SystemManager.Instance.IsReplay)
+         //   if (SystemManager.Instance.IsReplay)
             {
                 for(var i = 0; i < 5; i++)
                 {

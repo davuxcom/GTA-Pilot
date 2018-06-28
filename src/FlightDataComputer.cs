@@ -277,12 +277,24 @@ namespace GTAPilot
                 var val = Timeline.Data[id].Heading.Value;
                 if (!double.IsNaN(val) && Timeline.Speed > 10)
                 {
-                    var diff = Math2.DiffAngles(val, _desiredHeading);
+                    var internalDesiredHeading = _desiredHeading;
+
+                    // If on a Flight Plan, stick to the line.
+                    if (_plan != null)
+                    {
+                        var heading_cap = 20;
+                        var distanceFromTargetLine = 1.5 * Math2.GetDistanceFromLine(Timeline.CurrentLocation, _plan.TargetLine);
+                        distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
+
+                        internalDesiredHeading -= distanceFromTargetLine;
+                    }
+
+                    var diff = Math2.DiffAngles(val, internalDesiredHeading);
                     var aDiff = Math.Abs(diff);
 
                     if (aDiff > 1)
                     {
-                        aDiff = Math.Min(aDiff / 5, 10);
+                        aDiff = Math.Min(aDiff / 8, 10);
 
                         if (diff < 0)
                         {

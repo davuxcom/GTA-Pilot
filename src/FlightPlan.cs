@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Emgu.CV.Structure;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,6 +14,7 @@ namespace GTAPilot
 
         public int CurrentIndex { get; private set; }
         public PointF Target => Points[CurrentIndex];
+        public LineSegment2DF TargetLine => new LineSegment2DF(Points[CurrentIndex - 1], Points[CurrentIndex]);
         public double TargetHeading => Math2.GetPolarHeadingFromLine(Target, Timeline.CurrentLocation);
 
         public ObservableCollection<PointF> Points { get; }

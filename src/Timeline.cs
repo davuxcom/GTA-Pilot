@@ -60,7 +60,7 @@ namespace GTAPilot
             t.Start();
         }
 
-        private static double LatestAvg(int count, Func<TimelineFrame, double> finder)
+        private static double LatestAvg(int count, Func<TimelineFrame, double> finder, bool useHeadingMath = false)
         {
             List<double> ret = new List<double>();
 
@@ -79,7 +79,30 @@ namespace GTAPilot
 
             if (ret.Count == 0) return 0;
 
-            return ret.Sum() / ret.Count;
+            if (useHeadingMath)
+            {
+                if (ret.Count >= 8)
+                {
+                    var p1 = Math2.AddAngles(ret[0], ret[1]);
+                    var p2 = Math2.AddAngles(ret[2], ret[3]);
+                    var p3 = Math2.AddAngles(ret[4], ret[5]);
+                    var p4 = Math2.AddAngles(ret[6], ret[7]);
+                    var h1 = Math2.AddAngles(p1, p2);
+                    var h2 = Math2.AddAngles(p3, p4);
+                    return Math2.AddAngles(h1, h2);
+                }
+                else if (ret.Count >= 4)
+                {
+                    var p1 = Math2.AddAngles(ret[0], ret[1]);
+                    var p2 = Math2.AddAngles(ret[2], ret[3]);
+                    return Math2.AddAngles(p1, p2);
+                }
+                else return ret[0];
+            }
+            else
+            {
+                return ret.Sum() / ret.Count;
+            }
         }
 
         public static TimelineFrame LatestFrame(Func<TimelineFrame, double> finder, int endId)
@@ -102,30 +125,28 @@ namespace GTAPilot
             var newFrame = Data[id];
             if (id == 0)
             {
-                newFrame.IsLocationCalculated = true;
                 newFrame.Location = StartLocation;
             }
             else
             {
                 var lastFrame = Data[id - 1];
 
-                var hdg = LatestAvg(2, f => f.Heading.Value);
-                var spd = LatestAvg(4, f => f.Speed.Value);
-
+                var hdg = LatestAvg(8, f => f.Heading.Value, useHeadingMath: true);
+                var spd = LatestAvg(30, f => f.Speed.Value);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd))
                 {
                     var dx = ComputePositionChange(hdg, spd, newFrame.Seconds - lastFrame.Seconds);
                     newFrame.Location = lastFrame.Location.Add(dx);
-                    newFrame.IsLocationCalculated = true;
-                    CurrentLocation = newFrame.Location;
                 }
                 else
                 {
                     // We don't have a Heading or Speed, so all we can do is copy forward.
                     newFrame.Location = lastFrame.Location;
-                    newFrame.IsLocationCalculated = true;
                 }
             }
+
+            newFrame.IsLocationCalculated = true;
+            CurrentLocation = newFrame.Location;
         }
 
         private static PointF ComputePositionChange(double newHeading, double newSpeed, double dT)
