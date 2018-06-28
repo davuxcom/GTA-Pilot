@@ -25,6 +25,13 @@ namespace GTAPilot
         public ObservableCollection<Position> Positions { get; }
         public List<System.Drawing.PointF> Points { get; }
 
+        public RelayCommand Clear { get; }
+        public RelayCommand RW03Departure { get; }
+        public RelayCommand RW30RApproach { get; }
+
+
+        Point lastPoint;
+
         public FlightPlanMap(System.Drawing.PointF[] points)
         {
             InitializeComponent();
@@ -34,16 +41,56 @@ namespace GTAPilot
             Positions = new ObservableCollection<Position>();
             Points = new List<System.Drawing.PointF>();
 
-            foreach (var p in points) AddPosition(new Point(p.X / Metrics.SCALE_Map4_20_TO_100, p.Y / Metrics.SCALE_Map4_20_TO_100));
+            foreach (var p in points) AddPosition_FullCoordinates(p);
 
             DataContext = this;
+
+            Clear = new RelayCommand(ClearPoints);
+
+            RW03Departure = new RelayCommand(() =>
+            {
+                AddPosition_FullCoordinates(new System.Drawing.PointF { X = 2029, Y = 4575 });
+                AddPosition_FullCoordinates(new System.Drawing.PointF { X = 2230, Y = 4230 });
+            });
+
+            RW30RApproach = new RelayCommand(() =>
+            {
+                // var RW30R_Start = new System.Drawing.PointF { X = 2290, Y = 4730 };
+                //var RW30R_End = new System.Drawing.PointF { X = 2034, Y = 4583 };
+
+                var RW30R_Start = new System.Drawing.PointF { X = 2261, Y = 4776 };
+                var RW30R_End = new System.Drawing.PointF { X = 2003, Y = 4626 };
+                var oppositeHdg = Math2.GetPolarHeadingFromLine(RW30R_Start, RW30R_End);
+
+                for (var i = 8; i >= 1; i--)
+                {
+                    System.Drawing.PointF nextPt = RW30R_Start.ExtendAlongHeading(oppositeHdg, 50 * i);
+
+                    AddPosition_FullCoordinates(nextPt);
+                }
+                AddPosition_FullCoordinates(RW30R_Start);
+                AddPosition_FullCoordinates(RW30R_End);
+
+            });
         }
 
-        Point lastPoint;
+        private void ClearPoints()
+        {
+            Positions.Clear();
+            Points.Clear();
+            canvas.Children.Clear();
+            lastPoint = default(Point);
+        }
 
         private void img_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             AddPosition(e.GetPosition(img));
+        }
+
+        private void AddPosition_FullCoordinates(System.Drawing.PointF pt)
+        {
+            AddPosition(new Point(pt.X / Metrics.SCALE_Map4_20_TO_100, 
+                pt.Y / Metrics.SCALE_Map4_20_TO_100));
         }
 
         private void AddPosition(Point pt)

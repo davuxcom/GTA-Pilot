@@ -18,7 +18,8 @@ namespace GTAPilot.Indicators
         int num_rejected_values = 0;
         DateTime last_time = DateTime.Now;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.04, 100);
+        DynHsv dyn_lower2 = new DynHsv(0, 0, double.NaN, 0.0005, 100);
 
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
@@ -54,26 +55,38 @@ namespace GTAPilot.Indicators
 
                     var d = (int)circ.Radius * 2;
                     var r = (int)circ.Radius;
-
+                    var margin = 0;
                     var circCenter = new PointF(focus.Width / 2, focus.Height / 2);
 
 
                     //   var vs_blackimg2 = vs_blackimg.Copy(new Rectangle((int)circCenter.X - r - margin, (int)circCenter.Y - r - margin, d + margin * 2, d + margin * 2));
                     {
-                        //  Mat vspeedMask = new Mat(vs_blackimg.Size, DepthType.Cv8U, 3);
+                          Mat vspeedMask = new Mat(vs_blackimg.Size, DepthType.Cv8U, 3);
                         {
-                            //  vspeedMask.SetTo(new MCvScalar(1));
-                            //  CvInvoke.Circle(vspeedMask, Point.Round(new PointF(r + margin, r + margin)), (int)(r - (r * 0)), new Bgr(Color.White).MCvScalar, -1);
+                              vspeedMask.SetTo(new MCvScalar(1));
+                              CvInvoke.Circle(vspeedMask, new Point(focus.Width / 2, focus.Height /2), (int)(r - 14), new Bgr(Color.White).MCvScalar, -1);
                             //
-                            //   var vspeed_inner_only = vs_blackimg.Copy(vspeedMask.ToImage<Gray, byte>());
+                            var vspeed_inner_only = focus.Copy(vspeedMask.ToImage<Gray, byte>()).Convert<Hsv, byte>();
                             {
 
-                                //    debugState[2] = vspeed_inner_only;
+                                var vspeed_inner_hsv = vspeed_inner_only.DynLowInRange(dyn_lower2, new Hsv(180, 255, 255));
+
+                                    debugState[2] = vspeed_inner_hsv;
 
                                 var cannyEdges3 = new Mat();
                                 {
-                                    CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 100);
-                                    var lines = CvInvoke.HoughLinesP(cannyEdges3, 1, Math.PI / 45.0, 4, 14, 4).OrderByDescending(p => p.Length).ToList();
+                                    // reference:
+                                  //  CvInvoke.Canny(vspeed_inner_hsv, cannyEdges3, 10, 100);
+                                  //  var lines = CvInvoke.HoughLinesP(cannyEdges3, 1, Math.PI / 45.0, 4, 14, 8).OrderByDescending(p => p.Length).ToList();
+
+
+                                    CvInvoke.Canny(vspeed_inner_hsv, cannyEdges3, 20, 150);
+
+                                    Mat dialatedCanny = new Mat();
+                                 //   CvInvoke.Dilate(vspeed_inner_hsv, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
+
+
+                                    var lines = CvInvoke.HoughLinesP(vspeed_inner_hsv, 1, Math.PI / 180, 20, 20, 4).OrderByDescending(p => p.Length).ToList();
 
                                     var center_size = 40;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
@@ -83,7 +96,7 @@ namespace GTAPilot.Indicators
                                     var bestLines = new List<Tuple<double, LineSegment2D>>();
                                     var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
 
-                                    debugState[2] = markedup_frame;
+                                    debugState[3] = markedup_frame;
                                     {
 
                                         foreach (var line in lines)
@@ -111,7 +124,8 @@ namespace GTAPilot.Indicators
 
                                         CvInvoke.Rectangle(markedup_frame, center, new Bgr(Color.Yellow).MCvScalar, 1);
 
-                                        double ObservedValue = -1;
+                                        List<double> ret = new List<double>();
+
                                         foreach (var lineX in bestLines)
                                         {
                                             var line = lineX.Item2;
@@ -193,8 +207,12 @@ namespace GTAPilot.Indicators
                                                     knots = 0;
                                                 }
 
-                                                ObservedValue = knots;
+                                                return knots;
+                                                //ret.Add(knots);
+                                               // break;
+                                             //   var ObservedValue = knots;
 
+                                                /*
                                                 var change = Math.Abs(ObservedValue - last_value);
                                                 if (change > 40 && num_rejected_values < 10)
                                                 {
@@ -211,15 +229,17 @@ namespace GTAPilot.Indicators
                                                 CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
                                                 CvInvoke.Line(focus, line.P1, line.P2, new Bgr(Color.Yellow).MCvScalar, 2);
                                                 break;
+                                                */
                                             }
                                         }
 
-                                        if (ObservedValue < 0)
+                                        if (ret.Count == 0)
                                         {
                                           //  Trace.WriteLine("SPEED: -1 " + bestLines.Count);
                                             return double.NaN;
                                         }
-                                        return ObservedValue;
+                                       // return ret.Max();
+                                       // return ret.Sum() / ret.Count;
 
                                     }
                                 }

@@ -199,6 +199,8 @@ namespace GTAPilot.Indicators
 
                         var compass_frame = only_blobs.Rotate(ret, new Gray(0));
 
+                        // Re-rotate the frame now that N and S are vertical, so the centroids are in predictable
+                        // locations no matter what the inital angle was.
                         blobs = new CvBlobs();
                         GetBlobDetector().Detect(compass_frame, blobs);
                         blobs.FilterByArea(25, 250);
@@ -256,9 +258,11 @@ namespace GTAPilot.Indicators
                                 return double.NaN;
                             }
 
-                            // Trace.WriteLine($"A:{a}");
+                            // Trace.WriteLine($"A: {Math.Round(a,4)}");
 
                             ret += a / 2;
+
+                           // ret += 0.8;
 
                             if (ret < 0) ret = 360 - ret;
                             if (ret > 360) ret -= 360;

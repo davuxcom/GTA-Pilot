@@ -7,8 +7,24 @@
         Height="450"
         WindowState="Maximized">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <local:ZoomBorder Background="Gray" ClipToBounds="True">
+        <Menu>
+            <MenuItem Header="Tools">
+                <MenuItem Command="{Binding Clear}" Header="Clear" />
+                <Separator />
+                <MenuItem Command="{Binding RW03Departure}" Header="Add LS RW03 Departure" />
+                <Separator />
+                <MenuItem Command="{Binding RW30RApproach}" Header="Add LS RW30R Approach" />
+            </MenuItem>
+        </Menu>
+
+        <local:ZoomBorder Grid.Row="1"
+                          Background="Gray"
+                          ClipToBounds="True">
             <Viewbox>
                 <Grid>
                     <Image Name="img"

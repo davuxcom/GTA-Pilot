@@ -147,35 +147,50 @@ namespace GTAPilot
             {
                 var didAdvanceWaypoint = _plan.UpdateLocation();
 
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 7)
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 11)
                 {
-                    _mcp.ALT = 600;
+                    _mcp.ALT = 500;
                     _mcp.IAS = 80;
                 }
 
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 6)
-                {
-                    _mcp.ALT = 550;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 5)
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 9)
                 {
                     _mcp.ALT = 450;
                 }
 
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 4)
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 8)
+                {
+                    _mcp.ALT = 400;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 7)
                 {
                     _mcp.ALT = 350;
                 }
 
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 6)
+                {
+                    _mcp.ALT = 300;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 5)
                 {
                     _mcp.ALT = 250;
                 }
 
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 2)
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 4)
+                {
+                    _mcp.ALT = 200;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
                 {
                     _mcp.ALT = 150;
+                }
+
+                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 2)
+                {
+                    _mcp.ALT = 100;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 1)
@@ -200,7 +215,8 @@ namespace GTAPilot
 
                         var d = Math2.DiffAngles(Timeline.Heading, _desiredHeading);
                         var sign = Math.Sign(d);
-                        var ad = Math.Abs(d);
+                        var ad = Math.Abs(d) - 4;
+                        if (ad < 0) ad = 0;
 
                         var roll_angle = Math.Min(ad, 20);
                         var newRoll = (int)(-1 * sign * roll_angle);
@@ -297,7 +313,7 @@ namespace GTAPilot
 
                     if (aDiff > 1)
                     {
-                        aDiff = Math.Min(aDiff / 8, 10);
+                        aDiff = Math.Min(aDiff / 3, 10);
 
                         if (diff < 0)
                         {
