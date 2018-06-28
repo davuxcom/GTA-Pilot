@@ -86,7 +86,7 @@ namespace GTAPilot.Indicators
                                  //   CvInvoke.Dilate(vspeed_inner_hsv, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
 
 
-                                    var lines = CvInvoke.HoughLinesP(vspeed_inner_hsv, 1, Math.PI / 180, 20, 20, 4).OrderByDescending(p => p.Length).ToList();
+                                    var lines = CvInvoke.HoughLinesP(vspeed_inner_hsv, 1, Math.PI / 180, 20, 16, 4).OrderByDescending(p => p.Length).ToList();
 
                                     var center_size = 40;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
@@ -206,6 +206,15 @@ namespace GTAPilot.Indicators
                                                 {
                                                     knots = 0;
                                                 }
+
+                                                if (Math.Abs(knots - last_value) > 40 && num_rejected_values < 10)
+                                                {
+                                                    num_rejected_values++;
+                                                    return double.NaN;
+                                                }
+
+                                                num_rejected_values = 0;
+                                                last_value = knots;
 
                                                 return knots;
                                                 //ret.Add(knots);
