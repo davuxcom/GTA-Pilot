@@ -23,6 +23,20 @@ namespace GTAPilot.Indicators
             public double LastW = double.NaN;
         }
 
+        public static int HLow { get; set; }
+        public static int SLow { get; set; }
+        public static int VLow { get; set; }
+        public static int HHigh { get; set; }
+        public static int SHigh { get; set; }
+        public static int VHigh { get; set; }
+
+        static YawIndicator()
+        {
+            HHigh = 255;
+            SHigh = 255;
+            VHigh = 255;
+        }
+
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Heading;
 
@@ -45,7 +59,9 @@ namespace GTAPilot.Indicators
                     circ.Center = circles[0].Center.Add(firstCrop.Location);
                     circ.Radius = 64;
 
-                    focus = data.Frame.SafeCopy(Math2.CropCircle(circ, 15));
+
+                    var focusRect = Math2.CropCircle(circ, 15);
+                    focus = data.Frame.SafeCopy(focusRect);
 
                     debugState[0] = focus;
 
@@ -68,7 +84,7 @@ namespace GTAPilot.Indicators
                     var list_blobs = new List<CvBlob>();
                     foreach (var b in blobs) list_blobs.Add(b.Value);
 
-                    for(var i = list_blobs.Count - 1; i >= 0; i--)
+                    for (var i = list_blobs.Count - 1; i >= 0; i--)
                     {
                         var b = list_blobs[i];
                         if (b.Centroid.Y < 5)
@@ -115,9 +131,9 @@ namespace GTAPilot.Indicators
                                 }
                             }
                         }
-                      //  LastAction = "Checking Results";
+                        //  LastAction = "Checking Results";
                         if (results.Count != 2) return double.NaN;
-                      //  LastAction = "Have Results";
+                        //  LastAction = "Have Results";
 
                     }
                     else
@@ -182,7 +198,7 @@ namespace GTAPilot.Indicators
                     {
 
                         var compass_frame = only_blobs.Rotate(ret, new Gray(0));
-                        
+
                         blobs = new CvBlobs();
                         GetBlobDetector().Detect(compass_frame, blobs);
                         blobs.FilterByArea(25, 250);
@@ -197,29 +213,92 @@ namespace GTAPilot.Indicators
                         var lineFromNorthToSouth = new LineSegment2DF(top, bottom);
                         var skewAngle = Math2.angleBetween2Lines(lineFromNorthToSouth, verticalLine);
                         skewAngle = (skewAngle * (180 / Math.PI));
-      
+
                         ret -= skewAngle;
 
                         compass_frame = only_blobs.Rotate(ret, new Gray(0));
 
-                        debugState[4] = compass_frame;
+                        var topDotRect = new Rectangle(focusRect.Left - 160, focusRect.Top - 5, 40, 40);
+                        var bottomDotRect = new Rectangle(focusRect.Left - 170, focusRect.Bottom - 40, 60, 40);
 
-                        // Skew angle calculated from dots in the corner of the indicator.
-                        ret -= 5.66 / 2;
+                        var topPointBlobs = GetDotLocationFromFrame(data.Frame, focusRect, topDotRect, isTop:true);
+                        var bottomPointBlobs = GetDotLocationFromFrame(data.Frame, focusRect, bottomDotRect, isTop:false);
 
-                        if (ret < 0) ret = 360 - ret;
-                        if (ret > 360) ret -= 360;
+                        if (topPointBlobs.Count > 0 && bottomPointBlobs.Count > 0)
+                        {
+                            var topPoint = topPointBlobs.First().Centroid.Add(topDotRect.Location);
+                            var bottomPoint = bottomPointBlobs.First().Centroid.Add(bottomDotRect.Location);
 
-                        return ret;
+                            var a = Math2.GetPolarHeadingFromLine(topPoint, bottomPoint);
+
+                            if (a > 180)
+                            {
+                                a = 360 - a;
+                                a *= -1;
+                            }
+
+                            var lineRect = new Rectangle(focusRect.Left - 200, focusRect.Top - 50, 170, focusRect.Bottom + 50 - focusRect.Top);
+                            var lineImg = data.Frame.Copy(lineRect);
+
+                            var topInLineImg = new PointF(topPoint.X - lineRect.Location.X, topPoint.Y - lineRect.Location.Y);
+                            var bottomInLineImg = new PointF(bottomPoint.X - lineRect.Location.X, bottomPoint.Y - lineRect.Location.Y);
+
+
+                            var topRange = lineImg.Convert<Hsv, byte>(); //.InRange(new Hsv(HLow, SLow, VLow), new Hsv(HHigh, SHigh, VHigh));
+                            CvInvoke.Line(lineImg, topInLineImg.ToPoint(), bottomInLineImg.ToPoint(), new Bgr(Color.Yellow).MCvScalar, 1);
+
+                            debugState[3] = lineImg;
+                            debugState[4] = topRange;
+
+                            if (Math.Abs(a) > 8)
+                            {
+                                // Trace.WriteLine("Rejected due to dots angle out of bounds " + a);
+                                return double.NaN;
+                            }
+
+                            // Trace.WriteLine($"A:{a}");
+
+                            ret += a / 2;
+
+                            if (ret < 0) ret = 360 - ret;
+                            if (ret > 360) ret -= 360;
+
+                            return ret;
+                        }
+
+
                     }
                 }
             }
             return double.NaN;
         }
 
+        private List<CvBlob> GetDotLocationFromFrame(Image<Bgr, byte> frame, Rectangle focusRect, Rectangle dotRect, bool isTop)
+        {
+            var topDot = frame.SafeCopy(dotRect);
+            var topHsv = topDot.Convert<Hsv, byte>();
+            var topRange = topHsv.InRange(new Hsv(0, 0, 80), new Hsv(180, 255, 150));
+
+
+            var blobs = new CvBlobs();
+            GetBlobDetector().Detect(topRange, blobs);
+            blobs.FilterByArea(5, 18);
+
+            var ret = new List<CvBlob>();
+            ret.AddRange(blobs.Values);
+            if (isTop)
+            {
+                return ret.OrderByDescending(b => b.Centroid.Y).ToList();
+            }
+            else
+            {
+                return ret.OrderBy(b => b.Centroid.Y).ToList();
+            }
+        }
+
         double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame, ref object[] debugState)
         {
-            
+
             var my_frameref = Timeline.Data[frameId];
             TimelineFrame last_frameref = null;
 
@@ -232,7 +311,7 @@ namespace GTAPilot.Indicators
                     break;
                 }
             }
-            
+
 
             if (packs != null)
             {
@@ -255,7 +334,7 @@ namespace GTAPilot.Indicators
                     ocr.SetImage(pack.Item1);
                     ocr.Recognize();
 
-                 //   pack.Item1.Save($"c:\\save\\{cid++}.png");
+                    //   pack.Item1.Save($"c:\\save\\{cid++}.png");
 
                     var small_angle = pack.Item2;
                     var b = pack.BlobBox;
@@ -299,9 +378,9 @@ namespace GTAPilot.Indicators
                     if (str == "É") str = "E";
                     if (str == "=") str = "E";
 
-                   //   Trace.WriteLine("CHO : " + str);
+                    //   Trace.WriteLine("CHO : " + str);
 
-                    
+
                     if (last_frameref != null &&
                        (my_frameref.Seconds - last_frameref.Seconds) < 1000)
                     {
@@ -339,7 +418,7 @@ namespace GTAPilot.Indicators
                             }
                         }
                     }
-                    
+
 
                     if (str == "N" ||
                         str == "E" ||
@@ -476,7 +555,7 @@ namespace GTAPilot.Indicators
                     //  Trace.WriteLine("---------");
                     choices = choices.OrderBy(cx => cx.Item5).ToList();
 
-                //    LastAction = "Have Choices";
+                    //    LastAction = "Have Choices";
 
                     // exclude bad combinations
                     if (choices.Where(ct => ct.Item3 == "N").Count() > 1) return double.NaN;
@@ -485,8 +564,8 @@ namespace GTAPilot.Indicators
                     if (choices.Where(ct => ct.Item3 == "W").Count() > 1) return double.NaN;
 
                     var p1 = Math2.AddAngles(choices[0].Item1, choices[1].Item1);
-                     var p2 = Math2.AddAngles(choices[2].Item1, choices[3].Item1);
-                     var nextHeading = Math2.AddAngles(p1, p2);
+                    var p2 = Math2.AddAngles(choices[2].Item1, choices[3].Item1);
+                    var nextHeading = Math2.AddAngles(p1, p2);
 
                     //var nextHeading = choices.First(ct => ct.Item3 == "S").Item1;
 
@@ -511,7 +590,7 @@ namespace GTAPilot.Indicators
                         ret += o_ret;
                         //  Trace.WriteLine("CC: " + ret);
                     }
-                  //  LastAction = "No choices " + ret;
+                    //  LastAction = "No choices " + ret;
                 }
             }
             return double.NaN;

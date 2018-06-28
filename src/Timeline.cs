@@ -131,8 +131,8 @@ namespace GTAPilot
             {
                 var lastFrame = Data[id - 1];
 
-                var hdg = LatestAvg(8, f => f.Heading.Value, useHeadingMath: true);
-                var spd = LatestAvg(30, f => f.Speed.Value);
+                var hdg = LatestAvg(4, f => f.Heading.Value, useHeadingMath: true);
+                var spd = LatestAvg(5, f => f.Speed.Value);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd))
                 {
                     var dx = ComputePositionChange(hdg, spd, newFrame.Seconds - lastFrame.Seconds);

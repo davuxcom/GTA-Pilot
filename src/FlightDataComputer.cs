@@ -14,6 +14,7 @@ namespace GTAPilot
         private double _desiredHeading;
         private double _desiredSpeed;
         private double _desiredAltitude;
+        private bool _tightHoldLine;
         private PID _pitchPid;
         private PID _rollPid;
         private PID _speedPid;
@@ -154,27 +155,27 @@ namespace GTAPilot
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 6)
                 {
-                    _mcp.ALT = 500;
+                    _mcp.ALT = 550;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 5)
                 {
-                    _mcp.ALT = 400;
+                    _mcp.ALT = 450;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 4)
                 {
-                    _mcp.ALT = 300;
+                    _mcp.ALT = 350;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
                 {
-                    _mcp.ALT = 200;
+                    _mcp.ALT = 250;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 2)
                 {
-                    _mcp.ALT = 100;
+                    _mcp.ALT = 150;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 1)
@@ -282,8 +283,10 @@ namespace GTAPilot
                     // If on a Flight Plan, stick to the line.
                     if (_plan != null)
                     {
+                        _tightHoldLine = (Timeline.Altitude < 300);
+
                         var heading_cap = 20;
-                        var distanceFromTargetLine = 1.5 * Math2.GetDistanceFromLine(Timeline.CurrentLocation, _plan.TargetLine);
+                        var distanceFromTargetLine = (_tightHoldLine ? 2 : 0.5) * Math2.GetDistanceFromLine(Timeline.CurrentLocation, _plan.TargetLine);
                         distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
 
                         internalDesiredHeading -= distanceFromTargetLine;

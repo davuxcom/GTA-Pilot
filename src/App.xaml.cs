@@ -19,6 +19,17 @@ namespace GTAPilot
 
 3636, 857));
 */
+/*
+            var a = Math2.GetPolarHeadingFromLine(new System.Drawing.PointF(
+ 3528, 735), new System.Drawing.PointF(
+
+3536, 856));
+
+           */
+
+
+
+
 
             new SystemManager();
 
