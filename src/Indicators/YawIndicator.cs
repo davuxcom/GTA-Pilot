@@ -21,6 +21,7 @@ namespace GTAPilot.Indicators
             public double LastE = double.NaN;
             public double LastS = double.NaN;
             public double LastW = double.NaN;
+            public double Bias = double.NaN;
         }
 
         public static int HLow { get; set; }
@@ -48,7 +49,7 @@ namespace GTAPilot.Indicators
             {
                 circle.Center = new PointF(circle.Center.X + 1050, circle.Center.Y - 20);
                 circle.Radius = 70;
-                var firstCrop = Math2.CropCircle(circle, 40);
+                var firstCrop = Math2.CropCircle(circle, 65);
                 var focus = data.Frame.SafeCopy(firstCrop);
                 var vs_hsv = focus.Convert<Hsv, byte>().PyrUp().PyrDown();
 
@@ -252,15 +253,30 @@ namespace GTAPilot.Indicators
                             debugState[3] = lineImg;
                             debugState[4] = topRange;
 
-                            if (Math.Abs(a) > 8)
+                            var dist = Math2.GetDistance(topPoint, bottomPoint);
+
+                         //   Trace.WriteLine(dist);
+
+                            if (Math.Abs(a) > 8 || dist < 110 || dist > 120)
                             {
-                                // Trace.WriteLine("Rejected due to dots angle out of bounds " + a);
-                                return double.NaN;
+                                var biasFrame = Timeline.LatestFrame(f => f.Heading.ForIndicatorUse == null ? double.NaN : ((CompassExtendedFrame)f.Heading.ForIndicatorUse).Bias, data.Id);
+                                if (biasFrame != null)
+                                {
+                                    a = ((CompassExtendedFrame)biasFrame.Heading.ForIndicatorUse).Bias;
+                                }
+                                else
+                                {
+
+                                    // Trace.WriteLine("Rejected due to dots angle out of bounds " + a);
+                                    return double.NaN;
+                                }
                             }
 
                             // Trace.WriteLine($"A: {Math.Round(a,4)}");
 
                             ret += a / 2;
+
+                            ((CompassExtendedFrame)Timeline.Data[data.Id].Heading.ForIndicatorUse).Bias = a;
 
                             ret -= 1;
 

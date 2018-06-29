@@ -8,8 +8,6 @@ namespace GTAPilot
     {
         public static SystemManager Instance = null;
 
-        public event Action<FrameData> FrameProduced;
-
         public FlightPlan FlightPlan { get; }
         public IndicatorHandler IndicatorHost { get; }
         public ModeControlPanel MCP { get; }
@@ -49,7 +47,7 @@ namespace GTAPilot
             }
             else
             {
-                Replay = new ReplayFrameProducer(@"C:\save\recording1");
+                Replay = new ReplayFrameProducer(@"C:\save\recording3");
                 Replay.FrameProduced += OnFrameProduced;
                 Replay.Begin();
             }
@@ -83,12 +81,16 @@ namespace GTAPilot
         private void OnFrameProduced(int frameId, System.Drawing.Bitmap frame)
         {
             var data = new FrameData(frameId, frame, Timeline.Duration.Elapsed.TotalSeconds);
-            IndicatorHost.HandleFrameArrived(data);
+
+            if (Recorder != null)
+            {
+                Recorder.HandleFrameArrived(data);
+            }
+            else
+            {
+                IndicatorHost.HandleFrameArrived(data);
+            }
             Capture.GotFrame();
-
-            FrameProduced?.Invoke(data);
-
-            if (Recorder != null) Recorder.HandleFrameArrived(data);
         }
 
         private void Controler_ButtonPressed(object sender, XINPUT_GAMEPAD_BUTTONS e)

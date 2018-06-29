@@ -58,6 +58,8 @@ namespace GTAPilot.Extensions
 
     public class DynHsv
     {
+        private int lastDirection = 0;
+
         public DynHsv(double hue, double satuation, double value, double targetCount, double cachedValueSeed)
         {
             Hue = hue;
@@ -93,18 +95,32 @@ namespace GTAPilot.Extensions
         {
             var diff = Count - count;
 
-            if (diff > 0.005)
+            int cacheIncrement = 0;
+
+            if (diff > 0.0005)
             {
-                CachedValue -= 1;
+                cacheIncrement = -1;
+                lastDirection = -1;
             }
-            else if (diff < -0.005)
+            else if (diff < -0.0005)
             {
-                CachedValue += 1;
+                cacheIncrement = 1;
+                lastDirection = 1;
             }
             else
             {
+                lastDirection = 0;
                 return false;
             }
+
+            CachedValue += cacheIncrement;
+
+            if (CachedValue != lastDirection && lastDirection != 0)
+            {
+                lastDirection = 0;
+                return false; // we reversed direction
+            }
+
             return true; // keep trying
         }
 

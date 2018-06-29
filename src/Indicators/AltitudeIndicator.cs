@@ -15,7 +15,7 @@ namespace GTAPilot.Indicators
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Altitude;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.01, 100);
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.008, 100);
 
         int LastBig = 0;
 
@@ -55,7 +55,7 @@ namespace GTAPilot.Indicators
                     debugState[2] = markedup_frame;
 
                     var cannyEdges3 = new Mat();
-                    CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 100);
+                    CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 250);
                     var lines = CvInvoke.HoughLinesP(
                        cannyEdges3,
                        1, Math.PI / 45.0, 4, 14, 4);
