@@ -184,7 +184,8 @@ namespace GTAPilot.Indicators
 
                     CvInvoke.Line(focusFrame, boundary_one, boundary_two, new Bgr(Color.Yellow).MCvScalar, 2);
 
-                    return angle;
+                    // skew considered from other panels
+                    return angle - 1;
                 }
                 else
                 {

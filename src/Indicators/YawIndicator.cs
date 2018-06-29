@@ -216,15 +216,15 @@ namespace GTAPilot.Indicators
                         var skewAngle = Math2.angleBetween2Lines(lineFromNorthToSouth, verticalLine);
                         skewAngle = (skewAngle * (180 / Math.PI));
 
-                        ret -= skewAngle;
+                        ret -= skewAngle / 2;
 
                         compass_frame = only_blobs.Rotate(ret, new Gray(0));
 
                         var topDotRect = new Rectangle(focusRect.Left - 160, focusRect.Top - 5, 40, 40);
                         var bottomDotRect = new Rectangle(focusRect.Left - 170, focusRect.Bottom - 40, 60, 40);
 
-                        var topPointBlobs = GetDotLocationFromFrame(data.Frame, focusRect, topDotRect, isTop:true);
-                        var bottomPointBlobs = GetDotLocationFromFrame(data.Frame, focusRect, bottomDotRect, isTop:false);
+                        var topPointBlobs = GetDotLocationFromFrame(data.Frame, focusRect, topDotRect, isTop: true);
+                        var bottomPointBlobs = GetDotLocationFromFrame(data.Frame, focusRect, bottomDotRect, isTop: false);
 
                         if (topPointBlobs.Count > 0 && bottomPointBlobs.Count > 0)
                         {
@@ -262,7 +262,7 @@ namespace GTAPilot.Indicators
 
                             ret += a / 2;
 
-                           // ret += 0.8;
+                            ret -= 1;
 
                             if (ret < 0) ret = 360 - ret;
                             if (ret > 360) ret -= 360;

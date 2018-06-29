@@ -82,6 +82,9 @@
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
     <Compile Include="Interop\Gdi32.cs" />
     <Compile Include="Interop\XINPUT_GAMEPAD.cs" />
+    <Compile Include="RecorderWindow.xaml.cs">
+      <DependentUpon>RecorderWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TimelineFrame.cs" />
     <Compile Include="TimelineValue.cs" />
     <Compile Include="UI\RelayCommand.cs" />
@@ -139,6 +142,10 @@
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
     <Compile Include="XboxApp.cs" />
+    <Page Include="RecorderWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\FlightPlanControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

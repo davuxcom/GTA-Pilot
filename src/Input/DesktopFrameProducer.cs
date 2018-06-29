@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Threading;
 
 namespace GTAPilot
 {
@@ -20,8 +21,10 @@ namespace GTAPilot
             _isRunning = true;
             var t = new System.Threading.Thread(() =>
             {
+                int initialDelay = 100;
                 int frameId = 0;
                 var desktop = new DesktopDuplication.DesktopDuplicator(_window);
+
                 while (_isRunning)
                 {
                     var frame = desktop.GetLatestFrame();
@@ -29,6 +32,12 @@ namespace GTAPilot
                     {
                         System.Threading.Thread.Sleep(1);
                         continue;
+                    }
+
+                    if (initialDelay > 0)
+                    {
+                        initialDelay--;
+                        Thread.Sleep(50);
                     }
 
                     FrameProduced(frameId++, frame);

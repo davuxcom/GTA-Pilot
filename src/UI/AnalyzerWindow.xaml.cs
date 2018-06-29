@@ -79,7 +79,7 @@ namespace GTAPilot
         public void Tick()
         {
             ticks++;
-            if (ticks % 10 == 0 || SystemManager.Instance.IsReplay) _viewModel.Tick();
+            if (ticks % 4 == 0 || SystemManager.Instance.IsReplay) _viewModel.Tick();
         }
 
         private void Border_PreviewMouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)

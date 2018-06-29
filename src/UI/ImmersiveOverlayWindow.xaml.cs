@@ -59,6 +59,17 @@ namespace GTAPilot
             OpenRecorder = new RelayCommand(() =>
             {
 
+                using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+                {
+                    dialog.SelectedPath = @"c:\save\recording3";
+                    System.Windows.Forms.DialogResult result = dialog.ShowDialog();
+
+                    SystemManager.Instance.StartRecording(dialog.SelectedPath);
+
+                    var rc = new RecorderWindow();
+                    rc.Show();
+                }
+
             });
 
             DataContext = this;

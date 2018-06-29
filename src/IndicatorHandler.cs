@@ -45,6 +45,7 @@ namespace GTAPilot
                 Tick1(d);
                 _stage2.Enqueue(d);
             });
+
             StartWorkerThread(_stage2, (d) =>
             {
                 Tick2(d);
@@ -172,6 +173,8 @@ namespace GTAPilot
             }
 
             Timeline.Data[data.Id].IsDataComplete = true;
+
+           // Timeline.CompleteFrame(data.Id);
         }
     }
 }

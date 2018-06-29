@@ -33,7 +33,7 @@ namespace GTAPilot
         public static void Begin()
         {
             Duration = Stopwatch.StartNew();
-
+            
             var t = new Thread(() =>
             {
                 int lastDoneFrame = -1;
@@ -53,7 +53,7 @@ namespace GTAPilot
                         }
                     }
 
-                    Thread.Sleep(10);
+                    Thread.Sleep(1);
                 }
             });
             t.IsBackground = true;
@@ -77,7 +77,7 @@ namespace GTAPilot
                 }
             }
 
-            if (ret.Count == 0) return 0;
+            if (ret.Count == 0) return double.NaN;
 
             if (useHeadingMath)
             {
@@ -131,8 +131,8 @@ namespace GTAPilot
             {
                 var lastFrame = Data[id - 1];
 
-                var hdg = LatestAvg(4, f => f.Heading.Value, useHeadingMath: true);
-                var spd = LatestAvg(12, f => f.Speed.Value);
+                var hdg = LatestAvg(2, f => f.Heading.Value, useHeadingMath: true);
+                var spd = LatestAvg(2, f => f.Speed.Value);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd))
                 {
                     var dx = ComputePositionChange(hdg, spd, newFrame.Seconds - lastFrame.Seconds);

@@ -155,42 +155,42 @@ namespace GTAPilot
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 9)
                 {
-                    _mcp.ALT = 450;
+                    _mcp.ALT = 425;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 8)
                 {
-                    _mcp.ALT = 400;
+                    _mcp.ALT = 375;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 7)
                 {
-                    _mcp.ALT = 350;
+                    _mcp.ALT = 325;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 6)
                 {
-                    _mcp.ALT = 300;
+                    _mcp.ALT = 275;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 5)
                 {
-                    _mcp.ALT = 250;
+                    _mcp.ALT = 225;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 4)
                 {
-                    _mcp.ALT = 200;
+                    _mcp.ALT = 175;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
                 {
-                    _mcp.ALT = 150;
+                    _mcp.ALT = 120;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 2)
                 {
-                    _mcp.ALT = 100;
+                    _mcp.ALT = 85;
                 }
 
                 if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 1)
@@ -215,10 +215,10 @@ namespace GTAPilot
 
                         var d = Math2.DiffAngles(Timeline.Heading, _desiredHeading);
                         var sign = Math.Sign(d);
-                        var ad = Math.Abs(d) - 4;
+                        var ad = Math.Abs(d) - 10;
                         if (ad < 0) ad = 0;
 
-                        var roll_angle = Math.Min(ad, 20);
+                        var roll_angle = Math.Min(ad, 15);
                         var newRoll = (int)(-1 * sign * roll_angle);
 
                         if (_desiredRoll > newRoll)
@@ -313,7 +313,7 @@ namespace GTAPilot
 
                     if (aDiff > 1)
                     {
-                        aDiff = Math.Min(aDiff / 3, 10);
+                        aDiff = Math.Min(aDiff / 2, 40);
 
                         if (diff < 0)
                         {

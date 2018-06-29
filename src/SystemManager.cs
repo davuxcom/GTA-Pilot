@@ -17,6 +17,7 @@ namespace GTAPilot
         public FpsCounter Capture { get; }
         public bool IsReplay => Replay != null;
         public ReplayFrameProducer Replay { get; }
+        public SaveFrameConsumer Recorder { get; private set; }
 
         private FlightDataComputer _computer;
 
@@ -63,6 +64,11 @@ namespace GTAPilot
             SetValueAndHistory(frameId, (id) => Timeline.Data[id].Speed, controllerMsg.RIGHT_TRIGGER);
         }
 
+        internal void StartRecording(string selectedPath)
+        {
+            Recorder = new SaveFrameConsumer(selectedPath);
+        }
+
         private void SetValueAndHistory(int frameId, Func<int, TimelineValue> getFrame, double value)
         {
             var thisFrame = getFrame(frameId);
@@ -81,12 +87,22 @@ namespace GTAPilot
             Capture.GotFrame();
 
             FrameProduced?.Invoke(data);
+
+            if (Recorder != null) Recorder.HandleFrameArrived(data);
         }
 
         private void Controler_ButtonPressed(object sender, XINPUT_GAMEPAD_BUTTONS e)
         {
             switch (e)
             {
+                case XINPUT_GAMEPAD_BUTTONS.START:
+                        MCP.BankHold = false;
+                        MCP.HeadingHold = false;
+                        MCP.VSHold = false;
+                        MCP.AltitudeHold = false;
+                        MCP.IASHold = false;
+                        MCP.LNAV = false;
+                    break;
                 case XINPUT_GAMEPAD_BUTTONS.BACK:
                     if (MCP.BankHold || MCP.HeadingHold || MCP.VSHold || MCP.AltitudeHold || MCP.IASHold | MCP.LNAV)
                     {
