@@ -19,7 +19,7 @@ namespace GTAPilot.Indicators
         DateTime last_time = DateTime.Now;
 
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.04, 100);
-        DynHsv dyn_lower2 = new DynHsv(0, 0, double.NaN, 0.0005, 100);
+        DynHsv dyn_lower2 = new DynHsv(0, 0, double.NaN, 0.001, 100);
 
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
@@ -86,7 +86,7 @@ namespace GTAPilot.Indicators
                                  //   CvInvoke.Dilate(vspeed_inner_hsv, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
 
 
-                                    var lines = CvInvoke.HoughLinesP(vspeed_inner_hsv, 1, Math.PI / 180, 20, 16, 4).OrderByDescending(p => p.Length).ToList();
+                                    var lines = CvInvoke.HoughLinesP(vspeed_inner_hsv, 1, Math.PI / 180, 10, 16, 4).OrderByDescending(p => p.Length).ToList();
 
                                     var center_size = 40;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
