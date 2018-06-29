@@ -151,6 +151,14 @@ namespace GTAPilot
 
             return Math.Sin(angle) * abLength;
         }
+
+        internal static double SafeAddAngle(double angle, double add)
+        {
+            angle += add;
+            if (angle > 359) angle = angle - 360;
+            if (angle < 0) angle = 360 + angle;
+            return angle;
+        }
     }
 
 }

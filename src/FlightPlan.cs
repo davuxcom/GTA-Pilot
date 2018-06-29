@@ -56,7 +56,7 @@ namespace GTAPilot
             if (Points.Count == 0) return false;
 
             var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
-            bool isCloseToPoint = dist < 50;
+            bool isCloseToPoint = dist < 60;
             if (isCloseToPoint)
             {
                 CurrentIndex++;

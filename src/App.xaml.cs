@@ -19,19 +19,23 @@ namespace GTAPilot
 
 3636, 857));
 */
+
             /*
-                        var a = Math2.GetPolarHeadingFromLine(new System.Drawing.PointF(
-             3528, 735), new System.Drawing.PointF(
+            FlightPlan fp = new FlightPlan();
+            fp.LoadFromFile(@"c:\workspace\FlightPlan.txt");
 
-            3536, 856));
+            Timeline.Load(@"c:\workspace\run.txt");
 
-                       */
+            var locationPoints = new List<System.Drawing.PointF>();
+            for (var i = 0; i < Timeline.LatestFrameId; i++)
+            {
+                locationPoints.Add(Timeline.Data[i].Location);
+            }
 
-           // new FlightPlanMap(new System.Drawing.PointF[] { }).Show();
-          //  return;
+            new FlightPlanMap(fp.Points.ToArray(), locationPoints.ToArray()).Show();
 
-
-
+            return;
+            */
             new SystemManager();
 
             if (SystemManager.Instance.App.IsRunning)

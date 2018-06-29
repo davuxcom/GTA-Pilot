@@ -32,7 +32,7 @@ namespace GTAPilot
 
         Point lastPoint;
 
-        public FlightPlanMap(System.Drawing.PointF[] points)
+        public FlightPlanMap(System.Drawing.PointF[] points, System.Drawing.PointF[] locationPoints = null)
         {
             InitializeComponent();
 
@@ -42,6 +42,11 @@ namespace GTAPilot
             Points = new List<System.Drawing.PointF>();
 
             foreach (var p in points) AddPosition_FullCoordinates(p);
+
+            if (locationPoints != null)
+            {
+                foreach (var p in locationPoints) RenderLocation(p);
+            }
 
             DataContext = this;
 
@@ -70,8 +75,26 @@ namespace GTAPilot
                 }
                 AddPosition_FullCoordinates(RW30R_Start);
                 AddPosition_FullCoordinates(RW30R_End);
-
             });
+        }
+
+        System.Drawing.PointF lastLocation;
+        private void RenderLocation(System.Drawing.PointF frame)
+        {
+            if (lastLocation != default(System.Drawing.PointF))
+            {
+                Line l = new Line();
+                l.Stroke = Brushes.Red;
+                l.StrokeThickness = 1;
+
+                l.X1 = lastLocation.X / Metrics.SCALE_Map4_20_TO_100;
+                l.X2 = frame.X / Metrics.SCALE_Map4_20_TO_100;
+                l.Y1 = lastLocation.Y / Metrics.SCALE_Map4_20_TO_100;
+                l.Y2 = frame.Y / Metrics.SCALE_Map4_20_TO_100;
+
+                canvas.Children.Add(l);
+            }
+            lastLocation = frame;
         }
 
         private void ClearPoints()

@@ -39,6 +39,11 @@
                       Command="{Binding OpenRecorder}"
                       Foreground="White"
                       Header="Recorder" />
+
+            <MenuItem Background="Transparent"
+                      Command="{Binding SaveData}"
+                      Foreground="White"
+                      Header="Save Data" />
         </Menu>
 
         <Border Grid.Row="1"

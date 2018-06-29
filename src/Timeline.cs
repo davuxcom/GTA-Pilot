@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace GTAPilot
@@ -21,14 +22,14 @@ namespace GTAPilot
         // location is los santos runway 3
         public static PointF StartLocation = new PointF(2030.2f, 4573.9f);
 
-        public static double Roll => LatestAvg(1, f => f.Roll.Value);
-        public static double Pitch => LatestAvg(1, f => f.Pitch.Value);
-        public static double Speed => LatestAvg(1, f => f.Speed.Value);
-        public static double Altitude => LatestAvg(1, f => f.Altitude.Value);
-        public static double Heading => LatestAvg(1, f => f.Heading.Value);
+        public static double Roll => LatestAvg(1, f => f.Roll.Value, LatestFrameId);
+        public static double Pitch => LatestAvg(1, f => f.Pitch.Value, LatestFrameId);
+        public static double Speed => LatestAvg(1, f => f.Speed.Value, LatestFrameId);
+        public static double Altitude => LatestAvg(1, f => f.Altitude.Value, LatestFrameId);
+        public static double Heading => LatestAvg(1, f => f.Heading.Value, LatestFrameId);
 
-        public static double RollAvg => LatestAvg(25, f => f.Roll.Value);
-        public static double PitchAvg => LatestAvg(25, f => f.Pitch.Value);
+        public static double RollAvg => LatestAvg(25, f => f.Roll.Value, LatestFrameId);
+        public static double PitchAvg => LatestAvg(25, f => f.Pitch.Value, LatestFrameId);
 
         public static void Begin()
         {
@@ -60,11 +61,11 @@ namespace GTAPilot
             t.Start();
         }
 
-        private static double LatestAvg(int count, Func<TimelineFrame, double> finder, bool useHeadingMath = false)
+        private static double LatestAvg(int count, Func<TimelineFrame, double> finder, int startFrameId, bool useHeadingMath = false)
         {
             List<double> ret = new List<double>();
 
-            for (var i = LatestFrameId; i >= 0; i--)
+            for (var i = startFrameId; i >= 0; i--)
             {
                 if (Data[i] != null)
                 {
@@ -131,12 +132,26 @@ namespace GTAPilot
             {
                 var lastFrame = Data[id - 1];
 
-                var hdg = LatestAvg(2, f => f.Heading.Value, useHeadingMath: true);
-                var spd = LatestAvg(2, f => f.Speed.Value);
-                if (!double.IsNaN(hdg) && !double.IsNaN(spd))
+                var hdg = LatestAvg(1, f => f.Heading.Value, id, useHeadingMath: true);
+                var spd = LatestAvg(1, f => f.Speed.Value, id);
+                var roll = LatestAvg(4, f => f.Roll.Value, id);
+                if (!double.IsNaN(hdg) && !double.IsNaN(spd) && !double.IsNaN(roll))
                 {
-                    var dx = ComputePositionChange(hdg, spd, newFrame.Seconds - lastFrame.Seconds);
-                    newFrame.Location = lastFrame.Location.Add(dx);
+                    var dt = newFrame.Seconds - lastFrame.Seconds;
+                    var positionDelta = ComputePositionChange(hdg, spd, dt);
+                    newFrame.Location = lastFrame.Location.Add(positionDelta);
+
+                   if (Math.Abs(roll) > 3 && Math.Abs(roll) < 10)
+                   {
+                  
+                       var angle = 1 * Math.Sign(roll) * 90;
+                       var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), 0.2 * Math.Abs(roll), dt);
+                       newFrame.Location = newFrame.Location.Add(side_delta);
+                   }
+
+
+                    
+
                 }
                 else
                 {
@@ -149,10 +164,42 @@ namespace GTAPilot
             CurrentLocation = newFrame.Location;
         }
 
-        private static PointF ComputePositionChange(double newHeading, double newSpeed, double dT)
+        public static void Save(string filePath)
         {
-            var timeDeltaInSeconds = dT;
-            double speedInKnotsPerHour = newSpeed;
+            var stopId = LatestFrameId;
+
+            var ret = new List<string>();
+            for (var i = 0; i < stopId; i++)
+            {
+                var f = Data[i];
+                ret.Add($"{f.Seconds},{f.Roll.Value},{f.Pitch.Value},{f.Speed.Value},{f.Altitude.Value},{f.Heading.Value}");
+            }
+
+            System.IO.File.WriteAllLines(filePath, ret.ToArray());
+        }
+
+        public static void Load(string filePath)
+        {
+            var lines = System.IO.File.ReadAllLines(filePath);
+
+            for(var i = 0; i < lines.Length; i++)
+            {
+                var d = Data[i] = new TimelineFrame { Id = i };
+
+                var parts = lines[i].Split(',');
+                d.Seconds = double.Parse(parts[0]);
+                d.Roll.Value = double.Parse(parts[1]);
+                d.Pitch.Value = double.Parse(parts[2]);
+                d.Speed.Value = double.Parse(parts[3]);
+                d.Altitude.Value = double.Parse(parts[4]);
+                d.Heading.Value = Math2.SafeAddAngle(double.Parse(parts[5]), 0);
+                CompleteFrame(i);
+                LatestFrameId = i;
+            }
+        }
+
+        private static PointF ComputePositionChange(double newHeading, double speedInKnotsPerHour, double timeDeltaInSeconds)
+        {
             const double KnotsPerSecondToMetersPerSecond = 0.51444444444;
             double MetersPerSecond = speedInKnotsPerHour * KnotsPerSecondToMetersPerSecond;
 

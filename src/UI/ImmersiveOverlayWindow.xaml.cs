@@ -10,6 +10,7 @@ namespace GTAPilot
         public RelayCommand FlightPlanSave { get; }
         public RelayCommand FlightPlanEdit { get; }
         public RelayCommand OpenRecorder { get; }
+        public RelayCommand SaveData { get; }
 
         public ImmersiveOverlayWindow()
         {
@@ -70,6 +71,19 @@ namespace GTAPilot
                     rc.Show();
                 }
 
+            });
+
+            SaveData = new RelayCommand(() =>
+            {
+                Microsoft.Win32.SaveFileDialog dlg = new Microsoft.Win32.SaveFileDialog();
+                dlg.FileName = "Run";
+                dlg.DefaultExt = ".txt";
+                dlg.Filter = "Text documents (.txt)|*.txt";
+
+                if (dlg.ShowDialog() == true)
+                {
+                    Timeline.Save(dlg.FileName);
+                }
             });
 
             DataContext = this;

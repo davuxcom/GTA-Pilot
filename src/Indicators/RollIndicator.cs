@@ -179,13 +179,11 @@ namespace GTAPilot.Indicators
                         angle += 90;
                         angle *= -1;
                     }
-
-                  //  angle += 1.5;
-
+                    
                     CvInvoke.Line(focusFrame, boundary_one, boundary_two, new Bgr(Color.Yellow).MCvScalar, 2);
 
                     // skew considered from other panels
-                    return angle - 1;
+                    return angle + 1;
                 }
                 else
                 {
