@@ -5,7 +5,7 @@ using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+//using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -20,6 +20,14 @@ namespace GTAPilot.Indicators
             public double LastS = double.NaN;
             public double LastW = double.NaN;
             public double Bias = double.NaN;
+        }
+
+        class CompassPack
+        {
+            public Image<Gray, byte> Item1;
+            public double Item2;
+            public Rectangle BlobBox;
+            public double BlobArea;
         }
 
         public static int HLow { get; set; }
@@ -174,7 +182,7 @@ namespace GTAPilot.Indicators
                                 }
                                 else
                                 {
-                                    Trace.WriteLine("Rejected due to dots angle out of bounds " + a);
+                                    TraceLine("Rejected due to dots angle out of bounds " + a);
                                     return double.NaN;
                                 }
                             }
@@ -188,7 +196,7 @@ namespace GTAPilot.Indicators
                             }
                             else
                             {
-                                Trace.WriteLine("Rejected due to dots angle out of bounds " + a);
+                                TraceLine("Rejected due to dots angle out of bounds " + a);
                                 return double.NaN;
                             }
                         }
@@ -206,17 +214,17 @@ namespace GTAPilot.Indicators
                     }
                     else
                     {
-                        //Trace.WriteLine("PROC returned null");
+                        //TraceLine("PROC returned null");
                     }
                 }
                 else
                 {
-                    Trace.WriteLine("Couldn't find first level circle");
+                    TraceLine("Couldn't find first level circle");
                 }
             }
             else
             {
-                Trace.WriteLine("Couldn't find roll indicator");
+                TraceLine("Couldn't find roll indicator");
             }
             return double.NaN;
         }
@@ -298,7 +306,7 @@ namespace GTAPilot.Indicators
                     str != "S" &&
                     str != "W")
                 {
-                    //  Trace.WriteLine("CHO : " + str);
+                    //  TraceLine("CHO : " + str);
                 }
 
                 // If 'str' was not NESW, look back and copy if the position is close enough to only one NESW.
@@ -332,7 +340,7 @@ namespace GTAPilot.Indicators
                         }
                         else
                         {
-                           // Trace.WriteLine($"carry failed {tx}");
+                           // TraceLine($"carry failed {tx}");
                         }
                     }
                 }
@@ -401,7 +409,7 @@ namespace GTAPilot.Indicators
                 }
             }
 
-            
+            // Fill in exactly one missing quadrant.
             if (choices.Count == 3 && packs.Count == 4)
             {
 
@@ -452,17 +460,9 @@ namespace GTAPilot.Indicators
                     new_heading = new_heading - 360;
                 }
 
-                //  new_heading -= 1; // 1 degree bias to align with world
-
                 if (new_heading < 0) new_heading += 360;
 
-                //     Trace.WriteLine("IMPLICIT: " + str);
                 choices.Add(new Tuple<double, double, string, Image<Gray, byte>, double>(new_heading, (int)unused_angle, str, null, 0));
-
-
-
-
-
             }
             
             if (choices.Count == 4)
@@ -472,24 +472,24 @@ namespace GTAPilot.Indicators
                 // exclude bad combinations
                 if (choices.Where(ct => ct.Item3 == "N").Count() > 1)
                 {
-                    Trace.WriteLine("Bad N");
+                    TraceLine("Bad N");
                     return double.NaN;
                 }
                 if (choices.Where(ct => ct.Item3 == "E").Count() > 1)
                 {
-                    Trace.WriteLine("Bad E");
+                    TraceLine("Bad E");
 
                     return double.NaN;
                 }
                 if (choices.Where(ct => ct.Item3 == "S").Count() > 1)
                 {
-                    Trace.WriteLine("Bad S");
+                    TraceLine("Bad S");
 
                     return double.NaN;
                 }
                 if (choices.Where(ct => ct.Item3 == "W").Count() > 1)
                 {
-                    Trace.WriteLine("Bad W");
+                    TraceLine("Bad W");
 
                     return double.NaN;
                 }
@@ -500,20 +500,14 @@ namespace GTAPilot.Indicators
             }
             else
             {
-                Trace.WriteLine($"Bad choices {choices.Count}");
+                TraceLine($"Bad choices {choices.Count}");
             }
             return double.NaN;
         }
 
-
-        class CompassPack
+        private void TraceLine(string msg)
         {
-            public Image<Gray, byte> Item1;
-            public double Item2;
-            public Rectangle BlobBox;
-            public double BlobArea;
+            //
         }
-
-
     }
 }

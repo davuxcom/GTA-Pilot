@@ -55,11 +55,18 @@ namespace GTAPilot.Indicators
 
                     debugState[2] = markedup_frame;
 
+
                     var cannyEdges3 = new Mat();
-                    CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 250);
+                    CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 120);
+
+
+                    Mat dialatedCanny = new Mat();
+                       CvInvoke.Dilate(cannyEdges3, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
+
+
                     var lines = CvInvoke.HoughLinesP(
-                       cannyEdges3,
-                       1, Math.PI / 45.0, 4, 14, 4);
+                       dialatedCanny,
+                       1, Math.PI / 45.0, 20, 16, 0);
 
                     lines = lines.OrderByDescending(l => l.Length).ToArray();
 

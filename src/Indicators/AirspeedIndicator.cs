@@ -18,8 +18,8 @@ namespace GTAPilot.Indicators
         int num_rejected_values = 0;
         DateTime last_time = DateTime.Now;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.03, 100);
-        DynHsv dyn_lower2 = new DynHsv(0, 0, double.NaN, 0.01, 100);
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
+        DynHsv dyn_lower2 = new DynHsv(0, 0, double.NaN, 0.005, 100);
 
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
@@ -80,13 +80,13 @@ namespace GTAPilot.Indicators
                                   //  var lines = CvInvoke.HoughLinesP(cannyEdges3, 1, Math.PI / 45.0, 4, 14, 8).OrderByDescending(p => p.Length).ToList();
 
 
-                                    CvInvoke.Canny(vspeed_inner_hsv, cannyEdges3, 20, 150);
+                                    CvInvoke.Canny(vspeed_inner_hsv, cannyEdges3, 10, 150);
 
                                     Mat dialatedCanny = new Mat();
-                                 //   CvInvoke.Dilate(vspeed_inner_hsv, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
+                                    CvInvoke.Dilate(cannyEdges3, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
 
 
-                                    var lines = CvInvoke.HoughLinesP(vspeed_inner_hsv, 1, Math.PI / 180, 10, 16, 4).OrderByDescending(p => p.Length).ToList();
+                                    var lines = CvInvoke.HoughLinesP(dialatedCanny, 1, Math.PI / 45, 30, 18, 1).ToList(); //.OrderByDescending(p => p.Length).ToList();
 
                                     var center_size = 40;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
@@ -102,6 +102,8 @@ namespace GTAPilot.Indicators
                                         foreach (var line in lines)
                                         {
                                             CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Yellow).MCvScalar, 1);
+
+                                            if (line.Length < 18) continue;
 
                                             if (center.Contains(line.P1) || center.Contains(line.P2))
                                             {
