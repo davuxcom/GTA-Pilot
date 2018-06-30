@@ -9,15 +9,13 @@ namespace GTAPilot
         private ModeControlPanel _mcp;
         private XboxController _control;
         private FlightPlan _plan;
-        private double _desiredRoll;
-        private bool _tightHoldLine;
+
         private PID _pitchPid;
         private PID _rollPid;
         private PID _speedPid;
 
-        public FlightDataComputer(ModeControlPanel mcp, XboxController control, FlightPlan plan)
+        public FlightDataComputer(ModeControlPanel mcp, XboxController control)
         {
-            _plan = plan;
             _control = control;
             _mcp = mcp;
             _mcp.PropertyChanged += MCP_PropertyChanged;
@@ -55,12 +53,11 @@ namespace GTAPilot
                     Trace.WriteLine($"A/P: Pitch: {_mcp.VS}");
                     break;
                 case nameof(_mcp.BankHold) when (_mcp.BankHold):
-                    _desiredRoll = 0;
                     _mcp.Bank = 0;
                     _mcp.HeadingHold = false;
                     _mcp.LNAV = false;
                     _rollPid.ClearError();
-                    Trace.WriteLine($"A/P: Roll: {_desiredRoll}");
+                    Trace.WriteLine($"A/P: Roll: {_mcp.Bank}");
                     break;
                 case nameof(_mcp.LNAV) when (_mcp.LNAV):
                     _mcp.HeadingHold = false;
@@ -78,40 +75,11 @@ namespace GTAPilot
                     _speedPid.ClearError();
                     Trace.WriteLine($"A/P: Speed: {_mcp.IAS}");
                     break;
-
                 case nameof(_mcp.AltitudeHold) when (_mcp.AltitudeHold):
                     _mcp.VSHold = false;
                     Trace.WriteLine($"A/P: Altitude: {_mcp.ALT}");
                     break;
             }
-        }
-
-        double Handle_Pitch(double power)
-        {
-            // Trim:
-            {
-                power += Math.Abs(Timeline.RollAvg) * 30;
-            }
-
-            power = -1 * power;
-            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE));
-            return power;
-        }
-
-        double Handle_Throttle(double throttle)
-        {
-            if (throttle > 235)
-            {
-                _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, (int)throttle - 235);
-                _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 0);
-            }
-            else
-            {
-                _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 235 - (int)throttle);
-                _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, 0);
-            }
-
-            return throttle;
         }
 
         internal void OnRollDataSampled(int id)
@@ -124,35 +92,23 @@ namespace GTAPilot
                 {
                     if (_mcp.HeadingHold | _mcp.LNAV)
                     {
-                        var d = Math2.DiffAngles(Timeline.Heading, _mcp.HDG);
-                        var sign = Math.Sign(d);
-                        var ad = Math.Abs(d); // - 2;
-                        if (ad < 0) ad = 0;
+                        var rollDelta = Math2.DiffAngles(Timeline.Heading, _mcp.HDG);
+                        var newRoll = Math2.Clamp(-1 * rollDelta, -25, 25);
+                        _mcp.Bank += (_mcp.Bank > newRoll) ? -.25 : .25;
 
-                        var roll_angle = Math.Min(ad, 25);
-                        var newRoll = (int)(-1 * sign * roll_angle);
-
-                        if (_desiredRoll > newRoll)
-                        {
-                            _desiredRoll -= 0.25;
-                        }
-                        else
-                        {
-                            _desiredRoll += 0.25;
-                        }
-
-                        if (Timeline.Altitude < 200) _desiredRoll = 0;
+                        if (Timeline.Altitude < 200) _mcp.Bank = 0;
                     }
 
                     var output = _rollPid.Compute(
                         Timeline.Data[id].Roll.Value,
-                        _desiredRoll, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Roll.Value));
+                        _mcp.Bank, 
+                        GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Roll.Value));
 
                     _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(output, 8000, 10500));
 
                     Timeline.Data[id].Roll.OutputValue = output;
                 }
-                Timeline.Data[id].Roll.SetpointValue = _desiredRoll;
+                Timeline.Data[id].Roll.SetpointValue = _mcp.Bank;
             }
         }
 
@@ -160,26 +116,18 @@ namespace GTAPilot
         {
             if (_mcp.VSHold || _mcp.AltitudeHold)
             {
-                if (_mcp.AltitudeHold)
-                {
-                    var dx = _mcp.ALT - Timeline.Altitude;
-
-                    var desiredPitch = dx / 10;
-
-                    if (desiredPitch > 12) desiredPitch = 12;
-                    if (desiredPitch < -10) desiredPitch = -10;
-
-                    _mcp.VS = desiredPitch;
-                }
-
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
-                    Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(
-                        _pitchPid.Compute(0, _mcp.VS - Timeline.Data[id].Pitch.Value, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Pitch.Value)));
+                    var output = _pitchPid.Compute(Timeline.Data[id].Pitch.Value, _mcp.VS, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Pitch.Value));
+                    // Trim:
+                    output += Math.Abs(Timeline.RollAvg) * 30;
+
+                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(-1 * output, 4000, FlightComputerConfig.MAX_AXIS_VALUE));
+
+                    Timeline.Data[id].Pitch.OutputValue = output;
                 }
                 Timeline.Data[id].Pitch.SetpointValue = _mcp.VS;
             }
-
             _control.Flush();
         }
 
@@ -189,8 +137,18 @@ namespace GTAPilot
             {
                 if (!double.IsNaN(Timeline.Data[id].Speed.Value))
                 {
-                    Timeline.Data[id].Speed.OutputValue = Handle_Throttle(
-                        _speedPid.Compute(Timeline.Speed, _mcp.IAS, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Speed.Value)));
+                    var output = _speedPid.Compute(Timeline.Speed, _mcp.IAS, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Speed.Value));
+                    if (output > 235)
+                    {
+                        _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, (int)output - 235);
+                        _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 0);
+                    }
+                    else
+                    {
+                        _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 235 - (int)output);
+                        _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, 0);
+                    }
+                    Timeline.Data[id].Speed.OutputValue = output;
                 }
                 Timeline.Data[id].Speed.SetpointValue = _mcp.IAS;
             }
@@ -200,6 +158,9 @@ namespace GTAPilot
         {
             if (_mcp.AltitudeHold)
             {
+                var altitudeDelta = _mcp.ALT - Timeline.AltitudeAvg;
+                _mcp.VS = Math2.Clamp(altitudeDelta / 10, -10, 12);
+
                 Timeline.Data[id].Altitude.SetpointValue = _mcp.ALT;
             }
         }
@@ -216,7 +177,6 @@ namespace GTAPilot
 
                     if (aDiff > 1)
                     {
-
                         aDiff = Math.Min(aDiff / 3, 40);
 
                         if (diff < 0)

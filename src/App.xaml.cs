@@ -57,52 +57,6 @@ namespace GTAPilot
             t.IsBackground = true;
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
-
-            /*
-            t = new Thread(() =>
-            {
-                if (SystemManager.Instance.App.WindowHandle != IntPtr.Zero)
-                {
-                    User32.GetWindowRect(SystemManager.Instance.App.WindowHandle, out var rectNative);
-
-                    bool running = true;
-                    int ticks = 0;
-                    while (true)
-                    {
-                        ticks++;
-
-                        if (ticks % 100 == 0)
-                        {
-                            if (Keyboard.IsKeyDown(Key.LeftCtrl))
-                            {
-                                running = !running;
-                            }
-                        }
-
-                        if (running)
-                        {
-                            var x = rectNative.right - 200;
-                            var y = rectNative.top + 200;
-
-                            x -= (ticks % 2 == 0) ? 100 : 0;
-                            y += (ticks % 2 == 0) ? 100 : 0;
-
-                            User32.SetCursorPos(x, y);
-                        }
-
-
-                        Thread.Sleep(2);
-
-                       // if (ticks > 1000) Environment.Exit(0);
-                    }
-                }
-
-            });
-            t.IsBackground = true;
-            t.SetApartmentState(ApartmentState.STA);
-
-            t.Start();
-            */
         }
 
         internal static void Register(ICanTick tick)

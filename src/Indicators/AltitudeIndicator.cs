@@ -18,6 +18,7 @@ namespace GTAPilot.Indicators
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.008, 100);
 
         int LastBig = 0;
+        double last_value = 0;
 
         public double ReadValue(IndicatorData data, ref object[] debugState)
         {
@@ -184,28 +185,6 @@ namespace GTAPilot.Indicators
                 }
             }
             return double.NaN;
-        }
-
-        double last_value = 0;
-
-        // TODO: factor this all out somewhere
-        ConcurrentDictionary<int, CvBlobDetector> BlobDetectors = new ConcurrentDictionary<int, CvBlobDetector>();
-
-
-        CvBlobDetector CrateBlobDetector()
-        {
-            return new CvBlobDetector();
-        }
-
-        protected CvBlobDetector GetBlobDetector()
-        {
-            var tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-            if (!BlobDetectors.Keys.Contains(tid))
-            {
-                BlobDetectors.TryAdd(tid, CrateBlobDetector());
-            }
-            return BlobDetectors[tid];
         }
     }
 }

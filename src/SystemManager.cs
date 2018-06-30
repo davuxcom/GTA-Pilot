@@ -8,11 +8,11 @@ namespace GTAPilot
     {
         public static SystemManager Instance = null;
 
-        public FlightPlan FlightPlan { get; }
+        public FlightPlan FlightPlan { get; } = new FlightPlan();
         public IndicatorHandler IndicatorHost { get; }
-        public ModeControlPanel MCP { get; }
-        public XboxApp App { get; }
-        public FpsCounter Capture { get; }
+        public ModeControlPanel MCP { get; } = new ModeControlPanel();
+        public XboxApp App { get; } = new XboxApp();
+        public FpsCounter Capture { get; } = new FpsCounter();
         public bool IsReplay => Replay != null;
         public ReplayFrameProducer Replay { get; }
         public SaveFrameConsumer Recorder { get; private set; }
@@ -24,19 +24,15 @@ namespace GTAPilot
         {
             Instance = this;
 
-            Capture = new FpsCounter();
-            FlightPlan = new FlightPlan();
-            FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
-            MCP = new ModeControlPanel();
-            App = new XboxApp();
-
-            _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
-            _navigator = new FlightNavigator(MCP, FlightPlan);
-
             MCP.IAS = 120;
             MCP.ALT = 700;
 
+            FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
+
+            _computer = new FlightDataComputer(MCP, App.Controller);
+            _navigator = new FlightNavigator(MCP, FlightPlan);
             IndicatorHost = new IndicatorHandler(_computer);
+
             Timeline.Begin();
 
             if (App.IsRunning)

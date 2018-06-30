@@ -69,9 +69,7 @@ namespace GTAPilot
             if (Points.Count == 0) return false;
 
             var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
-
             double dist_max = 40;
-
             if (CurrentIndex > 0 && CurrentIndex + 1 < Points.Count - 1)
             {
                 var nextLine = Math2.GetPolarHeadingFromLine(Points[CurrentIndex], Points[CurrentIndex + 1]);
@@ -79,26 +77,18 @@ namespace GTAPilot
                 dist_max += angle_delta * 1.5;
             }
 
-            bool isCloseToPoint = dist < dist_max;
-            if (isCloseToPoint)
+            if (dist < dist_max)
             {
                 CurrentIndex++;
                 Trace.WriteLine($"Flight Plan: Advance: {CurrentIndex}");
-
-                if (CurrentIndex > Points.Count - 1)
-                {
-                    // Loop at end, if possible.
-                    CurrentIndex = 0;
-                }
 
                 App.Current.Dispatcher.BeginInvoke((Action) (() =>
                 {
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentIndex)));
                 }));
-                return true;
             }
 
-            return false;
+            return (dist < dist_max);
         }
     }
 }

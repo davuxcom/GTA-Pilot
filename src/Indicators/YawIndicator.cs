@@ -1,11 +1,9 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Cvb;
 using Emgu.CV.CvEnum;
-using Emgu.CV.OCR;
 using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -75,44 +73,28 @@ namespace GTAPilot.Indicators
 
                     debugState[1] = markedup_textonly;
 
-                    CvBlobs blobs = new CvBlobs();
-                    GetBlobDetector().Detect(vs_textonly, blobs);
-                    blobs.FilterByArea(25, 250);
+                    var blobs = PerThreadUtils.DetectAndFilterBlobs(vs_textonly, 25, 250).
+                        Where(b => b.Centroid.Y >= 5).OrderByDescending(b => b.Area).Take(4).ToList();
+
                     Mat blobMask = new Mat(vs_hsv.Size, DepthType.Cv8U, 3);
                     blobMask.SetTo(new MCvScalar(1));
 
-                    // Select 4 largest
-                    var list_blobs = new List<CvBlob>();
-                    foreach (var b in blobs) list_blobs.Add(b.Value);
-
-                    for (var i = list_blobs.Count - 1; i >= 0; i--)
+                    for (int i_blob = 0; i_blob < blobs.Count; i_blob++)
                     {
-                        var b = list_blobs[i];
-                        if (b.Centroid.Y < 5)
-                        {
-                            list_blobs.Remove(b);
-                        }
-                    }
-
-                    list_blobs = list_blobs.OrderByDescending(bx => bx.Area).Take(Math.Min(4, blobs.Count)).ToList();
-
-
-                    for (int i_blob = 0; i_blob < list_blobs.Count; i_blob++)
-                    {
-                        CvBlob b = list_blobs[i_blob];
+                        CvBlob b = blobs[i_blob];
                         CvInvoke.Rectangle(blobMask, b.BoundingBox, new Bgr(Color.White).MCvScalar, -1);
                         CvInvoke.Rectangle(markedup_textonly, b.BoundingBox, new Bgr(Color.Red).MCvScalar, -1);
                     }
 
 
-                    if (list_blobs.Count == 4)
+                    if (blobs.Count == 4)
                     {
 
                         var results = new List<Tuple<PointF, PointF, double>>();
 
-                        foreach (var b_o in list_blobs)
+                        foreach (var b_o in blobs)
                         {
-                            foreach (var b_i in list_blobs)
+                            foreach (var b_i in blobs)
                             {
                                 results.Add(new Tuple<PointF, PointF, double>(b_o.Centroid, b_i.Centroid, Math2.GetDistance(b_o.Centroid, b_i.Centroid)));
                             }
@@ -156,11 +138,11 @@ namespace GTAPilot.Indicators
                     LineSegment2D baseLine = new LineSegment2D(new Point((focus.Width / 2), 0), new Point((focus.Width / 2), (focus.Height / 2)));
 
                     int ix = 0;
-                    for (int i_blob = 0; i_blob < list_blobs.Count; i_blob++)
+                    for (int i_blob = 0; i_blob < blobs.Count; i_blob++)
                     {
                         ix++;
 
-                        CvBlob b = list_blobs[i_blob];
+                        CvBlob b = blobs[i_blob];
 
                         var box = b.BoundingBox;
                         box.Inflate(2, 2);
@@ -202,12 +184,7 @@ namespace GTAPilot.Indicators
 
                         // Re-rotate the frame now that N and S are vertical, so the centroids are in predictable
                         // locations no matter what the inital angle was.
-                        blobs = new CvBlobs();
-                        GetBlobDetector().Detect(compass_frame, blobs);
-                        blobs.FilterByArea(25, 250);
-                        list_blobs = new List<CvBlob>();
-
-                        var list = blobs.Values.OrderBy(b => b.Centroid.Y);
+                        var list = PerThreadUtils.DetectAndFilterBlobs(compass_frame, 25, 250).OrderBy(b => b.Centroid.Y);
 
                         var top = list.First().Centroid;
                         var bottom = list.Last().Centroid;
@@ -299,13 +276,7 @@ namespace GTAPilot.Indicators
             var topHsv = topDot.Convert<Hsv, byte>();
             var topRange = topHsv.InRange(new Hsv(0, 0, 80), new Hsv(180, 255, 150));
 
-
-            var blobs = new CvBlobs();
-            GetBlobDetector().Detect(topRange, blobs);
-            blobs.FilterByArea(5, 18);
-
-            var ret = new List<CvBlob>();
-            ret.AddRange(blobs.Values);
+            var ret = PerThreadUtils.DetectAndFilterBlobs(topRange, 5, 18).ToList();
             if (isTop)
             {
                 return ret.OrderByDescending(b => b.Centroid.Y).ToList();
@@ -350,7 +321,7 @@ namespace GTAPilot.Indicators
 
                 foreach (var pack in packs)
                 {
-                    var ocr = GetTesseract();
+                    var ocr = PerThreadUtils.GetTesseract();
                     ocr.SetImage(pack.Item1);
                     ocr.Recognize();
 
@@ -623,48 +594,6 @@ namespace GTAPilot.Indicators
             public double Item2;
             public Rectangle BlobBox;
             public double BlobArea;
-        }
-
-        // TODO: factor this all out somewhere
-        ConcurrentDictionary<int, CvBlobDetector> BlobDetectors = new ConcurrentDictionary<int, CvBlobDetector>();
-
-
-        CvBlobDetector CrateBlobDetector()
-        {
-            return new CvBlobDetector();
-        }
-
-        protected CvBlobDetector GetBlobDetector()
-        {
-            var tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-            if (!BlobDetectors.Keys.Contains(tid))
-            {
-                BlobDetectors.TryAdd(tid, CrateBlobDetector());
-            }
-            return BlobDetectors[tid];
-        }
-
-        // TODO also remove
-
-        ConcurrentDictionary<int, Tesseract> Tessreacts = new ConcurrentDictionary<int, Tesseract>();
-
-        Tesseract CreateTesseract()
-        {
-            var ocr = new Tesseract();
-            ocr.Init("", "eng", OcrEngineMode.TesseractOnly);
-            return ocr;
-        }
-
-        protected Tesseract GetTesseract()
-        {
-            var tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
-
-            if (!Tessreacts.Keys.Contains(tid))
-            {
-                Tessreacts.TryAdd(tid, CreateTesseract());
-            }
-            return Tessreacts[tid];
         }
 
 

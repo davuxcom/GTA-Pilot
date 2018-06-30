@@ -96,14 +96,19 @@ namespace GTAPilot
             return b0 + (b1 - b0) * ((a - a0) / (a1 - a0));
         }
 
-        // TODO: not clear if this returns positive angle delta only
+        // Can return positive or negative
         public static double DiffAngles(double a, double b)
         {
             var diff = ((a - b + 180 + 360) % 360) - 180;
             return diff;
         }
 
-
+        public static double Clamp(double value, double min, double max)
+        {
+            if (value > max) return max;
+            if (value < min) return min;
+            return value;
+        }
 
         public static double GetDistance(PointF point1, PointF point2)
         {

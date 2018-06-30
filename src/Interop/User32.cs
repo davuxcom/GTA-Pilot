@@ -14,9 +14,5 @@ namespace GTAPilot.Interop
         internal static extern bool GetWindowRect(
             IntPtr hwnd,
             out RECT lpRect);
-
-        [DllImport("user32.dll")]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SetCursorPos(int x, int y);
     }
 }
