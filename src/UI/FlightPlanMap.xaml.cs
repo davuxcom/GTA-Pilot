@@ -85,7 +85,7 @@ namespace GTAPilot
             {
                 Line l = new Line();
                 l.Stroke = Brushes.Red;
-                l.StrokeThickness = 1;
+                l.StrokeThickness = 0.1;
 
                 l.X1 = lastLocation.X / Metrics.SCALE_Map4_20_TO_100;
                 l.X2 = frame.X / Metrics.SCALE_Map4_20_TO_100;

@@ -18,6 +18,7 @@ namespace GTAPilot
         public SaveFrameConsumer Recorder { get; private set; }
 
         private FlightDataComputer _computer;
+        private FlightNavigator _navigator;
 
         public SystemManager()
         {
@@ -30,6 +31,7 @@ namespace GTAPilot
             App = new XboxApp();
 
             _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
+            _navigator = new FlightNavigator(MCP, FlightPlan);
 
             MCP.IAS = 110;
             MCP.ALT = 600;
@@ -44,6 +46,8 @@ namespace GTAPilot
                 App.Controller.ControllerInput += Controller_ControllerInput;
                 App.PropertyChanged += XboxApp_PropertyChanged;
                 App.Begin();
+
+                _navigator.Begin();
             }
             else
             {

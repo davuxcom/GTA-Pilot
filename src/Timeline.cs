@@ -132,23 +132,28 @@ namespace GTAPilot
             {
                 var lastFrame = Data[id - 1];
 
-                var hdg = LatestAvg(1, f => f.Heading.Value, id, useHeadingMath: true);
-                var spd = LatestAvg(1, f => f.Speed.Value, id);
-                var roll = LatestAvg(4, f => f.Roll.Value, id);
+                var hdg = LatestAvg(60, f => f.Heading.Value, id, useHeadingMath: true);
+                var spd = LatestAvg(30, f => f.Speed.Value, id);
+                var roll = LatestAvg(10, f => f.Roll.Value, id);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd) && !double.IsNaN(roll))
                 {
                     var dt = newFrame.Seconds - lastFrame.Seconds;
                     var positionDelta = ComputePositionChange(hdg, spd, dt);
                     newFrame.Location = lastFrame.Location.Add(positionDelta);
 
-                   if (Math.Abs(roll) > 3 && Math.Abs(roll) < 10)
+                    /*
+                  // if (Math.Abs(roll) > 2 && Math.Abs(roll) < 10)
                    {
-                  
                        var angle = 1 * Math.Sign(roll) * 90;
-                       var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), 0.2 * Math.Abs(roll), dt);
-                       newFrame.Location = newFrame.Location.Add(side_delta);
-                   }
+                        var rollSkew = 0.5 * Math.Abs(roll);
+                        var max_rollSkew = 10;
 
+                        if (rollSkew > max_rollSkew) rollSkew = max_rollSkew;
+
+                       var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), rollSkew, dt);
+                    //   newFrame.Location = newFrame.Location.Add(side_delta);
+                   }
+                   */
 
                     
 
@@ -198,10 +203,10 @@ namespace GTAPilot
             }
         }
 
-        private static PointF ComputePositionChange(double newHeading, double speedInKnotsPerHour, double timeDeltaInSeconds)
+        private static PointF ComputePositionChange(double newHeading, double speedInKnots, double timeDeltaInSeconds)
         {
-            const double KnotsPerSecondToMetersPerSecond = 0.51444444444;
-            double MetersPerSecond = speedInKnotsPerHour * KnotsPerSecondToMetersPerSecond;
+            const double KnotsToMetersPerSecond = 0.51444444444;
+            double MetersPerSecond = speedInKnots * KnotsToMetersPerSecond;
 
             return new PointF((float)(Math.Sin(Math2.ToRad(newHeading)) * (Metrics.SCALE_METERS_TO_MAP4 * MetersPerSecond * timeDeltaInSeconds)),
                               (float)(Math.Cos(Math2.ToRad(newHeading)) * (Metrics.SCALE_METERS_TO_MAP4 * MetersPerSecond * timeDeltaInSeconds * -1)));

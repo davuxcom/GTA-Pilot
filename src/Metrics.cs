@@ -17,7 +17,7 @@ namespace GTAPilot
 
         public static readonly int SCALE_Map4_20_TO_100 = 5;
 
-        public static readonly double SCALE_METERS_TO_MAP4 =  1 / 3.32; // (1 / 3.22); /// // 0.31102730648; // 
+        public static readonly double SCALE_METERS_TO_MAP4 =  1 / 3.22; // (1 / 3.22); /// // 0.31102730648; // 
 
         /* DESERT
           zoomed in on gta map

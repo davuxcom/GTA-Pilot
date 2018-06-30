@@ -80,6 +80,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
+    <Compile Include="FlightNavigator.cs" />
     <Compile Include="Interop\Gdi32.cs" />
     <Compile Include="Interop\XINPUT_GAMEPAD.cs" />
     <Compile Include="RecorderWindow.xaml.cs">

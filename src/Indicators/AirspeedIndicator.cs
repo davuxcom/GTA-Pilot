@@ -198,7 +198,10 @@ namespace GTAPilot.Indicators
                                                 // 0-360 degrees
                                                 // 0-180 knots
 
-                                              //  Trace.WriteLine("SPEED: " + v_angle);
+                                                //  Trace.WriteLine("SPEED: " + v_angle);
+
+                                                // skew 
+                                                v_angle -= 2;
 
                                                 var knots = (v_angle / 2);
                                                 if (knots > 175) knots = 0;

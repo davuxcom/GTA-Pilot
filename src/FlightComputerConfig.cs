@@ -16,8 +16,8 @@
         {
             Gain = new PID.Gain
             {
-                P = 1.2,
-                I = 0.1,
+                P = 2,
+                I = 0,
                 D = 0
             },
             PV = new PID.Range { Min = -45, Max = 45},

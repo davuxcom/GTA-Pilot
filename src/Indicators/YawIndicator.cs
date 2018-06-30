@@ -47,9 +47,9 @@ namespace GTAPilot.Indicators
         {
             if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
-                circle.Center = new PointF(circle.Center.X + 1050, circle.Center.Y - 20);
+                circle.Center = new PointF(circle.Center.X + 1055, circle.Center.Y - 20);
                 circle.Radius = 70;
-                var firstCrop = Math2.CropCircle(circle, 65);
+                var firstCrop = Math2.CropCircle(circle, 40);
                 var focus = data.Frame.SafeCopy(firstCrop);
                 var vs_hsv = focus.Convert<Hsv, byte>().PyrUp().PyrDown();
 

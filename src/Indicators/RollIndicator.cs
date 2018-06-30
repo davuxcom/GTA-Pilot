@@ -86,10 +86,10 @@ namespace GTAPilot.Indicators
                         int pos = 1;
                         int xpos = 2;
                         int xpos2 = 3;
-                        int xpos3 = 4;
-                        int xpos4 = 5;
-                        int xpos5 = 6;
-                        int xpos6 = 7;
+                        int xpos3 = 3;
+                        int xpos4 = 3;
+                        int xpos5 = 3;
+                        int xpos6 = 3;
                         var current = Point.Round(new Point(cX_, cY_));
 
                         // TODO: Simplify this condition/calculation

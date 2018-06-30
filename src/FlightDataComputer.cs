@@ -9,11 +9,7 @@ namespace GTAPilot
         private ModeControlPanel _mcp;
         private XboxController _control;
         private FlightPlan _plan;
-        private double _desiredPitch;
         private double _desiredRoll;
-        private double _desiredHeading;
-        private double _desiredSpeed;
-        private double _desiredAltitude;
         private bool _tightHoldLine;
         private PID _pitchPid;
         private PID _rollPid;
@@ -53,11 +49,10 @@ namespace GTAPilot
             switch (e.PropertyName)
             {
                 case nameof(_mcp.VSHold) when (_mcp.VSHold):
-                    _desiredPitch = Timeline.Pitch;
-                    _mcp.VS = (int)_desiredPitch;
+                    _mcp.VS = Timeline.Pitch;
                     _mcp.AltitudeHold = false;
                     _pitchPid.ClearError();
-                    Trace.WriteLine($"A/P: Pitch: {_desiredPitch}");
+                    Trace.WriteLine($"A/P: Pitch: {_mcp.VS}");
                     break;
                 case nameof(_mcp.BankHold) when (_mcp.BankHold):
                     _desiredRoll = 0;
@@ -74,40 +69,26 @@ namespace GTAPilot
                     Trace.WriteLine($"A/P: LNAV: On");
                     break;
                 case nameof(_mcp.HeadingHold) when (_mcp.HeadingHold):
-                    _desiredHeading = Timeline.Heading;
-                    _mcp.HDG = (int)_desiredHeading;
+                    _mcp.HDG = Timeline.Heading;
                     _mcp.BankHold = false;
                     _mcp.LNAV = false;
-                    Trace.WriteLine($"A/P: Heading: {_desiredHeading}");
+                    Trace.WriteLine($"A/P: Heading: {_mcp.HDG}");
                     break;
                 case nameof(_mcp.IASHold) when (_mcp.IASHold):
                     _speedPid.ClearError();
-                    Trace.WriteLine($"A/P: Speed: {_desiredSpeed}");
+                    Trace.WriteLine($"A/P: Speed: {_mcp.IAS}");
                     break;
 
                 case nameof(_mcp.AltitudeHold) when (_mcp.AltitudeHold):
                     _mcp.VSHold = false;
-                    Trace.WriteLine($"A/P: Altitude: {_desiredAltitude}");
-                    break;
-
-                case nameof(_mcp.HDG):
-                    _desiredHeading = _mcp.HDG;
-                    break;
-                case nameof(_mcp.VS):
-                    _desiredPitch = _mcp.VS;
-                    break;
-                case nameof(_mcp.ALT):
-                    _desiredAltitude = _mcp.ALT;
-                    break;
-                case nameof(_mcp.IAS):
-                    _desiredSpeed = _mcp.IAS;
+                    Trace.WriteLine($"A/P: Altitude: {_mcp.ALT}");
                     break;
             }
         }
 
         double Handle_Roll(double power)
         {
-            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(power, 4000, FlightComputerConfig.MAX_AXIS_VALUE));
+            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(power, 8500, 11000));
             return power;
         }
 
@@ -143,82 +124,18 @@ namespace GTAPilot
         {
             if (double.IsNaN(Timeline.Heading)) return;
 
-            if (_plan != null)
-            {
-                var didAdvanceWaypoint = _plan.UpdateLocation();
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 11)
-                {
-                    _mcp.ALT = 500;
-                    _mcp.IAS = 80;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 9)
-                {
-                    _mcp.ALT = 425;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 8)
-                {
-                    _mcp.ALT = 375;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 7)
-                {
-                    _mcp.ALT = 325;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 6)
-                {
-                    _mcp.ALT = 275;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 5)
-                {
-                    _mcp.ALT = 225;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 4)
-                {
-                    _mcp.ALT = 175;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
-                {
-                    _mcp.ALT = 120;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 2)
-                {
-                    _mcp.ALT = 85;
-                }
-
-                if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 1)
-                {
-                    _mcp.IAS = 40;
-                    _mcp.VSHold = true;
-                    _mcp.VS = 14;
-                }
-            }
-
             if (_mcp.BankHold | _mcp.HeadingHold | _mcp.LNAV)
             {
                 if (!double.IsNaN(Timeline.Data[id].Roll.Value))
                 {
                     if (_mcp.HeadingHold | _mcp.LNAV)
                     {
-                        if (_mcp.LNAV)
-                        {
-                            _desiredHeading = _plan.TargetHeading;
-                            _mcp.HDG = _desiredHeading;
-                        }
-
-                        var d = Math2.DiffAngles(Timeline.Heading, _desiredHeading);
+                        var d = Math2.DiffAngles(Timeline.Heading, _mcp.HDG);
                         var sign = Math.Sign(d);
-                        var ad = Math.Abs(d) - 10;
+                        var ad = Math.Abs(d);
                         if (ad < 0) ad = 0;
 
-                        var roll_angle = Math.Min(ad, 15);
+                        var roll_angle = Math.Min(ad, 20);
                         var newRoll = (int)(-1 * sign * roll_angle);
 
                         if (_desiredRoll > newRoll)
@@ -229,6 +146,8 @@ namespace GTAPilot
                         {
                             _desiredRoll += 0.25;
                         }
+
+                        if (Timeline.Altitude < 300) _desiredRoll = 0;
                     }
 
                     Timeline.Data[id].Roll.OutputValue = Handle_Roll(
@@ -244,23 +163,22 @@ namespace GTAPilot
             {
                 if (_mcp.AltitudeHold)
                 {
-                    var dx = _desiredAltitude - Timeline.Altitude;
+                    var dx = _mcp.ALT - Timeline.Altitude;
 
                     var desiredPitch = dx / 10;
 
                     if (desiredPitch > 20) desiredPitch = 20;
                     if (desiredPitch < -10) desiredPitch = -10;
 
-                    _desiredPitch = desiredPitch;
-                    _mcp.VS = _desiredPitch;
+                    _mcp.VS = desiredPitch;
                 }
 
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
                     Timeline.Data[id].Pitch.OutputValue = Handle_Pitch(
-                        _pitchPid.Compute(0, _desiredPitch - Timeline.Data[id].Pitch.Value, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Pitch.Value)));
+                        _pitchPid.Compute(0, _mcp.VS - Timeline.Data[id].Pitch.Value, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Pitch.Value)));
                 }
-                Timeline.Data[id].Pitch.SetpointValue = _desiredPitch;
+                Timeline.Data[id].Pitch.SetpointValue = _mcp.VS;
             }
 
             _control.Flush();
@@ -273,9 +191,9 @@ namespace GTAPilot
                 if (!double.IsNaN(Timeline.Data[id].Speed.Value))
                 {
                     Timeline.Data[id].Speed.OutputValue = Handle_Throttle(
-                        _speedPid.Compute(Timeline.Speed, _desiredSpeed, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Speed.Value)));
+                        _speedPid.Compute(Timeline.Speed, _mcp.IAS, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Speed.Value)));
                 }
-                Timeline.Data[id].Speed.SetpointValue = _desiredSpeed;
+                Timeline.Data[id].Speed.SetpointValue = _mcp.IAS;
             }
         }
 
@@ -283,7 +201,7 @@ namespace GTAPilot
         {
             if (_mcp.AltitudeHold)
             {
-                Timeline.Data[id].Heading.SetpointValue = _desiredAltitude;
+                Timeline.Data[id].Altitude.SetpointValue = _mcp.ALT;
             }
         }
 
@@ -294,26 +212,13 @@ namespace GTAPilot
                 var val = Timeline.Data[id].Heading.Value;
                 if (!double.IsNaN(val) && Timeline.Speed > 10)
                 {
-                    var internalDesiredHeading = _desiredHeading;
-
-                    // If on a Flight Plan, stick to the line.
-                    if (_plan != null)
-                    {
-                        _tightHoldLine = (Timeline.Altitude < 300);
-
-                        var heading_cap = 20;
-                        var distanceFromTargetLine = (_tightHoldLine ? 2 : 0.5) * Math2.GetDistanceFromLine(Timeline.CurrentLocation, _plan.TargetLine);
-                        distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
-
-                        internalDesiredHeading -= distanceFromTargetLine;
-                    }
-
-                    var diff = Math2.DiffAngles(val, internalDesiredHeading);
+                    var diff = Math2.DiffAngles(val, _mcp.HDG);
                     var aDiff = Math.Abs(diff);
 
                     if (aDiff > 1)
                     {
-                        aDiff = Math.Min(aDiff / 2, 40);
+
+                        aDiff = Math.Min(aDiff / 6, 40);
 
                         if (diff < 0)
                         {
@@ -327,7 +232,7 @@ namespace GTAPilot
                         }
                     }
                 }
-                Timeline.Data[id].Heading.SetpointValue = _desiredHeading;
+                Timeline.Data[id].Heading.SetpointValue = _mcp.HDG;
             }
         }
 
