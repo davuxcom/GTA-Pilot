@@ -71,14 +71,17 @@ namespace GTAPilot
             {
                 Tick5(d);
             });
+            /*
             StartWorkerThread(_stage5, (d) =>
             {
                 Tick5(d);
             });
+            
             StartWorkerThread(_stage5, (d) =>
             {
                 Tick5(d);
             });
+            */
         }
 
         private void StartWorkerThread(ConcurrentQueue<IndicatorData> target, Action<IndicatorData> next)
