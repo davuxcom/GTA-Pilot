@@ -86,12 +86,6 @@ namespace GTAPilot
             }
         }
 
-        double Handle_Roll(double power)
-        {
-            _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(power, 8500, 11000));
-            return power;
-        }
-
         double Handle_Pitch(double power)
         {
             // Trim:
@@ -132,10 +126,10 @@ namespace GTAPilot
                     {
                         var d = Math2.DiffAngles(Timeline.Heading, _mcp.HDG);
                         var sign = Math.Sign(d);
-                        var ad = Math.Abs(d);
+                        var ad = Math.Abs(d); // - 2;
                         if (ad < 0) ad = 0;
 
-                        var roll_angle = Math.Min(ad, 20);
+                        var roll_angle = Math.Min(ad, 25);
                         var newRoll = (int)(-1 * sign * roll_angle);
 
                         if (_desiredRoll > newRoll)
@@ -147,11 +141,16 @@ namespace GTAPilot
                             _desiredRoll += 0.25;
                         }
 
-                        if (Timeline.Altitude < 300) _desiredRoll = 0;
+                        if (Timeline.Altitude < 200) _desiredRoll = 0;
                     }
 
-                    Timeline.Data[id].Roll.OutputValue = Handle_Roll(
-                        _rollPid.Compute(0, _desiredRoll - Timeline.Data[id].Roll.Value, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Roll.Value)));
+                    var output = _rollPid.Compute(
+                        Timeline.Data[id].Roll.Value,
+                        _desiredRoll, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Roll.Value));
+
+                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(output, 8000, 10500));
+
+                    Timeline.Data[id].Roll.OutputValue = output;
                 }
                 Timeline.Data[id].Roll.SetpointValue = _desiredRoll;
             }
@@ -167,7 +166,7 @@ namespace GTAPilot
 
                     var desiredPitch = dx / 10;
 
-                    if (desiredPitch > 20) desiredPitch = 20;
+                    if (desiredPitch > 12) desiredPitch = 12;
                     if (desiredPitch < -10) desiredPitch = -10;
 
                     _mcp.VS = desiredPitch;
@@ -218,7 +217,7 @@ namespace GTAPilot
                     if (aDiff > 1)
                     {
 
-                        aDiff = Math.Min(aDiff / 6, 40);
+                        aDiff = Math.Min(aDiff / 3, 40);
 
                         if (diff < 0)
                         {

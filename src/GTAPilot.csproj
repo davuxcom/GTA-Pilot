@@ -79,6 +79,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Runways.cs" />
+    <Compile Include="Approach.cs" />
+    <Compile Include="Departure.cs" />
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
     <Compile Include="FlightNavigator.cs" />
     <Compile Include="Interop\Gdi32.cs" />
@@ -86,6 +89,7 @@
     <Compile Include="RecorderWindow.xaml.cs">
       <DependentUpon>RecorderWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Runway.cs" />
     <Compile Include="TimelineFrame.cs" />
     <Compile Include="TimelineValue.cs" />
     <Compile Include="UI\RelayCommand.cs" />

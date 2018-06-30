@@ -85,6 +85,11 @@ namespace GTAPilot
             return angle1 - angle2;
         }
 
+        internal static double GetPolarHeadingFromLine(LineSegment2DF targetLine)
+        {
+            return GetPolarHeadingFromLine(targetLine.P1, targetLine.P2);
+        }
+
         // TODO: Same as ScaleValue elsewhere
         public static double MapValue(double a0, double a1, double b0, double b1, double a)
         {

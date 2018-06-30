@@ -33,8 +33,8 @@ namespace GTAPilot
             _computer = new FlightDataComputer(MCP, App.Controller, FlightPlan);
             _navigator = new FlightNavigator(MCP, FlightPlan);
 
-            MCP.IAS = 110;
-            MCP.ALT = 600;
+            MCP.IAS = 120;
+            MCP.ALT = 700;
 
             IndicatorHost = new IndicatorHandler(_computer);
             Timeline.Begin();

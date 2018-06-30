@@ -41,6 +41,8 @@ namespace GTAPilot
             Positions = new ObservableCollection<Position>();
             Points = new List<System.Drawing.PointF>();
 
+
+            // Draw flight plan
             foreach (var p in points) AddPosition_FullCoordinates(p);
 
             if (locationPoints != null)
@@ -54,27 +56,17 @@ namespace GTAPilot
 
             RW03Departure = new RelayCommand(() =>
             {
-                AddPosition_FullCoordinates(new System.Drawing.PointF { X = 2029, Y = 4575 });
-                AddPosition_FullCoordinates(new System.Drawing.PointF { X = 2230, Y = 4230 });
+                AddPosition_FullCoordinates(Runways.LSI_RW03.StartPoint, false);
+                AddPosition_FullCoordinates(Runways.LSI_RW03.EndPoint, false);
             });
 
             RW30RApproach = new RelayCommand(() =>
             {
-                // var RW30R_Start = new System.Drawing.PointF { X = 2290, Y = 4730 };
-                //var RW30R_End = new System.Drawing.PointF { X = 2034, Y = 4583 };
+                 AddPosition_FullCoordinates(Runways.LSI_RW30R.ExtendBackward(500), false);
 
-                var RW30R_Start = new System.Drawing.PointF { X = 2261, Y = 4776 };
-                var RW30R_End = new System.Drawing.PointF { X = 2003, Y = 4626 };
-                var oppositeHdg = Math2.GetPolarHeadingFromLine(RW30R_Start, RW30R_End);
 
-                for (var i = 8; i >= 1; i--)
-                {
-                    System.Drawing.PointF nextPt = RW30R_Start.ExtendAlongHeading(oppositeHdg, 50 * i);
-
-                    AddPosition_FullCoordinates(nextPt);
-                }
-                AddPosition_FullCoordinates(RW30R_Start);
-                AddPosition_FullCoordinates(RW30R_End);
+                 AddPosition_FullCoordinates(Runways.LSI_RW30R.StartPoint, false);
+                 AddPosition_FullCoordinates(Runways.LSI_RW30R.EndPoint, false);
             });
         }
 
@@ -110,13 +102,13 @@ namespace GTAPilot
             AddPosition(e.GetPosition(img));
         }
 
-        private void AddPosition_FullCoordinates(System.Drawing.PointF pt)
+        private void AddPosition_FullCoordinates(System.Drawing.PointF pt, bool save = true)
         {
-            AddPosition(new Point(pt.X / Metrics.SCALE_Map4_20_TO_100, 
-                pt.Y / Metrics.SCALE_Map4_20_TO_100));
+            AddPosition(new Point(pt.X / Metrics.SCALE_Map4_20_TO_100,
+                pt.Y / Metrics.SCALE_Map4_20_TO_100), save);
         }
 
-        private void AddPosition(Point pt)
+        private void AddPosition(Point pt, bool save = true)
         {
             double heading = double.NaN;
             if (lastPoint != default(Point))
@@ -143,8 +135,11 @@ namespace GTAPilot
             canvas.Children.Add(dot);
             lastPoint = pt;
 
-            Positions.Add(new Position { pt = pt });
-            Points.Add(new System.Drawing.PointF((float)pt.X * Metrics.SCALE_Map4_20_TO_100, (float)pt.Y * Metrics.SCALE_Map4_20_TO_100));
+            if (save)
+            {
+                Positions.Add(new Position { pt = pt });
+                Points.Add(new System.Drawing.PointF((float)pt.X * Metrics.SCALE_Map4_20_TO_100, (float)pt.Y * Metrics.SCALE_Map4_20_TO_100));
+            }
         }
     }
 }
