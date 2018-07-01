@@ -74,7 +74,7 @@ namespace GTAPilot
             t.Start();
         }
 
-        private static double LatestAvg(int count, Func<TimelineFrame, double> finder, int startFrameId, bool useHeadingMath = false)
+        public static double LatestAvg(int count, Func<TimelineFrame, double> finder, int startFrameId, bool useHeadingMath = false)
         {
             List<double> ret = new List<double>();
 
