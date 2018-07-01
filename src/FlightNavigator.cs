@@ -5,6 +5,10 @@ namespace GTAPilot
 {
     class FlightNavigator
     {
+        public bool IsOnGlidePath => _plan.CurrentIndex == _plan.Points.Count - 2;
+
+        public double DistanceFromTargetLine => Math2.GetDistanceFromLine(Timeline.CurrentLocation, _plan.TargetLine);
+
         private FlightPlan _plan;
         private ModeControlPanel _mcp;
 
@@ -44,7 +48,7 @@ namespace GTAPilot
             }
 
             // G/P
-            if (_plan.CurrentIndex == _plan.Points.Count - 2)
+            if (IsOnGlidePath)
             {
                 var approach_dist = Math2.GetDistance(_plan.Points[_plan.CurrentIndex - 1], _plan.Points[_plan.CurrentIndex]);
                 var dist_from_threshold = Math2.GetDistance(Timeline.CurrentLocation, _plan.Points[_plan.CurrentIndex]);
@@ -79,7 +83,7 @@ namespace GTAPilot
                 var tightHoldLine = (Timeline.Altitude < 300) ||
                                     (_plan.CurrentIndex >= _plan.Points.Count - 2);
                 var heading_cap = 15;
-                var distanceFromTargetLine = (tightHoldLine ? 2 : 0.5) * Math2.GetDistanceFromLine(Timeline.CurrentLocation, _plan.TargetLine);
+                var distanceFromTargetLine = (tightHoldLine ? 2 : 0.5) * DistanceFromTargetLine;
                 distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
 
                 targetHdg -= distanceFromTargetLine;

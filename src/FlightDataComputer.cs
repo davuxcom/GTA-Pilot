@@ -122,7 +122,7 @@ namespace GTAPilot
                     // Trim:
                     output += Math.Abs(Timeline.RollAvg) * 30;
 
-                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(-1 * output, 4000, FlightComputerConfig.MAX_AXIS_VALUE));
+                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(-1 * output, 6000, FlightComputerConfig.MAX_AXIS_VALUE));
 
                     Timeline.Data[id].Pitch.OutputValue = output;
                 }
@@ -177,7 +177,7 @@ namespace GTAPilot
 
                     if (aDiff > 1)
                     {
-                        aDiff = Math.Min(aDiff / 3, 40);
+                        aDiff = Math.Min(aDiff / 3, 100);
 
                         if (diff < 0)
                         {

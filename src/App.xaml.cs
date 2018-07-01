@@ -21,12 +21,12 @@ namespace GTAPilot
 
 3636, 857));
 */
-/*
-            
+
+            /*
             FlightPlan fp = new FlightPlan();
             fp.LoadFromFile(@"c:\workspace\FlightPlan.txt");
 
-            Timeline.Load(@"c:\workspace\run7.txt");
+            Timeline.Load(@"c:\workspace\run9.txt");
 
             var locationPoints = new List<System.Drawing.PointF>();
             for (var i = 0; i < Timeline.LatestFrameId; i++)

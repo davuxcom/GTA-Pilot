@@ -67,6 +67,7 @@ namespace GTAPilot
         internal bool UpdateLocation()
         {
             if (Points.Count == 0) return false;
+            if (CurrentIndex == Points.Count) return false;
 
             var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
             double dist_max = 40;

@@ -122,9 +122,34 @@ namespace GTAPilot
             LModeText.Text = mcp.HeadingHold ? "HDG SEL" :
                 (mcp.LNAV ? "LNAV" : "");
 
+            if (SystemManager.Instance.Nav.IsOnGlidePath)
+            {
+                VModeText.Text = "G/P";
+                LModeText.Text = "FAC";
+            }
+
             AltSetpoint.Text = "" + Math.Round(mcp.ALT);
             SpeedSetpoint.Text = "" + Math.Round(mcp.IAS);
 
+            if (!double.IsNaN(Timeline.Pitch) &&
+                !double.IsNaN(Timeline.Roll))
+            {
+                var top = -1 * (mcp.VS - Timeline.PitchAvg) * 4;
+                FDH.Margin = new Thickness(0, top, 0, 0);
+                var left = (mcp.Bank - Timeline.RollAvg) * 4;
+                FDV.Margin = new Thickness(left, 0, 0, 0);
+            }
+
+            GPDisplay.Visibility = (SystemManager.Instance.Nav.IsOnGlidePath) ? Visibility.Visible : Visibility.Collapsed;
+            FACDisplay.Visibility = (SystemManager.Instance.Nav.IsOnGlidePath) ? Visibility.Visible : Visibility.Collapsed;
+            if (SystemManager.Instance.Nav.IsOnGlidePath)
+            {
+                var vx = (mcp.ALT - Timeline.AltitudeAvg) * -2.5;
+                ILSV.Margin = new Thickness(0, vx, 0, 0);
+
+                var hx = SystemManager.Instance.Nav.DistanceFromTargetLine * 25;
+                ILSH.Margin = new Thickness(hx, 0, 0, 0);
+            }
 
             if (!double.IsNaN(Timeline.Pitch))
             {

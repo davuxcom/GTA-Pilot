@@ -133,28 +133,28 @@ namespace GTAPilot
             {
                 var lastFrame = Data[id - 1];
 
-                var hdg = LatestAvg(60, f => f.Heading.Value, id, useHeadingMath: true);
-                var spd = LatestAvg(30, f => f.Speed.Value, id);
-                var roll = LatestAvg(10, f => f.Roll.Value, id);
+                var hdg = LatestAvg(4, f => f.Heading.Value, id, useHeadingMath: true);
+                var spd = LatestAvg(4, f => f.Speed.Value, id);
+                var roll = LatestAvg(4, f => f.Roll.Value, id);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd) && !double.IsNaN(roll))
                 {
                     var dt = newFrame.Seconds - lastFrame.Seconds;
                     var positionDelta = ComputePositionChange(hdg, spd, dt);
                     newFrame.Location = lastFrame.Location.Add(positionDelta);
-
-                    /*
+                
+                    
                   // if (Math.Abs(roll) > 2 && Math.Abs(roll) < 10)
                    {
                        var angle = 1 * Math.Sign(roll) * 90;
                         var rollSkew = 0.5 * Math.Abs(roll);
-                        var max_rollSkew = 10;
+                        var max_rollSkew = 4;
 
                         if (rollSkew > max_rollSkew) rollSkew = max_rollSkew;
 
                        var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), rollSkew, dt);
                     //   newFrame.Location = newFrame.Location.Add(side_delta);
                    }
-                   */
+                   
 
                     
 

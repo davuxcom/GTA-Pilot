@@ -12,13 +12,13 @@ namespace GTAPilot
         public IndicatorHandler IndicatorHost { get; }
         public ModeControlPanel MCP { get; } = new ModeControlPanel();
         public XboxApp App { get; } = new XboxApp();
+        public FlightNavigator Nav { get; }
         public FpsCounter Capture { get; } = new FpsCounter();
         public bool IsReplay => Replay != null;
         public ReplayFrameProducer Replay { get; }
         public SaveFrameConsumer Recorder { get; private set; }
 
         private FlightDataComputer _computer;
-        private FlightNavigator _navigator;
 
         public SystemManager()
         {
@@ -30,7 +30,7 @@ namespace GTAPilot
             FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
 
             _computer = new FlightDataComputer(MCP, App.Controller);
-            _navigator = new FlightNavigator(MCP, FlightPlan);
+            Nav = new FlightNavigator(MCP, FlightPlan);
             IndicatorHost = new IndicatorHandler(_computer);
 
             Timeline.Begin();
@@ -43,7 +43,7 @@ namespace GTAPilot
                 App.PropertyChanged += XboxApp_PropertyChanged;
                 App.Begin();
 
-                _navigator.Begin();
+                Nav.Begin();
             }
             else
             {

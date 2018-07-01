@@ -31,17 +31,6 @@
 
         <Canvas Name="PFD">
 
-            <!--
-            <Polygon Fill="Black"
-
-                     Points="160,250  220,250, 220,270,
-                     215,270, 215,255, 160,255"
-                     Stroke="White" />
-
-            <Polygon Fill="Black"
-                     Points="440,250  380,250, 380,270,
-                     385,270, 385,255, 440,255"
-                     Stroke="White" />-->
             <Line Name="VSLine"
                   Stroke="White"
                   StrokeThickness="4"
@@ -218,7 +207,116 @@
                 </Border>
             </Grid>
 
+            <Grid Grid.Row="1">
+                <Rectangle Name="FDV"
+                           Width="4"
+                           Height="220"
+                           Margin="0,0,0,0"
+                           Fill="Magenta" />
 
+                <Rectangle Name="FDH"
+                           Width="220"
+                           Height="4"
+                           Margin="0,0,0,0"
+                           Fill="Magenta" />
+            </Grid>
+
+            <Grid Grid.Row="1">
+
+                <Grid Name="GPDisplay"
+                      Width="40"
+                      Height="250"
+                      Margin="320,0,0,0"
+                      ClipToBounds="False"
+                      Background="{StaticResource PanelBackgroundBrush}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Polygon HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Black"
+                             Points="10,30 20,15 10,0 0,15"
+                             Stroke="White"
+                             StrokeThickness="2" />
+
+                    <Polygon Grid.Row="1"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Black"
+                             Points="10,30 20,15 10,0 0,15"
+                             Stroke="White"
+                             StrokeThickness="2" />
+
+
+
+                    <Polygon Grid.Row="2"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Black"
+                             Points="10,30 20,15 10,0 0,15"
+                             Stroke="White"
+                             StrokeThickness="2" />
+
+                    <Polygon Name="ILSV"
+                             Grid.RowSpan="3"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Magenta"
+                             Points="10,30 20,15 10,0 0,15"
+                             Stroke="Magenta"
+                             StrokeThickness="2" />
+                </Grid>
+
+                <Grid Name="FACDisplay"
+                      Width="250"
+                      Height="40"
+                      Margin="0,300,0,0"
+                      ClipToBounds="False"
+                      Background="{StaticResource PanelBackgroundBrush}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Polygon Grid.Column="0"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Black"
+                             Points="0,10 15,20 30,10 15,0"
+                             Stroke="White"
+                             StrokeThickness="2" />
+
+                    <Polygon Grid.Column="1"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Black"
+                             Points="0,10 15,20 30,10 15,0"
+                             Stroke="White"
+                             StrokeThickness="2" />
+
+                    <Polygon Grid.Column="2"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Black"
+                             Points="0,10 15,20 30,10 15,0"
+                             Stroke="White"
+                             StrokeThickness="2" />
+
+                    <Polygon Name="ILSH"
+                             Grid.ColumnSpan="3"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center"
+                             Fill="Magenta"
+                             Points="0,10 15,20 30,10 15,0"
+                             Stroke="Magenta"
+                             StrokeThickness="2" />
+                </Grid>
+
+            </Grid>
 
             <Grid Grid.Row="2" Height="50" />
 

@@ -16,10 +16,8 @@
         </Style>
 
         <Style TargetType="{x:Type Image}">
-            <Setter Property="Width"
-                    Value="300" />
-            <Setter Property="Height"
-                    Value="300" />
+            <Setter Property="Width" Value="300" />
+            <Setter Property="Height" Value="300" />
         </Style>
     </Window.Resources>
     <Grid>
