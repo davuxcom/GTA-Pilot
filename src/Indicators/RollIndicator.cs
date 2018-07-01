@@ -215,8 +215,18 @@ namespace GTAPilot.Indicators
                 return true;
             }
 
+            var localRect = MovementRect;
+
+            if (data.Id > 0 && Timeline.Data[data.Id - 1].Roll.ForIndicatorUse != null)
+            {
+                // Our hint from last time.
+                ret = (CircleF)Timeline.Data[data.Id - 1].Roll.ForIndicatorUse;
+
+                localRect = Math2.CropCircle(ret, 10);
+            }
+
             // Crop and blur
-            var cropped_frame = data.Frame.Copy(MovementRect).PyrUp().PyrDown();
+            var cropped_frame = data.Frame.Copy(localRect).PyrUp().PyrDown();
 
             var MovementFrameGray = new Mat();
             CvInvoke.CvtColor(cropped_frame, MovementFrameGray, ColorConversion.Bgr2Gray);
@@ -232,7 +242,7 @@ namespace GTAPilot.Indicators
             // Pick the topmost circle and crop.
             var rollIndicatorCicle = circles.OrderBy(c => c.Center.Y).First();
             rollIndicatorCicle.Radius = 64;
-            rollIndicatorCicle.Center = rollIndicatorCicle.Center.Add(MovementRect.Location);
+            rollIndicatorCicle.Center = rollIndicatorCicle.Center.Add(localRect.Location);
             ret = rollIndicatorCicle;
             Timeline.Data[data.Id].Roll.ForIndicatorUse = ret;
             return true;
