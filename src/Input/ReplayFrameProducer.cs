@@ -58,8 +58,6 @@ namespace GTAPilot
 
             t = new Thread(() =>
             {
-                int initialDelay = 20;
-
                 while (true)
                 {
                     if (_isPaused)
@@ -77,15 +75,6 @@ namespace GTAPilot
                     _currentId++;
 
                     if (_currentId >= _framePaths.Length) _currentId = 0;
-
-                    if (initialDelay > 0)
-                    {
-                        initialDelay--;
-                        Thread.Sleep(50);
-                    }
-
-                    // This is manually tuned such that we don't fall behind.
-                    Thread.Sleep(12);
 
                     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentFrame)));
                 }

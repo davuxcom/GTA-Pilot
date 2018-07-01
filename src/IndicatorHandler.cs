@@ -14,7 +14,7 @@ namespace GTAPilot
         public int Id;
     }
 
-    // IndicatorHandler takes a fullscreen bitmap image and 'ticks' it to each of the indicators in turn.
+    // IndicatorHandler takes a fullscreen bitmap image and processes it using each of the indicators in turn.
     // Threads are created such that there is a pipeline of reading the indicator data.  This way there is
     // less overall latency in that we don't wait for each indicator, we do one at a time and thus the last
     // in the order has the highest latency, and the first has almost no latency.
@@ -29,50 +29,56 @@ namespace GTAPilot
         public Indicator Altitude = new Indicator(new AltitudeIndicator());
         public Indicator Compass = new Indicator(new YawIndicator());
 
-        ConcurrentQueue<IndicatorData> _stage1 = new ConcurrentQueue<IndicatorData>();
-        ConcurrentQueue<IndicatorData> _stage2 = new ConcurrentQueue<IndicatorData>();
-        ConcurrentQueue<IndicatorData> _stage3 = new ConcurrentQueue<IndicatorData>();
-        ConcurrentQueue<IndicatorData> _stage4 = new ConcurrentQueue<IndicatorData>();
-        ConcurrentQueue<IndicatorData> _stage5 = new ConcurrentQueue<IndicatorData>();
+        enum Stage
+        {
+            Tick1 = 1,
+            Tick2 = 2,
+            Tick3 = 3,
+            Tick4 = 4,
+            Tick5 = 5,
+        }
+
+        class Data
+        {
+            public IndicatorData IndicatorData;
+            public Stage Stage;
+        }
+
+        ConcurrentQueue<Data> _workItems = new ConcurrentQueue<Data>();
         FlightDataComputer _computer;
+        long queueIncrementId;
 
         public IndicatorHandler(FlightDataComputer computer)
         {
             _computer = computer;
 
-            StartWorkerThread(_stage1, (d) =>
-            {
-                Tick1(d);
-                _stage2.Enqueue(d);
-            });
-
-            StartWorkerThread(_stage2, (d) =>
-            {
-                Tick2(d);
-                Tick3(d);
-                Tick4(d);
-
-                _stage5.Enqueue(d);
-            });
-
-            StartWorkerThread(_stage5, (d) =>
-            {
-                Tick5(d);
-            });
+            StartWorkerThread();
+            StartWorkerThread();
+            StartWorkerThread();
+            StartWorkerThread();
+            StartWorkerThread();
+            StartWorkerThread();
+            StartWorkerThread();
         }
 
-        private void StartWorkerThread(ConcurrentQueue<IndicatorData> target, Action<IndicatorData> next)
+        private void StartWorkerThread()
         {
             var t = new Thread(() =>
             {
+                long localId = 0;
                 while (true)
                 {
-                    if (target.TryDequeue(out var nextFrame))
+                    if (queueIncrementId != localId && _workItems.TryDequeue(out var nextFrame))
                     {
-                        next.Invoke(nextFrame);
+                        Tick(nextFrame.Stage, nextFrame.IndicatorData);
+                        if (nextFrame.Stage != Stage.Tick5)
+                        {
+                            Enqueue(new Data { Stage = ++nextFrame.Stage, IndicatorData = nextFrame.IndicatorData });
+                        }
                     }
                     else
                     {
+                        localId = queueIncrementId;
                         Thread.Sleep(1);
                     }
                 }
@@ -98,44 +104,46 @@ namespace GTAPilot
                 Seconds = data.Seconds,
             };
 
-            _stage1.Enqueue(frame);
+            Enqueue(new Data { Stage = Stage.Tick1, IndicatorData = frame });
         }
 
-        void Tick1(IndicatorData data)
+        private void Enqueue(Data data)
         {
-            Timeline.Data[data.Id].Roll.Value = Roll.Tick(data);
-            _computer.OnRollDataSampled(data.Id);
-            Timeline.Data[data.Id].Roll.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+            _workItems.Enqueue(data);
+            queueIncrementId++;
         }
 
-        void Tick2(IndicatorData data)
+        void Tick(Stage stage, IndicatorData data)
         {
-            Timeline.Data[data.Id].Pitch.Value = Pitch.Tick(data);
-            _computer.OnPitchDataSampled(data.Id);
-            Timeline.Data[data.Id].Pitch.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-        }
-
-        void Tick3(IndicatorData data)
-        {
-            Timeline.Data[data.Id].Speed.Value = Airspeed.Tick(data);
-            _computer.OnSpeedDataSampled(data.Id);
-            Timeline.Data[data.Id].Speed.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-        }
-
-        void Tick4(IndicatorData data)
-        {
-            Timeline.Data[data.Id].Altitude.Value = Altitude.Tick(data);
-            _computer.OnAltidudeDataSampled(data.Id);
-            Timeline.Data[data.Id].Altitude.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-        }
-
-        void Tick5(IndicatorData data)
-        {
-            Timeline.Data[data.Id].Heading.Value = Compass.Tick(data);
-            _computer.OnCompassDataSampled(data.Id);
-            Timeline.Data[data.Id].Heading.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-
-            Timeline.Data[data.Id].IsDataComplete = true;
+            switch (stage)
+            {
+                case Stage.Tick1:
+                    Timeline.Data[data.Id].Roll.Value = Roll.Tick(data);
+                    _computer.OnRollDataSampled(data.Id);
+                    Timeline.Data[data.Id].Roll.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+                    break;
+                case Stage.Tick2:
+                    Timeline.Data[data.Id].Pitch.Value = Pitch.Tick(data);
+                    _computer.OnPitchDataSampled(data.Id);
+                    Timeline.Data[data.Id].Pitch.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+                    break;
+                case Stage.Tick3:
+                    Timeline.Data[data.Id].Speed.Value = Airspeed.Tick(data);
+                    _computer.OnSpeedDataSampled(data.Id);
+                    Timeline.Data[data.Id].Speed.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+                    break;
+                case Stage.Tick4:
+                    Timeline.Data[data.Id].Altitude.Value = Altitude.Tick(data);
+                    _computer.OnAltidudeDataSampled(data.Id);
+                    Timeline.Data[data.Id].Altitude.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+                    break;
+                case Stage.Tick5:
+                    Timeline.Data[data.Id].Heading.Value = Compass.Tick(data);
+                    _computer.OnCompassDataSampled(data.Id);
+                    Timeline.Data[data.Id].Heading.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+                    Timeline.Data[data.Id].IsDataComplete = true;
+                    break;
+            }
         }
     }
 }
