@@ -80,6 +80,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DebugState.cs" />
+    <Compile Include="LoadingReader.cs" />
+    <Compile Include="MenuReader.cs" />
     <Compile Include="PerThreadUtils.cs" />
     <Compile Include="Runways.cs" />
     <Compile Include="Approach.cs" />

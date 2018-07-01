@@ -9,6 +9,15 @@ using System.Threading;
 
 namespace GTAPilot
 {
+    public enum TimelineMode
+    {
+        NotConnected,
+        Live,
+        Menu,
+        Loading,
+        Disconnected
+    }
+
     class Timeline
     {
         public static int LatestFrameId;
@@ -32,6 +41,8 @@ namespace GTAPilot
         public static double PitchAvg => LatestAvg(25, f => f.Pitch.Value, LatestFrameId);
         public static double AltitudeAvg => LatestAvg(25, f => f.Altitude.Value, LatestFrameId);
         public static double SpeedAvg => LatestAvg(25, f => f.Speed.Value, LatestFrameId);
+
+        public TimelineMode Mode { get; private set; }
 
         public static void Begin()
         {
@@ -203,6 +214,16 @@ namespace GTAPilot
                 CompleteFrame(i);
                 LatestFrameId = i;
             }
+        }
+
+        public static void ResetFromSavePoint()
+        {
+
+        }
+
+        public static void EnterMenu()
+        {
+            // TODO:
         }
 
         private static PointF ComputePositionChange(double newHeading, double speedInKnots, double timeDeltaInSeconds)
