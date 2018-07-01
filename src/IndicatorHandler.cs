@@ -54,34 +54,11 @@ namespace GTAPilot
 
                 _stage5.Enqueue(d);
             });
-            /*
-            StartWorkerThread(_stage3, (d) =>
-            {
-                Tick3(d);
-                _stage4.Enqueue(d);
-            });
-            StartWorkerThread(_stage4, (d) =>
-            {
-                Tick4(d);
-                _stage5.Enqueue(d);
-            });
-            */
-            // TOD: Yaw needs better performance such that two threads aren't required.
+
             StartWorkerThread(_stage5, (d) =>
             {
                 Tick5(d);
             });
-            /*
-            StartWorkerThread(_stage5, (d) =>
-            {
-                Tick5(d);
-            });
-            
-            StartWorkerThread(_stage5, (d) =>
-            {
-                Tick5(d);
-            });
-            */
         }
 
         private void StartWorkerThread(ConcurrentQueue<IndicatorData> target, Action<IndicatorData> next)
@@ -155,29 +132,10 @@ namespace GTAPilot
         void Tick5(IndicatorData data)
         {
             Timeline.Data[data.Id].Heading.Value = Compass.Tick(data);
-
             _computer.OnCompassDataSampled(data.Id);
             Timeline.Data[data.Id].Heading.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
 
-            // TODO: This is a hack, should be part of the indicator logic itself.
-            var prev = Timeline.LatestFrame(d => d.Heading.Value, data.Id);
-            if (prev != null && !double.IsNaN(Timeline.Data[data.Id].Heading.Value))
-            {
-                var dT = Timeline.Data[data.Id].Heading.SecondsWhenComputed - prev.Heading.SecondsWhenComputed;
-                if (dT < 1)
-                {
-                    var dX = Math2.DiffAngles(Timeline.Data[data.Id].Heading.Value, prev.Heading.Value);
-                    if (Math.Abs(dX) > 10)
-                    {
-                        // can't move more than 20 deg in one second
-                        Timeline.Data[data.Id].Heading.Value = double.NaN;
-                    }
-                }
-            }
-
             Timeline.Data[data.Id].IsDataComplete = true;
-
-           // Timeline.CompleteFrame(data.Id);
         }
     }
 }

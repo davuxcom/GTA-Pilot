@@ -206,6 +206,21 @@ namespace GTAPilot.Indicators
                         if (ret < 0) ret = 360 - ret;
                         if (ret > 360) ret -= 360;
 
+                        var prev = Timeline.LatestFrame(d => d.Heading.Value, data.Id);
+                        if (prev != null && !double.IsNaN(Timeline.Data[data.Id].Heading.Value))
+                        {
+                            var dT = Timeline.Data[data.Id].Heading.SecondsWhenComputed - prev.Heading.SecondsWhenComputed;
+                            if (dT < 1)
+                            {
+                                var dX = Math2.DiffAngles(Timeline.Data[data.Id].Heading.Value, prev.Heading.Value);
+                                if (Math.Abs(dX) > 10)
+                                {
+                                    // can't move more than 20 deg in one second
+                                    Timeline.Data[data.Id].Heading.Value = double.NaN;
+                                }
+                            }
+                        }
+
                         return ret;
                     }
                     else
