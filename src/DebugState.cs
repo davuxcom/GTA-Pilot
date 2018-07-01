@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Emgu.CV;
+using Emgu.CV.Structure;
+using System.Collections.Generic;
 
 namespace GTAPilot
 {
@@ -8,6 +10,11 @@ namespace GTAPilot
 
         public void Add(object img)
         {
+            if (img is Mat)
+            {
+                img = ((Mat)img).ToImage<Gray, byte>();
+            }
+
             _images.Add(img);
         }
 

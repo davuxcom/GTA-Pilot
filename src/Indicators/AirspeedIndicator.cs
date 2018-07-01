@@ -16,7 +16,6 @@ namespace GTAPilot.Indicators
 
         double last_value = 0;
         int num_rejected_values = 0;
-        DateTime last_time = DateTime.Now;
 
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.02, 100);
         DynHsv dyn_lower2 = new DynHsv(0, 0, double.NaN, 0.005, 100);
@@ -24,10 +23,6 @@ namespace GTAPilot.Indicators
 
         public double ReadValue(IndicatorData data, DebugState debugState)
         {
-            DateTime this_time = DateTime.Now;
-            DateTime this_last_time = last_time;
-            double this_last_value = last_value;
-
             if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y + 70);
@@ -64,7 +59,7 @@ namespace GTAPilot.Indicators
                           Mat vspeedMask = new Mat(vs_blackimg.Size, DepthType.Cv8U, 3);
                         {
                               vspeedMask.SetTo(new MCvScalar(1));
-                              CvInvoke.Circle(vspeedMask, new Point(focus.Width / 2, focus.Height /2), (int)(r - 14), new Bgr(Color.White).MCvScalar, -1);
+                              CvInvoke.Circle(vspeedMask, new Point(focus.Width / 2, focus.Height /2), (int)(r - 12), new Bgr(Color.White).MCvScalar, -1);
                             //
                             var vspeed_inner_only = focus.Copy(vspeedMask.ToImage<Gray, byte>()).Convert<Hsv, byte>();
                             {
@@ -75,18 +70,21 @@ namespace GTAPilot.Indicators
                                 var cannyEdges3 = new Mat();
                                 {
                                     // reference:
-                                  //  CvInvoke.Canny(vspeed_inner_hsv, cannyEdges3, 10, 100);
-                                  //  var lines = CvInvoke.HoughLinesP(cannyEdges3, 1, Math.PI / 45.0, 4, 14, 8).OrderByDescending(p => p.Length).ToList();
+                                    //  CvInvoke.Canny(vspeed_inner_hsv, cannyEdges3, 10, 100);
+                                    //  var lines = CvInvoke.HoughLinesP(cannyEdges3, 1, Math.PI / 45.0, 4, 14, 8).OrderByDescending(p => p.Length).ToList();
 
+                                    var vspeed_inner_hsv2 = Utils.RemoveBlobs(vspeed_inner_hsv, 1, 10);
+                                    debugState.Add(vspeed_inner_hsv2);
 
-                                    CvInvoke.Canny(vspeed_inner_hsv, cannyEdges3, 10, 150);
+                                    CvInvoke.Canny(vspeed_inner_hsv2, cannyEdges3, 10, 150);
 
                                     Mat dialatedCanny = new Mat();
                                     CvInvoke.Dilate(cannyEdges3, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
+                                    debugState.Add(cannyEdges3.ToImage<Gray, byte>());
 
+                                    var lines = CvInvoke.HoughLinesP(dialatedCanny, 1, Math.PI / 45, 30, 20, 1).ToList(); //.OrderByDescending(p => p.Length).ToList();
+                                    debugState.Add(dialatedCanny);
 
-                                    var lines = CvInvoke.HoughLinesP(dialatedCanny, 1, Math.PI / 45, 30, 18, 1).ToList(); //.OrderByDescending(p => p.Length).ToList();
-                
                                     var center_size = 40;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
                                     var center_box_point = new Point((focus.Width / 2) - (center_size / 2), (focus.Height / 2) - (center_size / 2));
@@ -96,7 +94,8 @@ namespace GTAPilot.Indicators
                                     var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
 
                                     debugState.Add(markedup_frame);
-                                    debugState.Add(cannyEdges3.ToImage<Gray, byte>());
+
+
 
                                     {
 

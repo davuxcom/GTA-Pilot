@@ -46,7 +46,7 @@ namespace GTAPilot.Extensions
             {
                 ret = img.InRange(lower.GetHsv(), higher);
 
-                if (++rev > 25)
+                if (++rev > 255)
                 {
                     Trace.WriteLine("ERROR: DynLowInRange exceeded 25 attempts.");
                     break;

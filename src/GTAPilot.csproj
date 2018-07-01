@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="UI\IndicatorChart.cs" />
     <Compile Include="ModeControlPanel.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="XboxController.cs" />
     <Compile Include="Extensions\BitmapExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />

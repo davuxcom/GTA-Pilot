@@ -27,7 +27,6 @@ namespace GTAPilot.Indicators
         {
             if (TryFindRollCircleInFullFrame(data, out CircleF rollIndicatorCicle))
             {
-
                 var FocusRect = Math2.CropCircle(rollIndicatorCicle, 10);
                 var focusFrame = data.Frame.SafeCopy(FocusRect);
 
@@ -41,18 +40,26 @@ namespace GTAPilot.Indicators
                 CvInvoke.Circle(maskInnerAlt, new Point(focusFrame.Size.Width / 2, focusFrame.Size.Height / 2), (int)(rollIndicatorCicle.Radius - (rollIndicatorCicle.Radius * 0.275)), new Bgr(Color.Black).MCvScalar, -1);
 
                 var outerMovingRingOnly = focusFrame.Copy(maskInnerAlt.ToImage<Gray, byte>());
-                var outerMovingRingWithoutBottom = outerMovingRingOnly.Copy(new Rectangle(0, 0, outerMovingRingOnly.Width, (int)(outerMovingRingOnly.Height - (outerMovingRingOnly.Height * 0.29))));
+                var outerMovingRingWithoutBottom = outerMovingRingOnly.Copy(new Rectangle(0, 0, outerMovingRingOnly.Width, (int)(outerMovingRingOnly.Height ))); // - (outerMovingRingOnly.Height * 0.29)
 
                 var hsv = outerMovingRingWithoutBottom.Convert<Hsv, byte>();
 
+                debugState.Add(outerMovingRingOnly);
+                debugState.Add(outerMovingRingWithoutBottom);
+
                 // Low is TuningValue
-                var ring_hsv = hsv.InRange(new Hsv(20, 0, 85), new Hsv(180, 255, 255));
+                var ring_hsv_unfiltered = hsv.InRange(new Hsv(20, 0, 85), new Hsv(180, 255, 255));
+                debugState.Add(ring_hsv_unfiltered);
+
+                var ring_hsv = Utils.RemoveBlobs(ring_hsv_unfiltered, 1, 200);
                 debugState.Add(ring_hsv);
 
 
                 var ring_distance_transform = new Image<Gray, float>(ring_hsv.Size);
 
                 CvInvoke.DistanceTransform(ring_hsv, ring_distance_transform, null, DistType.L1, 3);
+
+
                 var circles = CvInvoke.HoughCircles(ring_hsv, HoughType.Gradient, 2.0, 1.0, 1, 10, 50, 53);
 
                 var boundaries = new List<PointAndCount>();
@@ -86,7 +93,7 @@ namespace GTAPilot.Indicators
                         int pos = 1;
                         int xpos = 2;
                         int xpos2 = 3;
-                        int xpos3 = 3;
+                        int xpos3 = 5;
                         int xpos4 = 3;
                         int xpos5 = 3;
                         int xpos6 = 3;
