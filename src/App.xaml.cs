@@ -51,7 +51,8 @@ namespace GTAPilot
 
             t = new Thread(() =>
             {
-                new AnalyzerWindow().Show();
+                var a = new AnalyzerWindow();
+                a.Show();
                 System.Windows.Threading.Dispatcher.Run();
             });
             t.IsBackground = true;

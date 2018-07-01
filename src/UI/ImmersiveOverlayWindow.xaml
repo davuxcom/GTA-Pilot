@@ -8,68 +8,99 @@
         Background="Transparent"
         ResizeMode="NoResize"
         WindowStyle="None">
+
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="500" />
-        </Grid.RowDefinitions>
+        <Grid>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="470" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+            <Polygon Fill="Black" Points="1920,1120, 1920,610 1300,630 570,710, 510,750, 450,900, 400,1120" />
+        </Grid>
 
-        <Menu Grid.ColumnSpan="2" Background="Black">
-            <MenuItem Background="Transparent"
-                      Foreground="White"
-                      Header="Flight Planner">
-                <MenuItem Command="{Binding FlightPlanOpen}"
-                          Foreground="Black"
-                          Header="Open" />
-                <MenuItem Command="{Binding FlightPlanSave}"
-                          Foreground="Black"
-                          Header="Save as..." />
-                <MenuItem Command="{Binding FlightPlanEdit}"
-                          Foreground="Black"
-                          Header="Edit on map" />
-            </MenuItem>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="500" />
+            </Grid.RowDefinitions>
 
-            <MenuItem Background="Transparent"
-                      Command="{Binding OpenRecorder}"
-                      Foreground="White"
-                      Header="Recorder" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="470" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <MenuItem Background="Transparent"
-                      Command="{Binding SaveData}"
-                      Foreground="White"
-                      Header="Save Data" />
-        </Menu>
+            <Menu Grid.ColumnSpan="2" Background="Black">
+                <MenuItem Background="Transparent"
+                          Foreground="White"
+                          Header="Flight Planner">
+                    <MenuItem Command="{Binding FlightPlanOpen}"
+                              Foreground="Black"
+                              Header="Open" />
+                    <MenuItem Command="{Binding FlightPlanSave}"
+                              Foreground="Black"
+                              Header="Save as..." />
+                    <MenuItem Command="{Binding FlightPlanEdit}"
+                              Foreground="Black"
+                              Header="Edit on map" />
+                </MenuItem>
 
-        <Border Grid.Row="1"
-                Grid.Column="1"
-                Margin="200,0,0,0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Bottom">
-            <local:MCPControl />
-        </Border>
+                <MenuItem Background="Transparent"
+                          Command="{Binding OpenRecorder}"
+                          Foreground="White"
+                          Header="Recorder" />
 
-        <Border Grid.Row="2"
-                Grid.Column="1"
-                Background="Black">
-            <Grid>
+                <MenuItem Background="Transparent"
+                          Command="{Binding SaveData}"
+                          Foreground="White"
+                          Header="Save Data" />
+            </Menu>
 
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
+            <Border Grid.Row="1"
+                    Grid.Column="1"
+                    Margin="950,0,0,-60"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Bottom">
+                <local:MCPControl Grid.Column="2" />
+            </Border>
 
-                <local:PrimaryFlightDisplayControl />
+            <Border Grid.Row="2" Grid.Column="1">
+                <Viewbox Width="900"
+                         Height="400"
+                         Margin="100,0,0,0"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Center">
+                    <Grid>
 
-                <local:NavigationDisplayControl Grid.Column="1" />
-                <local:FlightPlanControl Grid.Column="2" />
-            </Grid>
-        </Border>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Margin="12"
+                                BorderBrush="White"
+                                BorderThickness="4">
+                            <local:PrimaryFlightDisplayControl />
+                        </Border>
+
+                        <Border Grid.Column="1"
+                                Margin="12"
+                                BorderBrush="White"
+                                BorderThickness="4">
+                            <local:NavigationDisplayControl />
+
+                        </Border>
+
+                        <!--
+                        <local:FlightPlanControl Grid.Column="2" />
+                        -->
+
+                    </Grid>
+                </Viewbox>
+
+            </Border>
+        </Grid>
+
+
+
     </Grid>
+
 </Window>
