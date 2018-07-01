@@ -4,7 +4,7 @@ using System.Windows.Controls;
 
 namespace GTAPilot
 {
-    public partial class IndicatorWindow : Window
+    public partial class IndicatorWindow : Window, ICanTick
     {
         IndicatorViewModel _viewModel;
         internal IndicatorWindow(IndicatorViewModel viewModel)
@@ -12,6 +12,13 @@ namespace GTAPilot
             _viewModel = viewModel;
             InitializeComponent();
             DataContext = _viewModel;
+
+            App.Register(this);
+        }
+
+        public void Tick()
+        {
+            _viewModel.Tick();
         }
 
         private void TextBox_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

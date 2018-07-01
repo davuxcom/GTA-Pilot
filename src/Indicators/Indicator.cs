@@ -22,9 +22,9 @@ namespace GTAPilot.Indicators
 
         public double Tick(IndicatorData data)
         {
-            object[] debugState = new object[] { null, null, null, null, null };
-            Value = _indicator.ReadValue(data, ref debugState);
-            Image = debugState;
+            DebugState ds = new DebugState();
+            Value = _indicator.ReadValue(data, ds);
+            Image = ds.Get(10);
 
             if (double.IsNaN(Value))
             {

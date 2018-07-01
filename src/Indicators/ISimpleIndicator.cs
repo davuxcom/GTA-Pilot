@@ -5,6 +5,6 @@
         double CachedTuningValue { get; }
         double LastGoodValue { get; }
 
-        double ReadValue(IndicatorData data, ref object[] debugState);
+        double ReadValue(IndicatorData data, DebugState debugState);
     }
 }

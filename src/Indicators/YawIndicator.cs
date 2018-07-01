@@ -49,7 +49,7 @@ namespace GTAPilot.Indicators
 
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.025, 100);
 
-        public double ReadValue(IndicatorData data, ref object[] debugState)
+        public double ReadValue(IndicatorData data, DebugState debugState)
         {
             if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
@@ -68,8 +68,8 @@ namespace GTAPilot.Indicators
 
                     var focusRect = Math2.CropCircle(circ, 15);
                     focus = data.Frame.SafeCopy(focusRect);
+                    debugState.Add(focus);
 
-                    debugState[0] = focus;
 
                     focusHsv = focus.Convert<Hsv, byte>();
 
@@ -78,7 +78,7 @@ namespace GTAPilot.Indicators
                     var focusHsvTextOnly = focusHsvText.Copy(focusHsvTriangleMask);
                     var focusHsvTextOnlyMarkedUp = focusHsvTextOnly.Convert<Bgr, byte>();
 
-                    debugState[1] = focusHsvTextOnlyMarkedUp;
+                    debugState.Add(focusHsvTextOnlyMarkedUp);
 
                     var blobs = PerThreadUtils.DetectAndFilterBlobs(focusHsvTextOnly, 25, 250).
                         Where(b => b.Centroid.Y >= 5).OrderByDescending(b => b.Area).Take(4).ToList();
@@ -93,7 +93,7 @@ namespace GTAPilot.Indicators
                     }
 
                     var focusHsvOnlyBlobs = focusHsvTextOnly.Copy(blobMask.ToImage<Gray, byte>());
-                    debugState[2] = focusHsvOnlyBlobs;
+                    debugState.Add(focusHsvOnlyBlobs);
 
                     var frame_center = new Point(focus.Width / 2, focus.Height / 2);
 
@@ -111,15 +111,12 @@ namespace GTAPilot.Indicators
                         var rotated_frame = focusHsvOnlyBlobs.Rotate(-1 * rotationAngle, new Gray(0));
                         var rotated_letter_only = rotated_frame.Copy(new Rectangle(rotated_frame.Width / 2 - 30, 0, 60, 60));
 
-                        if (debugState[3] == null)
-                        {
-                            debugState[3] = rotated_letter_only;
-                        }
+                        debugState.Add(rotated_letter_only);
 
                         parts.Add(new CompassPack { Item1 = rotated_letter_only, Item2 = rotationAngle, BlobBox = b.BoundingBox, BlobArea = b.Area });
                     }
 
-                    var ret = CompassProcFrame(data.Id, parts, focus, ref debugState);
+                    var ret = CompassProcFrame(data.Id, parts, focus, debugState);
                     if (!double.IsNaN(ret))
                     {
                         var compass_frame = focusHsvOnlyBlobs.Rotate(ret, new Gray(0));
@@ -168,10 +165,9 @@ namespace GTAPilot.Indicators
 
                             var topRange = lineImg.Convert<Hsv, byte>(); //.InRange(new Hsv(HLow, SLow, VLow), new Hsv(HHigh, SHigh, VHigh));
                             CvInvoke.Line(lineImg, topInLineImg.ToPoint(), bottomInLineImg.ToPoint(), new Bgr(Color.Yellow).MCvScalar, 1);
-
-                            debugState[3] = lineImg;
-                            debugState[4] = topRange;
-
+                            debugState.Add(lineImg);
+                            debugState.Add(topRange);
+                            
                             var dist = Math2.GetDistance(topPoint, bottomPoint);
                             if (Math.Abs(a) > 8 || dist < 110 || dist > 120)
                             {
@@ -285,7 +281,7 @@ namespace GTAPilot.Indicators
             return str;
         }
 
-        double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame, ref object[] debugState)
+        double CompassProcFrame(int frameId, List<CompassPack> packs, Image<Bgr, Byte> compass_frame, DebugState debugState)
         {
             var frame = Timeline.Data[frameId];
             var lastFrame = Timeline.LatestFrame(f => f.Heading.Value, frameId - 1);

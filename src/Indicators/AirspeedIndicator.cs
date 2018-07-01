@@ -22,7 +22,7 @@ namespace GTAPilot.Indicators
         DynHsv dyn_lower2 = new DynHsv(0, 0, double.NaN, 0.005, 100);
 
 
-        public double ReadValue(IndicatorData data, ref object[] debugState)
+        public double ReadValue(IndicatorData data, DebugState debugState)
         {
             DateTime this_time = DateTime.Now;
             DateTime this_last_time = last_time;
@@ -45,13 +45,13 @@ namespace GTAPilot.Indicators
                     circ.Radius = 50;
                     focus = data.Frame.Copy(Math2.CropCircle(circ, 10));
 
-                    debugState[0] = focus;
+                    debugState.Add(focus);
 
                     vs_hsv = focus.Convert<Hsv, byte>();
 
                     var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255)).PyrUp().PyrDown();
 
-                    debugState[1] = vs_blackimg;
+                    debugState.Add(vs_blackimg);
 
                     var d = (int)circ.Radius * 2;
                     var r = (int)circ.Radius;
@@ -70,8 +70,7 @@ namespace GTAPilot.Indicators
                             {
 
                                 var vspeed_inner_hsv = vspeed_inner_only.DynLowInRange(dyn_lower2, new Hsv(180, 255, 255));
-
-                                    debugState[2] = vspeed_inner_hsv;
+                                debugState.Add(vspeed_inner_hsv);
 
                                 var cannyEdges3 = new Mat();
                                 {
@@ -87,7 +86,7 @@ namespace GTAPilot.Indicators
 
 
                                     var lines = CvInvoke.HoughLinesP(dialatedCanny, 1, Math.PI / 45, 30, 18, 1).ToList(); //.OrderByDescending(p => p.Length).ToList();
-
+                
                                     var center_size = 40;
                                     var center_point = new Point((focus.Width / 2), (focus.Height / 2));
                                     var center_box_point = new Point((focus.Width / 2) - (center_size / 2), (focus.Height / 2) - (center_size / 2));
@@ -96,7 +95,9 @@ namespace GTAPilot.Indicators
                                     var bestLines = new List<Tuple<double, LineSegment2D>>();
                                     var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
 
-                                    debugState[3] = markedup_frame;
+                                    debugState.Add(markedup_frame);
+                                    debugState.Add(cannyEdges3.ToImage<Gray, byte>());
+
                                     {
 
                                         foreach (var line in lines)

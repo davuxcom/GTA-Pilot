@@ -21,7 +21,7 @@ namespace GTAPilot
         public double Value => Math.Round(_indicator.LastGoodValue, 1);
         public double BadFrameCount => _indicator.BadFrames.Count;
         public double CachedTuningValue => _indicator.CachedTuningValue;
-        public ImageSource[] Img { get; }
+        public ImageSource[] Img { get; private set; }
 
         public int HLow
         {
@@ -83,14 +83,14 @@ namespace GTAPilot
             Name = name;
             _indicator = indicator;
 
-            Img = new ImageSource[] { null, null, null, null, null };
+            Img = new ImageSource[] { null, null, null, null, null, null, null, null, null, null, null, null };
         }
 
         public void Tick()
         {
          //   if (SystemManager.Instance.IsReplay)
             {
-                for(var i = 0; i < 5; i++)
+                for(var i = 0; i < _indicator.Image.Length; i++)
                 {
                     Img[i] = ((Bitmap)_indicator.Image[i]?.ToBitmap()).ToImageSource();
                 }

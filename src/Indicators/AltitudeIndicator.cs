@@ -20,7 +20,7 @@ namespace GTAPilot.Indicators
         int LastBig = 0;
         double last_value = 0;
 
-        public double ReadValue(IndicatorData data, ref object[] debugState)
+        public double ReadValue(IndicatorData data, DebugState debugState)
         {
             if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
@@ -39,12 +39,14 @@ namespace GTAPilot.Indicators
                     circ.Radius = 45;
 
                     focus = data.Frame.SafeCopy(Math2.CropCircle(circ, 15));
-                    debugState[0] = focus;
+
+                    debugState.Add(focus);
+
                     vs_hsv = focus.Convert<Hsv, byte>();
 
                     var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255)).PyrUp().PyrDown();
 
-                    debugState[1] = vs_blackimg;
+                    debugState.Add(vs_blackimg);
 
 
 
@@ -53,8 +55,8 @@ namespace GTAPilot.Indicators
 
                     var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
 
-                    debugState[2] = markedup_frame;
-
+ 
+                    debugState.Add(markedup_frame);
 
                     var cannyEdges3 = new Mat();
                     CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 120);

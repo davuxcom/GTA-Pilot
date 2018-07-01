@@ -79,6 +79,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="DebugState.cs" />
     <Compile Include="PerThreadUtils.cs" />
     <Compile Include="Runways.cs" />
     <Compile Include="Approach.cs" />

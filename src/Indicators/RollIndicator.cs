@@ -23,7 +23,7 @@ namespace GTAPilot.Indicators
         public double CachedTuningValue => 0;
         public double LastGoodValue => Timeline.Roll;
 
-        public double ReadValue(IndicatorData data, ref object[] debugState)
+        public double ReadValue(IndicatorData data, DebugState debugState)
         {
             if (TryFindRollCircleInFullFrame(data, out CircleF rollIndicatorCicle))
             {
@@ -31,7 +31,7 @@ namespace GTAPilot.Indicators
                 var FocusRect = Math2.CropCircle(rollIndicatorCicle, 10);
                 var focusFrame = data.Frame.SafeCopy(FocusRect);
 
-                debugState[0] = focusFrame;
+                debugState.Add(focusFrame);
 
                 // Isolate the outside ring
                 Mat maskInnerAlt = new Mat(focusFrame.Size, DepthType.Cv8U, 3);
@@ -47,8 +47,8 @@ namespace GTAPilot.Indicators
 
                 // Low is TuningValue
                 var ring_hsv = hsv.InRange(new Hsv(20, 0, 85), new Hsv(180, 255, 255));
+                debugState.Add(ring_hsv);
 
-                debugState[1] = ring_hsv;
 
                 var ring_distance_transform = new Image<Gray, float>(ring_hsv.Size);
 
