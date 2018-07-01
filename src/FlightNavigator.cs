@@ -64,7 +64,7 @@ namespace GTAPilot
             {
                 _mcp.IAS = 0;
                 _mcp.VSHold = true;
-                _mcp.VS = 14;
+                _mcp.VS = 8;
             }
 
             // Disconnect

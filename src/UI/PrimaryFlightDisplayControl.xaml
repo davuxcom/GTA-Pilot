@@ -9,7 +9,7 @@
         <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#77000000" />
 
         <Style x:Key="ModeTextStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontSize" Value="24" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="LimeGreen" />
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -18,7 +18,7 @@
         </Style>
 
         <Style x:Key="SetpointTextStyle" TargetType="{x:Type TextBlock}">
-            <Setter Property="FontSize" Value="20" />
+            <Setter Property="FontSize" Value="24" />
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Foreground" Value="Magenta" />
             <Setter Property="HorizontalAlignment" Value="Center" />
@@ -65,7 +65,7 @@
                     </Grid.RowDefinitions>
 
                     <Border Grid.Row="1"
-                            Margin="4"
+                            Margin="0,0,0,4"
                             Background="Black">
                         <TextBlock Name="SpeedSetpoint"
                                    Style="{StaticResource SetpointTextStyle}"
@@ -80,7 +80,7 @@
                     </Grid.RowDefinitions>
 
                     <Border Grid.Row="1"
-                            Margin="4"
+                            Margin="0,0,0,4"
                             Background="Black">
                         <TextBlock Name="AltSetpoint"
                                    Style="{StaticResource SetpointTextStyle}"
@@ -90,8 +90,8 @@
 
                 <Grid Grid.Column="2"
                       Width="300"
-                      Height="35"
-                      Margin="4,4,4,24"
+                      Height="50"
+                      Margin="4,4,4,0"
                       Background="{StaticResource PanelBackgroundBrush}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -134,22 +134,29 @@
 
                 <Border Grid.Column="1"
                         BorderBrush="Black"
-                        BorderThickness="1">
+                        BorderThickness="1"
+                        ClipToBounds="True">
+                    <Grid Background="{StaticResource PanelBackgroundBrush}" ClipToBounds="True">
+                        <Canvas Name="SpeedTapeRoot">
 
-                    <Rectangle Fill="{StaticResource PanelBackgroundBrush}" />
-
+                            <Canvas.RenderTransform>
+                                <TranslateTransform />
+                            </Canvas.RenderTransform>
+                        </Canvas>
+                    </Grid>
                 </Border>
 
                 <Border Grid.Column="1"
                         Width="75"
-                        Height="60"
+                        Height="40"
                         BorderBrush="Black"
                         BorderThickness="1">
                     <Border Background="Black"
                             BorderBrush="White"
                             BorderThickness="2">
                         <TextBlock Name="SpeedText"
-                                   HorizontalAlignment="Center"
+                                   Margin="12,0,0,0"
+                                   HorizontalAlignment="Left"
                                    VerticalAlignment="Center"
                                    FontSize="25"
                                    Foreground="White">
@@ -182,15 +189,21 @@
 
                 <Border Grid.Column="3"
                         BorderBrush="Black"
-                        BorderThickness="1">
+                        BorderThickness="1"
+                        ClipToBounds="True">
+                    <Grid Background="{StaticResource PanelBackgroundBrush}" ClipToBounds="True">
+                        <Canvas Name="AltitudeTapeRoot">
 
-                    <Rectangle Fill="{StaticResource PanelBackgroundBrush}" />
-
+                            <Canvas.RenderTransform>
+                                <TranslateTransform />
+                            </Canvas.RenderTransform>
+                        </Canvas>
+                    </Grid>
                 </Border>
 
                 <Border Grid.Column="3"
                         Width="75"
-                        Height="60"
+                        Height="40"
                         BorderBrush="Black"
                         BorderThickness="1">
                     <Border Background="Black"
@@ -227,8 +240,8 @@
                       Width="40"
                       Height="250"
                       Margin="320,0,0,0"
-                      ClipToBounds="False"
-                      Background="{StaticResource PanelBackgroundBrush}">
+                      Background="{StaticResource PanelBackgroundBrush}"
+                      ClipToBounds="False">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" />
                         <RowDefinition Height="*" />
@@ -274,8 +287,8 @@
                       Width="250"
                       Height="40"
                       Margin="0,300,0,0"
-                      ClipToBounds="False"
-                      Background="{StaticResource PanelBackgroundBrush}">
+                      Background="{StaticResource PanelBackgroundBrush}"
+                      ClipToBounds="False">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />

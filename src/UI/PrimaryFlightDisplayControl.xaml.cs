@@ -41,6 +41,17 @@ namespace GTAPilot
             PFDBackground.RenderTransformOrigin = new Point(0.5, 0.5);
 
             SizeChanged += PrimaryFlightDisplayControl_SizeChanged;
+
+            for (var i = 18; i >= 0; i--)
+            {
+                SpeedTapeRoot.Children.Add(CreateTemplateFor(i * 10));
+            }
+
+            currentY = 0;
+            for (var i = 85; i >= 0; i--)
+            {
+                AltitudeTapeRoot.Children.Add(CreateTemplateFor(i * 100));
+            }
         }
 
         private void PrimaryFlightDisplayControl_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -159,6 +170,58 @@ namespace GTAPilot
 
                 VSLine.Stroke = Math.Abs(Timeline.Pitch) > 60 ? Brushes.Yellow : Brushes.White;
             }
+
+            {
+                var tt = (TranslateTransform)SpeedTapeRoot.RenderTransform;
+                tt.Y = -1 * 40 * ((180 - Timeline.SpeedAvg) / 10) + 165;
+            }
+            {
+                var tt = (TranslateTransform)AltitudeTapeRoot.RenderTransform;
+                tt.Y = -1 * 40 * ((8500 - Timeline.AltitudeAvg) / 100) + 165;
+            }
+        }
+
+        double currentY = 0;
+        private Grid CreateTemplateFor(int number)
+        {
+            var g = new Grid();
+            var t = new TextBlock();
+            t.Text = "" + number;
+            t.Margin = new Thickness(12, 0, 0, 0);
+            t.HorizontalAlignment = HorizontalAlignment.Left;
+            t.VerticalAlignment = VerticalAlignment.Center;
+            t.Foreground = Brushes.White;
+            t.FontSize = 18;
+
+            g.Children.Add(t);
+
+            var top = new Rectangle();
+            top.Stroke = Brushes.White;
+            top.StrokeThickness = 1;
+            top.HorizontalAlignment = HorizontalAlignment.Right;
+            top.VerticalAlignment = VerticalAlignment.Top;
+            top.Width = 10;
+            var bottom = new Rectangle();
+            bottom.Stroke = Brushes.White;
+            bottom.StrokeThickness = 1;
+            bottom.HorizontalAlignment = HorizontalAlignment.Right;
+            bottom.VerticalAlignment = VerticalAlignment.Bottom;
+            bottom.Width = 10;
+            var center = new Rectangle();
+            center.Stroke = Brushes.White;
+            center.StrokeThickness = 1;
+            center.HorizontalAlignment = HorizontalAlignment.Right;
+            center.VerticalAlignment = VerticalAlignment.Center;
+            center.Width = 20;
+
+            g.Children.Add(top);
+            g.Children.Add(center);
+            g.Children.Add(bottom);
+            g.Height = 40;
+            g.Width = 75;
+            Canvas.SetTop(g, currentY);
+            currentY += 40;
+            return g;
         }
     }
 }
