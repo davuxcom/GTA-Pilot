@@ -159,7 +159,9 @@ namespace GTAPilot
             if (_mcp.AltitudeHold)
             {
                 var altitudeDelta = _mcp.ALT - Timeline.AltitudeAvg;
-                _mcp.VS = Math2.Clamp(altitudeDelta / 10, -10, 12);
+                var mult = 10;
+                if (SystemManager.Instance.Nav.IsOnGlidePath) mult = 9;
+                _mcp.VS = Math2.Clamp(altitudeDelta / mult, -10, 13);
 
                 Timeline.Data[id].Altitude.SetpointValue = _mcp.ALT;
             }

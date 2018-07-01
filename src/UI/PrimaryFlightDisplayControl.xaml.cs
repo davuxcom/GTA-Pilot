@@ -173,13 +173,15 @@ namespace GTAPilot
 
             {
                 var tt = (TranslateTransform)SpeedTapeRoot.RenderTransform;
-                tt.Y = -1 * 40 * ((180 - Timeline.SpeedAvg) / 10) + 165;
+                tt.Y = -1 * TAPE_ITEM_HEIGHT * ((180 - Timeline.SpeedAvg) / 10) + 165;
             }
             {
                 var tt = (TranslateTransform)AltitudeTapeRoot.RenderTransform;
-                tt.Y = -1 * 40 * ((8500 - Timeline.AltitudeAvg) / 100) + 165;
+                tt.Y = -1 * TAPE_ITEM_HEIGHT * ((8500 - Timeline.AltitudeAvg) / 100) + 165;
             }
         }
+
+        double TAPE_ITEM_HEIGHT = 60;
 
         double currentY = 0;
         private Grid CreateTemplateFor(int number)
@@ -191,7 +193,7 @@ namespace GTAPilot
             t.HorizontalAlignment = HorizontalAlignment.Left;
             t.VerticalAlignment = VerticalAlignment.Center;
             t.Foreground = Brushes.White;
-            t.FontSize = 18;
+            t.FontSize = 20;
 
             g.Children.Add(t);
 
@@ -217,10 +219,10 @@ namespace GTAPilot
             g.Children.Add(top);
             g.Children.Add(center);
             g.Children.Add(bottom);
-            g.Height = 40;
+            g.Height = TAPE_ITEM_HEIGHT;
             g.Width = 75;
             Canvas.SetTop(g, currentY);
-            currentY += 40;
+            currentY += TAPE_ITEM_HEIGHT;
             return g;
         }
     }
