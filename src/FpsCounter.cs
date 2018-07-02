@@ -2,63 +2,49 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 
 namespace GTAPilot
 {
-    // TODO: Should use high performance counters!
+    // A tool to measure performacne without slowing down the target
+    // Not threadsafe in terms of data (frames may be dropped), but should
+    // be good enough for our purposes.
     public class FpsCounter
     {
-        public DateTime LastFrameTime = DateTime.Now;
-        public int Fps;
+        private static Stopwatch s_time = Stopwatch.StartNew();
+        private const int MAX_FRAMES = 120;
 
-        private List<DateTime> Frames = new List<DateTime>();
+        private double[] _frames = new double[MAX_FRAMES];
+        private long _frameCounter = 0;
 
-        // TODO: This design is really bad, find a high performance threadsafe version.
-        // This is poor due to wanting to avoid a lock
-        public int CalculateFps()
-        {
-            try
-            {
-                var oneSecondAgo = DateTime.Now.AddSeconds(-1);
-
-                var toRemove = Frames.ToArray().Where(f => f < oneSecondAgo);
-                try
-                {
-                    foreach (var f in toRemove) Frames.Remove(f);
-                }
-                catch (Exception) { }
-
-                Fps = Frames.Count;
-            }
-            catch (Exception ex)
-            {
-                Trace.WriteLine(ex);
-            }
-            return Fps;
-        }
+        public int Fps { get; set; }
 
         public void GotFrame()
         {
-            try
-            {
-                var frameTime = DateTime.Now;
-                LastFrameTime = frameTime;
-                Frames.Add(frameTime);
+            var index = (int)(Interlocked.Increment(ref _frameCounter) % MAX_FRAMES);
+            _frames[index] = s_time.Elapsed.TotalSeconds;
 
-                CalculateFps();
-            }
-            catch(Exception ex)
-            {
-                Trace.WriteLine(ex);
-            }
+            Calculate(index);
         }
 
-        public int LastFrameMsAgo
+        private void Calculate(int startIndex)
         {
-            get
+            var nowSeconds = s_time.Elapsed.TotalSeconds;
+
+            var count = 0;
+            for (var i = startIndex; i >= 0; i--)
             {
-                return (int)Math.Round((DateTime.Now - LastFrameTime).TotalMilliseconds);
+                if (nowSeconds - _frames[i] > 1) break;
+                count++;
             }
+
+            for (var i = MAX_FRAMES - 1; i > startIndex; i--)
+            {
+                if (nowSeconds - _frames[i] > 1) break;
+                count++;
+            }
+
+            Fps = count;
         }
     }
 }
