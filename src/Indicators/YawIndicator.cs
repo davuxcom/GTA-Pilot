@@ -406,7 +406,7 @@ namespace GTAPilot.Indicators
                 new_heading = Math2.ClampAngle(new_heading);
                 choices.Add(new Tuple<double, double, string, Image<Gray, byte>>(new_heading, (int)unused_angle, str, null));
             }
-
+            
             if (choices.Count == 4)
             {
                 // Exclude invalid combinations

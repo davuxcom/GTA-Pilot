@@ -1,10 +1,9 @@
 ﻿using Emgu.CV;
-using Emgu.CV.Cvb;
 using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
-using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
@@ -17,11 +16,9 @@ namespace GTAPilot.Indicators
 
         DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.008, 100);
 
-        int LastBig = 0;
-        double last_value = 0;
-
-        public double ReadValue(IndicatorData data, DebugState debugState)
+        private static bool TryFindCircleInFullFrame(IndicatorData data, out CircleF ret)
         {
+            ret = default(CircleF);
             if (RollIndicator.TryFindRollCircleInFullFrame(data, out var circle))
             {
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y - 40);
@@ -34,163 +31,71 @@ namespace GTAPilot.Indicators
                 var circles = CvInvoke.HoughCircles(vs_hsv[2], HoughType.Gradient, 2.0, 80, 4, 50, 40, 50);
                 if (circles.Length == 1)
                 {
-                    var circ = circles[0];
-                    circ.Center = circles[0].Center.Add(firstCrop.Location);
-                    circ.Radius = 45;
-
-                    focus = data.Frame.SafeCopy(Math2.CropCircle(circ, 15));
-
-                    debugState.Add(focus);
-
-                    vs_hsv = focus.Convert<Hsv, byte>();
-
-                    var vs_blackimg = vs_hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255)).PyrUp().PyrDown();
-
-                    debugState.Add(vs_blackimg);
-
-
-
-                    var d = (int)circ.Radius * 2;
-                    var r = (int)circ.Radius;
-
-                    var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
-
- 
-                    debugState.Add(markedup_frame);
-
-                    var cannyEdges3 = new Mat();
-                    CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 120);
-
-
-                    Mat dialatedCanny = new Mat();
-                       CvInvoke.Dilate(cannyEdges3, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
-
-
-                    var lines = CvInvoke.HoughLinesP(
-                       dialatedCanny,
-                       1, Math.PI / 45.0, 20, 16, 0);
-
-                    lines = lines.OrderByDescending(l => l.Length).ToArray();
-
-                    if (lines.Length == 0)
-                    {
-                      //  Trace.WriteLine("NO LINES");
-                    }
-
-                    foreach (var line in lines)
-                    {
-                        CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
-                    }
-
-                    foreach (var line in lines)
-                    {
-
-                        //  CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
-
-                        var center_size = 35;
-                        var center_point = new Point((focus.Width / 2) - 4, (focus.Height / 2) + 4);
-                        var center_box_point = new Point((focus.Width / 2) - (center_size / 2), 4 + (focus.Height / 2) - (center_size / 2));
-                        Rectangle center = new Rectangle(center_box_point, new Size(center_size, center_size));
-
-                        CvInvoke.Rectangle(markedup_frame, center, new Bgr(Color.Red).MCvScalar, 1);
-
-                        if (center.Contains(line.P1) || center.Contains(line.P2))
-                        {
-                            Point other_point;
-                            Point real_center_point;
-                            if (center.Contains(line.P1))
-                            {
-                                other_point = line.P2;
-                                real_center_point = line.P1;
-                            }
-                            else
-                            {
-                                other_point = line.P1;
-                                real_center_point = line.P2;
-                            }
-
-                            LineSegment2D baseLine = new LineSegment2D(
-                                new Point((focus.Width / 2), 0), new Point((focus.Width / 2), (focus.Height / 2))
-
-                                );
-
-
-                            center_point = real_center_point;
-
-                            LineSegment2D small_line = new LineSegment2D(other_point, center_point);
-
-                            var small_angle = Math2.FixAngle(Math2.angleBetween2Lines(small_line, baseLine), center_point, other_point);
-
-
-                            var hundreds = Math.Round((small_angle / 360) * 1000);
-
-                            CvInvoke.Line(markedup_frame, center_point, other_point, new Bgr(Color.Purple).MCvScalar, 1);
-                            CvInvoke.Line(focus, center_point, other_point, new Bgr(Color.Yellow).MCvScalar, 2);
-
-                            
-
-                            if (hundreds == 1000) hundreds = 0;
-
-
-                            Func<int, double> GetNextValue = (int big) =>
-                            {
-                                if (big == -1) return -1000;
-
-                                double val = 0;
-                                if (hundreds < 100)
-                                {
-                                    val = double.Parse(big + "0" + hundreds); // double.Parse(hundreds);
-                                }
-                                else
-                                {
-                                    val = double.Parse(big + "" + hundreds); // double.Parse(hundreds);
-                                }
-                                return val;
-                            };
-
-                            double nextValue = GetNextValue(LastBig);
-
-
-                            var max_change = 300;
-
-                            if (Math.Abs(nextValue - last_value) > max_change)
-                            {
-
-
-                                    var increasedNextValue = GetNextValue(LastBig + 1);
-                                    var decresedNextValue = GetNextValue(LastBig - 1);
-                                    if (Math.Abs(increasedNextValue - last_value) < max_change)
-                                    {
-                                        LastBig++;
-                                        nextValue = increasedNextValue;
-                                    }
-                                    else if (Math.Abs(decresedNextValue - last_value) < max_change)
-                                    {
-                                        LastBig--;
-                                        nextValue = decresedNextValue;
-                                    }
-                                    else
-                                    {
-                                     //  num_rejected_values++;
-                                      //    Trace.WriteLine("rejected altitude value: " + nextValue + " " + increasedNextValue + " " + decresedNextValue);
-                                        // ????
-                                        return double.NaN;
-                                    }
-
-
-                            }
-
-                           
-                            last_value = nextValue;
-                            return nextValue;
-                        }
-                    }
-
-                  //  Trace.WriteLine("NO CENTER LINES");
+                    circles[0].Center = circles[0].Center.Add(firstCrop.Location);
+                    circles[0].Radius = 45;
+                    ret = circles[0];
+                    return true;
                 }
-                else
+            }
+            return false;
+        }
+
+        private Rectangle GetCenterBoxFromImage(Image<Bgr, byte> focus)
+        {
+            var center_size = 35;
+            var center_box_point = new Point((focus.Width / 2) - (center_size / 2), (focus.Height / 2) - (center_size / 2));
+            return new Rectangle(center_box_point, new Size(center_size, center_size));
+        }
+
+        public double ReadValue(IndicatorData data, DebugState debugState)
+        {
+            if (TryFindCircleInFullFrame(data, out var circle))
+            {
+                var focus = data.Frame.SafeCopy(Math2.CropCircle(circle, 15));
+                var vs_blackimg = focus.Convert<Hsv, byte>().DynLowInRange(dyn_lower, new Hsv(180, 255, 255)).PyrUp().PyrDown();
+                var markedup_frame = vs_blackimg.Convert<Bgr, byte>();
+                debugState.Add(focus);
+                debugState.Add(vs_blackimg);
+                debugState.Add(markedup_frame);
+
+                var cannyEdges3 = new Mat();
+                CvInvoke.Canny(vs_blackimg, cannyEdges3, 10, 120);
+                Mat dialatedCanny = new Mat();
+                CvInvoke.Dilate(cannyEdges3, dialatedCanny, null, new Point(-1, -1), 1, BorderType.Default, new Gray(0).MCvScalar);
+
+                Rectangle center = GetCenterBoxFromImage(focus);
+                CvInvoke.Rectangle(markedup_frame, center, new Bgr(Color.Red).MCvScalar, 1);
+
+                var lines = CvInvoke.HoughLinesP(dialatedCanny, 1, Math.PI / 45.0, 20, 16, 0).OrderByDescending(l => l.Length);
+                foreach (var line in lines)
                 {
-                //    Trace.WriteLine("Didn't find cicles 2");
+                    CvInvoke.Line(markedup_frame, line.P1, line.P2, new Bgr(Color.Red).MCvScalar, 1);
+
+                    if (center.Contains(line.P1) || center.Contains(line.P2))
+                    {
+                        LineSegment2D needleLine;
+                        if (center.Contains(line.P1))
+                        {
+                            needleLine = new LineSegment2D(line.P2, line.P1);
+                        }
+                        else
+                        {
+                            needleLine = new LineSegment2D(line.P1, line.P2);
+                        }
+
+                        var angle = Math2.GetPolarHeadingFromLine(needleLine);
+                        var hundreds = Math.Round((angle / 360) * 999);
+
+                        CvInvoke.Line(focus, needleLine.P1, needleLine.P2, new Bgr(Color.Yellow).MCvScalar, 2);
+
+                        var candidates = new List<double>();
+                        for (var i = 0; i < 9; i++)
+                        {
+                            candidates.Add(hundreds + (i * 1000));
+                        }
+
+                        return candidates.OrderBy(c => Math.Abs(c - (double.IsNaN(Timeline.Altitude) ? 0 : Timeline.Altitude))).First();
+                    }
                 }
             }
             return double.NaN;

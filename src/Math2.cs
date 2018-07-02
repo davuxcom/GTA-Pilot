@@ -26,56 +26,6 @@ namespace GTAPilot
             return (Math.PI / 180) * degree;
         }
 
-        // TODO: Should fix/remove this mess, almost definitely only exists because we
-        // have the wrong baseline.
-        public static double FixAngle(double angle, Point center_point, Point other_point)
-        {
-            var v_angle = (angle * (180 / Math.PI));
-
-            if (v_angle >= 180 && v_angle <= 270 && v_angle > 0)
-            {
-                var is_bottom = other_point.Y >= center_point.Y && other_point.X <= center_point.X;
-
-                if (is_bottom)
-                {
-                    // angle OK
-                }
-                else
-                {
-                    v_angle -= 180;
-                }
-            }
-            else if (v_angle <= 0 && v_angle >= -90)
-            {
-                var is_bottom = other_point.Y > center_point.Y || other_point.X > center_point.X;
-
-
-                if (is_bottom)
-                {
-                    v_angle += 180;
-                }
-                else
-                {
-                    v_angle += 360;
-                }
-            }
-            else
-            {
-                //  Trace.WriteLine("EXTA " + v_angle);
-            }
-            return v_angle;
-        }
-
-
-        public static double angleBetween2Lines(LineSegment2D line1, LineSegment2D line2)
-        {
-            double angle1 = Math.Atan2(line1.P1.Y - line1.P2.Y,
-                                       line1.P1.X - line1.P2.X);
-            double angle2 = Math.Atan2(line2.P1.Y - line2.P2.Y,
-                                       line2.P1.X - line2.P2.X);
-            return angle1 - angle2;
-        }
-
         public static double angleBetween2Lines(LineSegment2DF line1, LineSegment2DF line2)
         {
             double angle1 = Math.Atan2(line1.P1.Y - line1.P2.Y,
@@ -186,5 +136,4 @@ namespace GTAPilot
             return ret;
         }
     }
-
 }

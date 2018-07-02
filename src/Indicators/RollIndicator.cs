@@ -28,37 +28,25 @@ namespace GTAPilot.Indicators
             if (TryFindRollCircleInFullFrame(data, out CircleF rollIndicatorCicle))
             {
                 var FocusRect = Math2.CropCircle(rollIndicatorCicle, 10);
-                var focusFrame = data.Frame.SafeCopy(FocusRect);
+                var focus = data.Frame.SafeCopy(FocusRect);
 
-                debugState.Add(focusFrame);
+                debugState.Add(focus);
 
                 // Isolate the outside ring
-                Mat maskInnerAlt = new Mat(focusFrame.Size, DepthType.Cv8U, 3);
+                Mat maskInnerAlt = new Mat(focus.Size, DepthType.Cv8U, 3);
                 maskInnerAlt.SetTo(new MCvScalar(1));
+                CvInvoke.Circle(maskInnerAlt, new Point(focus.Size.Width / 2, focus.Size.Height / 2), (int)(rollIndicatorCicle.Radius - (rollIndicatorCicle.Radius * 0.2)), new Bgr(Color.White).MCvScalar, -1);
+                CvInvoke.Circle(maskInnerAlt, new Point(focus.Size.Width / 2, focus.Size.Height / 2), (int)(rollIndicatorCicle.Radius - (rollIndicatorCicle.Radius * 0.275)), new Bgr(Color.Black).MCvScalar, -1);
 
-                CvInvoke.Circle(maskInnerAlt, new Point(focusFrame.Size.Width / 2, focusFrame.Size.Height / 2), (int)(rollIndicatorCicle.Radius - (rollIndicatorCicle.Radius * 0.2)), new Bgr(Color.White).MCvScalar, -1);
-                CvInvoke.Circle(maskInnerAlt, new Point(focusFrame.Size.Width / 2, focusFrame.Size.Height / 2), (int)(rollIndicatorCicle.Radius - (rollIndicatorCicle.Radius * 0.275)), new Bgr(Color.Black).MCvScalar, -1);
-
-                var outerMovingRingOnly = focusFrame.Copy(maskInnerAlt.ToImage<Gray, byte>());
+                var outerMovingRingOnly = focus.Copy(maskInnerAlt.ToImage<Gray, byte>());
                 var outerMovingRingWithoutBottom = outerMovingRingOnly.Copy(new Rectangle(0, 0, outerMovingRingOnly.Width, (int)(outerMovingRingOnly.Height ))); // - (outerMovingRingOnly.Height * 0.29)
-
-                var hsv = outerMovingRingWithoutBottom.Convert<Hsv, byte>();
+                var ring_hsv_unfiltered = outerMovingRingWithoutBottom.Convert<Hsv, byte>().InRange(new Hsv(20, 0, 85), new Hsv(180, 255, 255));
+                var ring_hsv = Utils.RemoveBlobs(ring_hsv_unfiltered, 1, 200);
 
                 debugState.Add(outerMovingRingOnly);
                 debugState.Add(outerMovingRingWithoutBottom);
-
-                // Low is TuningValue
-                var ring_hsv_unfiltered = hsv.InRange(new Hsv(20, 0, 85), new Hsv(180, 255, 255));
-                debugState.Add(ring_hsv_unfiltered);
-
-                var ring_hsv = Utils.RemoveBlobs(ring_hsv_unfiltered, 1, 200);
                 debugState.Add(ring_hsv);
-
-
-                var ring_distance_transform = new Image<Gray, float>(ring_hsv.Size);
-
-                CvInvoke.DistanceTransform(ring_hsv, ring_distance_transform, null, DistType.L1, 3);
-
+                debugState.Add(ring_hsv_unfiltered);
 
                 var circles = CvInvoke.HoughCircles(ring_hsv, HoughType.Gradient, 2.0, 1.0, 1, 10, 50, 53);
 
@@ -73,6 +61,13 @@ namespace GTAPilot.Indicators
                     int NOTFOUND = 2;
                     Point last = new Point(0, 0);
                     int found_count = 0;
+
+
+                    var ring_distance_transform = new Image<Gray, float>(ring_hsv.Size);
+
+                    CvInvoke.DistanceTransform(ring_hsv, ring_distance_transform, null, DistType.L1, 3);
+
+
 
                     for (double t = Math.PI / 2; t < Math.PI * 3; t += 0.05f)
                     {
@@ -187,7 +182,7 @@ namespace GTAPilot.Indicators
                         angle *= -1;
                     }
                     
-                    CvInvoke.Line(focusFrame, boundary_one, boundary_two, new Bgr(Color.Yellow).MCvScalar, 2);
+                    CvInvoke.Line(focus, boundary_one, boundary_two, new Bgr(Color.Yellow).MCvScalar, 2);
 
                     // skew considered from other panels
                     return angle + 1;
