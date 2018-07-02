@@ -2,6 +2,8 @@
 using Emgu.CV.Structure;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace GTAPilot
 {
@@ -21,7 +23,7 @@ namespace GTAPilot
 
         public object[] Get(int count)
         {
-            var ret = new List<object>(_images);
+            var ret = new List<object>(_images.Take(count));
 
             for (var i = 0; i < count - ret.Count; i++) ret.Add(null);
 
@@ -30,7 +32,7 @@ namespace GTAPilot
 
         public void SetError(string msg)
         {
-            // TODO: not sure how to use this data
+            Trace.WriteLine(msg);
         }
     }
 }

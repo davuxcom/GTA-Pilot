@@ -47,7 +47,7 @@ namespace GTAPilot.Indicators
                 debugState.Add(focus);
 
                 var blobs = Utils.DetectAndFilterBlobs(focusHsvTextOnly, 25, 250).
-                    Where(b => b.Centroid.Y >= 5).OrderByDescending(b => b.Area).Take(4).ToList();
+                    Where(b => b.Centroid.Y >= 5).OrderByDescending(b => b.Area).Take(4);
 
                 var focusHsvOnlyBlobs = Utils.RemoveAllButBlobs(focusHsvTextOnly, blobs);
                 debugState.Add(focusHsvOnlyBlobs);
@@ -117,6 +117,8 @@ namespace GTAPilot.Indicators
                 var rotated_frame = focus.Rotate(-1 * rotationAngle, new Gray(0));
                 var rotated_letter_only = rotated_frame.Copy(new Rectangle(rotated_frame.Width / 2 - 30, 0, 60, 60));
 
+              //  rotated_letter_only = Utils.RemoveBlobs(rotated_letter_only, 1, 3);
+
                 debugState.Add(rotated_letter_only);
 
                 parts.Add(new BlobPack { BlobImage = rotated_letter_only, BlobRationAngle = rotationAngle, BlobBox = b.BoundingBox });
@@ -131,11 +133,14 @@ namespace GTAPilot.Indicators
             // Re-rotate the frame now that N and S are vertical, so the centroids are in predictable
             // locations no matter what the inital angle was.
             var list = Utils.DetectAndFilterBlobs(rotatedNorthUp, 25, 250).OrderBy(b => b.Centroid.Y);
-            var verticalLine = new LineSegment2DF(new PointF(focus.Size.Width / 2, 0), new PointF(focus.Size.Width / 2, focus.Size.Height));
-            var lineFromNorthToSouth = new LineSegment2DF(list.First().Centroid, list.Last().Centroid);
-            var skewAngle = Math2.angleBetween2Lines(lineFromNorthToSouth, verticalLine) * (180 / Math.PI);
-            // Divide by two since this is relative to the center of the line.
-            resultAngle -= skewAngle / 2;
+            if (list.Count() >= 2)
+            {
+                var verticalLine = new LineSegment2DF(new PointF(focus.Size.Width / 2, 0), new PointF(focus.Size.Width / 2, focus.Size.Height));
+                var lineFromNorthToSouth = new LineSegment2DF(list.First().Centroid, list.Last().Centroid);
+                var skewAngle = Math2.angleBetween2Lines(lineFromNorthToSouth, verticalLine) * (180 / Math.PI);
+                // Divide by two since this is relative to the center of the line.
+                resultAngle -= skewAngle / 2;
+            }
             return resultAngle;
         }
 

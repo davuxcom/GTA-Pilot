@@ -55,6 +55,9 @@ namespace GTAPilot
             new Thread(() =>
             {
                 StartWorkerThread();
+
+                // This delay exists because there seems to be a race condition in initializing EmguCV
+                // when multiple threads go at it we see AccessViolationExceptions, mostly out of Blob detection.
                 Thread.Sleep(1000);
 
                 StartWorkerThread();
@@ -64,7 +67,6 @@ namespace GTAPilot
                 StartWorkerThread();
                 StartWorkerThread();
             }).Start();
-
         }
 
         private void StartWorkerThread()
