@@ -13,20 +13,12 @@ namespace GTAPilot
         static ConcurrentDictionary<int, Tesseract> Tessreacts = new ConcurrentDictionary<int, Tesseract>();
         static ConcurrentDictionary<int, CvBlobDetector> BlobDetectors = new ConcurrentDictionary<int, CvBlobDetector>();
 
-        public static IEnumerable<CvBlob> DetectAndFilterBlobs(Image<Gray, byte> img, int min, int max)
-        {
-            CvBlobs blobs = new CvBlobs();
-            GetBlobDetector().Detect(img, blobs);
-            blobs.FilterByArea(min, max);
-            return blobs.Values;
-        }
-
         private static CvBlobDetector CreateBlobDetector()
         {
             return new CvBlobDetector();
         }
 
-        private static CvBlobDetector GetBlobDetector()
+        public static CvBlobDetector GetBlobDetector()
         {
             var tid = System.Threading.Thread.CurrentThread.ManagedThreadId;
 

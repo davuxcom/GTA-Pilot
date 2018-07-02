@@ -174,6 +174,17 @@ namespace GTAPilot
             if (angle < 0) angle = 360 + angle;
             return angle;
         }
+
+        internal static double ClampAngle(double ret)
+        {
+            while (ret > 360)
+            {
+                ret = ret - 360;
+            }
+            if (ret < 0) ret += 360;
+
+            return ret;
+        }
     }
 
 }

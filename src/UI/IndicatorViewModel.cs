@@ -22,42 +22,7 @@ namespace GTAPilot
         public double BadFrameCount => _indicator.BadFrames.Count;
         public double CachedTuningValue => _indicator.CachedTuningValue;
         public ImageSource[] Img { get; private set; }
-
-        public int HLow
-        {
-            get => YawIndicator.HLow;
-            set => YawIndicator.HLow = value;
-        }
-
-        public int SLow
-        {
-            get => YawIndicator.SLow;
-            set => YawIndicator.SLow = value;
-        }
-
-        public int VLow
-        {
-            get => YawIndicator.VLow;
-            set => YawIndicator.VLow = value;
-        }
-        public int HHigh
-        {
-            get => YawIndicator.HHigh;
-            set => YawIndicator.HHigh = value;
-        }
-
-        public int SHigh
-        {
-            get => YawIndicator.SHigh;
-            set => YawIndicator.SHigh = value;
-        }
-
-        public int VHigh
-        {
-            get => YawIndicator.VHigh;
-            set => YawIndicator.VHigh = value;
-        }
-
+        
         public HashSet<int> BadFrames => _indicator.BadFrames;
 
         public IndicatorType Type
