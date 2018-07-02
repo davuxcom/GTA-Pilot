@@ -114,8 +114,8 @@ namespace GTAPilot
             }
             else if (Type == IndicatorChartType.Value)
             {
-                return Timeline.LatestAvg(4, f => GetTimelineValueForIndicator(f).Value, frame.Id, Indicator.Type == IndicatorType.Yaw);
-               // return GetTimelineValueForIndicator(frame).Value;
+               // return Timeline.LatestAvg(4, f => GetTimelineValueForIndicator(f).Value, frame.Id, Indicator.Type == IndicatorType.Yaw);
+                return GetTimelineValueForIndicator(frame).Value;
             }
             else if (Type == IndicatorChartType.InputOutput)
             {
@@ -143,16 +143,16 @@ namespace GTAPilot
         {
             if (Type == IndicatorChartType.Delay)
             {
-                return new double[] { 0, 0.032 }; // seconds
+                return new double[] { 0, 0.064 }; // seconds
             }
             else if (Type == IndicatorChartType.Value)
             {
                 switch (Indicator.Type)
                 {
-                    case IndicatorType.Roll: return new double[] { -45, 45 };
+                    case IndicatorType.Roll: return new double[] { -50, 50 };
                     case IndicatorType.Pitch: return new double[] { -90, 90 };
                     case IndicatorType.Speed: return new double[] { 0, 180 };
-                    case IndicatorType.Altitude: return new double[] { 0, 8500 };
+                    case IndicatorType.Altitude: return new double[] { 0, 4500 };
                     case IndicatorType.Yaw: return new double[] { 0, 360 };
                     default: throw new NotImplementedException();
                 }

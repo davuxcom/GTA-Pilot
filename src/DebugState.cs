@@ -1,5 +1,6 @@
 ﻿using Emgu.CV;
 using Emgu.CV.Structure;
+using System;
 using System.Collections.Generic;
 
 namespace GTAPilot
@@ -25,6 +26,11 @@ namespace GTAPilot
             for (var i = 0; i < count - ret.Count; i++) ret.Add(null);
 
             return ret.ToArray();
+        }
+
+        public void SetError(string msg)
+        {
+            // TODO: not sure how to use this data
         }
     }
 }
