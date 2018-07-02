@@ -52,13 +52,19 @@ namespace GTAPilot
         {
             _computer = computer;
 
-            StartWorkerThread();
-            StartWorkerThread();
-            StartWorkerThread();
-            StartWorkerThread();
-            StartWorkerThread();
-            StartWorkerThread();
-            StartWorkerThread();
+            new Thread(() =>
+            {
+                StartWorkerThread();
+                Thread.Sleep(1000);
+
+                StartWorkerThread();
+                StartWorkerThread();
+                StartWorkerThread();
+                StartWorkerThread();
+                StartWorkerThread();
+                StartWorkerThread();
+            }).Start();
+
         }
 
         private void StartWorkerThread()
