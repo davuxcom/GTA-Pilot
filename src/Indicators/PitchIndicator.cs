@@ -51,7 +51,7 @@ namespace GTAPilot.Indicators
                             needleLine = new LineSegment2D(line.P1, line.P2);
                         }
 
-                        var angle = Math2.GetPolarHeadingFromLine(needleLine) - 270;
+                        var angle = (Math2.GetPolarHeadingFromLine(needleLine) - 270);
                         // bias up to account for skew
                         angle += 2.75;
 

@@ -7,7 +7,7 @@ namespace GTAPilot.Indicators
         public FpsCounter Counter { get; }
         public double Value { get; private set; }
         public double LastGoodValue => _indicator.LastGoodValue;
-        public dynamic Image { get; private set; }
+        public dynamic Image { get; set; }
         public double CachedTuningValue => _indicator.CachedTuningValue;
 
         ISimpleIndicator _indicator;

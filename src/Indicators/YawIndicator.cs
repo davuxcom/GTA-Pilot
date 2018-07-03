@@ -249,7 +249,6 @@ namespace GTAPilot.Indicators
         {
             var str = Utils.ReadTextFromImage(img, debugState);
 
-            str = str.Replace("'", "").Replace(".", "").Replace("‘", "").Replace("’", "").Replace("\"", "").Replace(",", "").Replace(":", "");
 
             if (str == "VI") str = "W";
             if (str == "VV") str = "W";

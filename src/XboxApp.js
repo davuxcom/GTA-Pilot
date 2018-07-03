@@ -216,7 +216,8 @@ Interceptor.replace(XInputGetStateAddress, new NativeCallback(function (dwUserIn
                 }
 
                 // Disable back/view.
-                controllerStateData.Buttons &= ~XInputButtons.BACK;
+                controllerStateData.Buttons &= ~XInputButtons.BACK
+                controllerStateData.Buttons &= ~XInputButtons.DPAD_UP
 
                 for (var replaceBtn in XInputButtons) {
                     // Replace buttons

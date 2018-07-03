@@ -29,6 +29,9 @@ namespace GTAPilot
         public Indicator Altitude = new Indicator(new AltitudeIndicator());
         public Indicator Compass = new Indicator(new YawIndicator());
 
+        public MenuReader Menu = new MenuReader();
+        public LoadingReader Loading = new LoadingReader();
+
         enum Stage
         {
             Tick1 = 1,
@@ -36,6 +39,8 @@ namespace GTAPilot
             Tick3 = 3,
             Tick4 = 4,
             Tick5 = 5,
+
+            MenuTick = 6
         }
 
         class Data
@@ -79,7 +84,7 @@ namespace GTAPilot
                     if (queueIncrementId != localId && _workItems.TryDequeue(out var nextFrame))
                     {
                         Tick(nextFrame.Stage, nextFrame.IndicatorData);
-                        if (nextFrame.Stage != Stage.Tick5)
+                        if (nextFrame.Stage < Stage.Tick5)
                         {
                             Enqueue(new Data { Stage = ++nextFrame.Stage, IndicatorData = nextFrame.IndicatorData });
                         }
@@ -97,22 +102,32 @@ namespace GTAPilot
 
         internal void HandleFrameArrived(FrameData data)
         {
-            Timeline.Data[data.FrameId] = new TimelineFrame
+            var frame = new TimelineFrame
             {
                 Seconds = data.Seconds,
-                Id = data.FrameId,
+                Id = Timeline.LatestFrameId,
             };
+            Timeline.Data[Timeline.LatestFrameId] = frame;
 
-            Timeline.LatestFrameId = data.FrameId;
+            if (Timeline.IsInGame)
+            {
+                Timeline.LatestFrameId++;
+            }
 
-            var frame = new IndicatorData
+            if (!Timeline.IsInGame)
+            {
+                // Drop a lot of frames for non-game mode.
+                if (data.FrameId % 10 != 0) return;
+            }
+
+            var indicatorData = new IndicatorData
             {
                 Frame = new Image<Bgr, byte>(data.Frame),
-                Id = data.FrameId,
+                Id = frame.Id,
                 Seconds = data.Seconds,
             };
 
-            Enqueue(new Data { Stage = Stage.Tick1, IndicatorData = frame });
+            Enqueue(new Data { Stage = Timeline.IsInGame ? Stage.Tick1 : Stage.MenuTick, IndicatorData = indicatorData });
         }
 
         private void Enqueue(Data data)
@@ -151,6 +166,16 @@ namespace GTAPilot
                     Timeline.Data[data.Id].Heading.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
                     Timeline.Data[data.Id].IsDataComplete = true;
                     break;
+                case Stage.MenuTick:
+
+                    var menuDS = new DebugState();
+                    Menu.HandleFrameArrived(data, new DebugState());
+                    Loading.HandleFrameArrived(data, menuDS);
+                    Roll.Image = menuDS.Get(10);
+               
+                    // TODO: do something with 
+                    break;
+                default: throw new NotImplementedException();
             }
         }
     }

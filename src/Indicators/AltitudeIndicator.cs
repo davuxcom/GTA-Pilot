@@ -94,7 +94,19 @@ namespace GTAPilot.Indicators
                             candidates.Add(hundreds + (i * 1000));
                         }
 
-                        return candidates.OrderBy(c => Math.Abs(c - (double.IsNaN(Timeline.Altitude) ? 0 : Timeline.Altitude))).First();
+                        var ret = candidates.OrderBy(c => Math.Abs(c - (double.IsNaN(Timeline.Altitude) ? -200 : Timeline.Altitude))).First();
+
+                        if (!double.IsNaN(Timeline.Altitude))
+                        {
+                            var delta = Math.Abs(ret - Timeline.Altitude);
+                            if (delta > 400)
+                            {
+                                debugState.SetError($"Bad value {delta} > 400");
+                                return double.NaN;
+                            }
+                        }
+
+                        return ret;
                     }
                 }
             }

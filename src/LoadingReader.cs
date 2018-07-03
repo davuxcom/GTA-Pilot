@@ -6,19 +6,16 @@ namespace GTAPilot
     class LoadingReader
     {
         public bool IsLoading { get; private set; }
+        public string LoadingTextRead { get; private set; }
 
         static Rectangle LoadingTextRect = new Rectangle(1613, 1085, 68, 19);
-        static string LoadingText = "Loading";
+        static string LoadingText = "LOADING";
 
         public void HandleFrameArrived(IndicatorData data, DebugState debugState)
         {
-            var loadingTextFocus = data.Frame.Copy(LoadingTextRect);
-            var blackImg = loadingTextFocus.Convert<Hsv, byte>()[2];
-            var text = Utils.ReadTextFromImage(blackImg, debugState);
+            var text = Utils.ReadTextFromImage(data.Frame.Copy(LoadingTextRect), debugState);
             IsLoading = text == LoadingText;
-
-            debugState.Add(loadingTextFocus);
-            debugState.Add(blackImg);
+            LoadingTextRead = text;
         }
     }
 }

@@ -97,6 +97,10 @@ namespace GTAPilot
         {
             switch (e)
             {
+                case XINPUT_GAMEPAD_BUTTONS.DPAD_UP:
+                    Timeline.EnterMenu();
+                    break;
+
                 case XINPUT_GAMEPAD_BUTTONS.START:
                         MCP.BankHold = false;
                         MCP.HeadingHold = false;

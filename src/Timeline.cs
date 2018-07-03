@@ -9,15 +9,6 @@ using System.Threading;
 
 namespace GTAPilot
 {
-    public enum TimelineMode
-    {
-        NotConnected,
-        Live,
-        Menu,
-        Loading,
-        Disconnected
-    }
-
     class Timeline
     {
         public static int LatestFrameId;
@@ -42,17 +33,18 @@ namespace GTAPilot
         public static double AltitudeAvg => LatestAvg(25, f => f.Altitude.Value, LatestFrameId);
         public static double SpeedAvg => LatestAvg(25, f => f.Speed.Value, LatestFrameId);
 
-        public TimelineMode Mode { get; private set; }
+        public static bool IsInGame { get; set; }
 
         public static void Begin()
         {
+            IsInGame = true;
             Duration = Stopwatch.StartNew();
             
             var t = new Thread(() =>
             {
                 int lastDoneFrame = -1;
 
-                while (true)
+                while (IsInGame)
                 {
                     for (var i = lastDoneFrame + 1; i <= LatestFrameId; i++)
                     {
@@ -216,14 +208,106 @@ namespace GTAPilot
             }
         }
 
-        public static void ResetFromSavePoint()
+        public static void Reset()
         {
-
+            for (var i = 0; i < LatestFrameId; i++)
+            {
+                Data[i] = null;
+            }
+            LatestFrameId = 0;
+            CurrentLocation = StartLocation;
         }
 
         public static void EnterMenu()
         {
-            // TODO:
+            IsInGame = false;
+            new Thread(() =>
+            {
+                Trace.WriteLine("EnterMenu");
+
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.START, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                while (!SystemManager.Instance.IndicatorHost.Menu.IsInMenu)
+                {
+                    Thread.Sleep(100);
+                }
+
+                Trace.WriteLine("now in menu!");
+
+                while (!SystemManager.Instance.IndicatorHost.Menu.SelectedMenuItem.Contains("GAME"))
+                {
+                    Trace.WriteLine("SELECTED: " + SystemManager.Instance.IndicatorHost.Menu.SelectedMenuItem);
+                    SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.DPAD_LEFT, 10);
+                    SystemManager.Instance.App.Controller.Flush();
+
+                    Thread.Sleep(1000);
+                }
+
+                Trace.WriteLine("now in game!");
+
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(1000);
+
+                Trace.WriteLine("now game menu list");
+
+
+                while (SystemManager.Instance.IndicatorHost.Menu.SelectedGameMenuItem != "LOADGAME")
+                {
+                    Trace.WriteLine("SELECTED: " + SystemManager.Instance.IndicatorHost.Menu.SelectedGameMenuItem);
+                    SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.DPAD_DOWN, 10);
+                    SystemManager.Instance.App.Controller.Flush();
+
+                    Thread.Sleep(2000);
+                }
+
+                Trace.WriteLine("now save list");
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(1000);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(1000);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(1000);
+
+                Trace.WriteLine("now game should be loading");
+
+                while (!SystemManager.Instance.IndicatorHost.Loading.IsLoading)
+                {
+                    Trace.WriteLine("wait for loading " + SystemManager.Instance.IndicatorHost.Loading.LoadingTextRead);
+
+                    Thread.Sleep(1000);
+                }
+
+                Trace.WriteLine("confirm loading!");
+
+                while (SystemManager.Instance.IndicatorHost.Loading.IsLoading)
+                {
+                    Trace.WriteLine("wait for no loading " + SystemManager.Instance.IndicatorHost.Loading.LoadingTextRead);
+
+                    Thread.Sleep(1000);
+                }
+
+                SystemManager.Instance.FlightPlan.CurrentIndex = 0;
+                Reset();
+
+                Trace.WriteLine("GAME READY!");
+                Timeline.Begin();
+
+                Thread.Sleep(7000);
+
+                SystemManager.Instance.MCP.IAS = 120;
+                SystemManager.Instance.MCP.ALT = 700;
+                SystemManager.Instance.MCP.AltitudeHold = true;
+                SystemManager.Instance.MCP.LNAV = true;
+                SystemManager.Instance.MCP.IASHold = true;
+
+            }).Start();
+
+            
         }
 
         private static PointF ComputePositionChange(double newHeading, double speedInKnots, double timeDeltaInSeconds)

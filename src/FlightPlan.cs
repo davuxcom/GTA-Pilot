@@ -14,7 +14,7 @@ namespace GTAPilot
 
         public Runway Source { get; private set; }
         public Runway Destination { get; private set; }
-        public int CurrentIndex { get; private set; }
+        public int CurrentIndex { get; set; }
         public ObservableCollection<PointF> Points { get; }
         public LineSegment2DF TargetLine => new LineSegment2DF(Points[CurrentIndex - 1], Points[CurrentIndex]);
         public double TargetHeading => CurrentIndex == Points.Count ? 0 : Math2.GetPolarHeadingFromLine(Points[CurrentIndex], Timeline.CurrentLocation);

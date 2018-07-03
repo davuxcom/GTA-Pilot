@@ -56,7 +56,7 @@ namespace GTAPilot
 
                 if (percent_done > 1) percent_done = 1;
 
-                _mcp.ALT = Math.Round(Math2.MapValue(0, 1, _plan.Destination.Elevation, glidePathTopAlt, percent_done));
+                _mcp.ALT = Math.Round(Math2.MapValue(0, 1, _plan.Destination.Elevation + 50, glidePathTopAlt, percent_done));
             }
 
             // Flare
@@ -69,8 +69,13 @@ namespace GTAPilot
 
             // Disconnect
             if (_mcp.IASHold && _plan.CurrentIndex == _plan.Points.Count - 1
-                && Timeline.Speed < 40)
+                && Timeline.Speed < 20)
             {
+                if (_mcp.LNAV)
+                {
+                    Timeline.EnterMenu();
+                }
+
                 _mcp.IASHold = false;
                 _mcp.VSHold = false;
                 _mcp.LNAV = false;
@@ -80,14 +85,18 @@ namespace GTAPilot
             {
                 var targetHdg = _plan.TargetHeading;
 
-                var tightHoldLine = (Timeline.Altitude < 300) ||
-                                    (_plan.CurrentIndex >= _plan.Points.Count - 2);
-                var heading_cap = 15;
-                var distanceFromTargetLine = (tightHoldLine ? 2 : 0.5) * DistanceFromTargetLine;
-                distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
+                if (_plan.CurrentIndex > 0)
+                {
 
-                targetHdg -= distanceFromTargetLine;
+                    var tightHoldLine = (Timeline.Altitude < 300) ||
+                                        (_plan.CurrentIndex >= _plan.Points.Count - 2);
+                    var heading_cap = 15;
 
+                    var distanceFromTargetLine = (tightHoldLine ? 2 : 0.5) * DistanceFromTargetLine;
+                    distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
+
+                    targetHdg -= distanceFromTargetLine;
+                }
                 _mcp.HDG = targetHdg;
             }
         }

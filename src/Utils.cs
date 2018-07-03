@@ -59,6 +59,8 @@ namespace GTAPilot
             {
                 str += c.Text.Trim().ToUpper();
             }
+
+            str = str.Replace("'", "").Replace(".", "").Replace("‘", "").Replace("’", "").Replace("\"", "").Replace(",", "").Replace(":", "");
             return str;
         }
     }
