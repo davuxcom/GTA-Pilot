@@ -20,7 +20,7 @@
                 I = 0,
                 D = 0
             },
-            PV = new PID.Range { Min = -45, Max = 45},
+            PV = new PID.Range { Min = -50, Max = 50 },
             OV = new PID.Range { Min = MIN_AXIS_VALUE, Max = MAX_AXIS_VALUE },
         };
 

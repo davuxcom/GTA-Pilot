@@ -114,8 +114,8 @@ namespace GTAPilot
             }
             else if (Type == IndicatorChartType.Value)
             {
-               // return Timeline.LatestAvg(4, f => GetTimelineValueForIndicator(f).Value, frame.Id, Indicator.Type == IndicatorType.Yaw);
-                return GetTimelineValueForIndicator(frame).Value;
+                return Timeline.LatestAvg(3, f => GetTimelineValueForIndicator(f).Value, frame.Id, Indicator.Type == IndicatorType.Yaw);
+                //return GetTimelineValueForIndicator(frame).Value;
             }
             else if (Type == IndicatorChartType.InputOutput)
             {

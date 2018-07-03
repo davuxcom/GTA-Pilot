@@ -245,17 +245,9 @@ namespace GTAPilot.Indicators
             }
         }
 
-        private string GetText(Image<Gray, byte> img)
+        private string GetText(Image<Gray, byte> img, DebugState debugState)
         {
-            var ocr = PerThreadUtils.GetTesseract();
-            ocr.SetImage(img);
-            ocr.Recognize();
-
-            var str = "";
-            foreach (var c in ocr.GetCharacters())
-            {
-                str += c.Text.Trim().ToUpper();
-            }
+            var str = Utils.ReadTextFromImage(img, debugState);
 
             str = str.Replace("'", "").Replace(".", "").Replace("‘", "").Replace("’", "").Replace("\"", "").Replace(",", "").Replace(":", "");
 
@@ -337,7 +329,7 @@ namespace GTAPilot.Indicators
 
                 if (string.IsNullOrWhiteSpace(str))
                 {
-                    str = GetText(pack.BlobImage);
+                    str = GetText(pack.BlobImage, debugState);
                 }
 
                 if (str == "N" || str == "E" || str == "S" || str == "W")

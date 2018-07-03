@@ -8,7 +8,6 @@ namespace GTAPilot
     {
         private ModeControlPanel _mcp;
         private XboxController _control;
-        private FlightPlan _plan;
 
         private PID _pitchPid;
         private PID _rollPid;
