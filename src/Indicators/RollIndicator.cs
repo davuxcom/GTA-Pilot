@@ -153,14 +153,16 @@ namespace GTAPilot.Indicators
 
             var localRect = MovementRect;
 
-            if (data.Id > 0 && Timeline.Data[data.Id - 1].Roll.ForIndicatorUse != null)
+            if (data.Id > 0 &&
+                Timeline.Data[data.Id - 1].Roll != null &&
+                Timeline.Data[data.Id - 1].Roll.ForIndicatorUse != null)
             {
                 // Our hint from last time.
                 localRect = Math2.CropCircle((CircleF)Timeline.Data[data.Id - 1].Roll.ForIndicatorUse, 10);
             }
 
             // Crop and blur
-            var cropped_frame = data.Frame.Copy(localRect).PyrUp().PyrDown();
+            var cropped_frame = data.Frame.SafeCopy(localRect).PyrUp().PyrDown();
 
             var MovementFrameGray = new Mat();
             CvInvoke.CvtColor(cropped_frame, MovementFrameGray, ColorConversion.Bgr2Gray);

@@ -94,7 +94,7 @@ namespace GTAPilot.Indicators
                             candidates.Add(hundreds + (i * 1000));
                         }
 
-                        var ret = candidates.OrderBy(c => Math.Abs(c - (double.IsNaN(Timeline.Altitude) ? -200 : Timeline.Altitude))).First();
+                        var ret = candidates.OrderBy(c => Math.Abs(c - Timeline.Altitude)).First();
 
                         if (!double.IsNaN(Timeline.Altitude))
                         {
@@ -104,6 +104,10 @@ namespace GTAPilot.Indicators
                                 debugState.SetError($"Bad value {delta} > 400");
                                 return double.NaN;
                             }
+                        }
+                        else
+                        {
+                            return 0;
                         }
 
                         return ret;

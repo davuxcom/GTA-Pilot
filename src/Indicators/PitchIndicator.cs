@@ -18,7 +18,7 @@ namespace GTAPilot.Indicators
         {
             if (TryFindCircleInFullFrame(data, out var circle))
             {
-                var focus = data.Frame.Copy(Math2.CropCircle(circle, 15));
+                var focus = data.Frame.SafeCopy(Math2.CropCircle(circle, 15));
                 var vs_blackimg = focus.Convert<Hsv, byte>().DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
 
                 debugState.Add(focus);

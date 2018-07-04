@@ -22,8 +22,8 @@ namespace GTAPilot
 
 3636, 857));
 */
-
-            /*
+/*
+            
             FlightPlan fp = new FlightPlan();
             fp.LoadFromFile(@"c:\workspace\FlightPlan.txt");
 

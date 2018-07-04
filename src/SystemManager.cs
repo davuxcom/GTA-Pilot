@@ -26,6 +26,7 @@ namespace GTAPilot
 
             MCP.IAS = 120;
             MCP.ALT = 700;
+            MCP.VS = 0;
 
             FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
 

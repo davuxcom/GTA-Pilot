@@ -38,7 +38,7 @@ namespace GTAPilot
             if (IsInMap)
             {
                 Location = ReadMapLocation(frame, debugState);
-                Trace.WriteLine($"Location: {Location}");
+               // Trace.WriteLine($"Location: {Location}");
             }
             else
             {
@@ -92,7 +92,7 @@ namespace GTAPilot
             var blobs = Utils.DetectAndFilterBlobs(onlyGreenBlobs, 170, 220);
             if (blobs.Any())
             {
-                Trace.WriteLine("Blobs; " + string.Join(" ", blobs.Select(b => b.Area).ToArray()));
+              //  Trace.WriteLine("Blobs; " + string.Join(" ", blobs.Select(b => b.Area).ToArray()));
 
                 // Scale on map: 1007m = 207px
                 // Scale factor: 

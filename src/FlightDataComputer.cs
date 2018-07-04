@@ -95,7 +95,7 @@ namespace GTAPilot
 
                         var rollMax = 30;
 
-                       // if (SystemManager.Instance.Nav.IsOnGlidePath) rollMax = 15;
+                        if (SystemManager.Instance.Nav.IsOnGlidePath90) rollMax = 0;
 
                         var newRoll = Math2.Clamp(-1 * rollDelta, -1 * rollMax, rollMax);
                         _mcp.Bank += (_mcp.Bank > newRoll) ? -.25 : .25;

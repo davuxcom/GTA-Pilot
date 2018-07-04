@@ -5,12 +5,24 @@ namespace GTAPilot
 {
     class FlightNavigator
     {
-        public bool IsOnGlidePath => _plan.CurrentIndex == _plan.Points.Count - 2;
+        public bool IsOnGlidePath => _plan.CurrentIndex == _plan.Points.Count - 2 || _plan.CurrentIndex == _plan.Points.Count - 1;
+        public bool IsOnGlideToThreshold => _plan.CurrentIndex == _plan.Points.Count - 2;
+        public bool IsOnGlidePath90 => IsOnGlidePath && OnGlidePathPercent() < 0.5;
 
         public double DistanceFromTargetLine => Math2.GetDistanceFromLine(Timeline.CurrentLocation, _plan.TargetLine);
 
         private FlightPlan _plan;
         private ModeControlPanel _mcp;
+
+        private double OnGlidePathPercent()
+        {
+            var approach_dist = Math2.GetDistance(_plan.Points[_plan.CurrentIndex - 1], _plan.Points[_plan.CurrentIndex]);
+            var dist_from_threshold = Math2.GetDistance(Timeline.CurrentLocation, _plan.Points[_plan.CurrentIndex]);
+            var percent_done = dist_from_threshold / approach_dist;
+
+            if (percent_done > 1) percent_done = 1;
+            return percent_done;
+        }
 
         public FlightNavigator(ModeControlPanel mcp, FlightPlan plan)
         {
@@ -50,7 +62,7 @@ namespace GTAPilot
                 glidePathTopAlt = _mcp.ALT;
             }
 
-            if (didAdvanceWaypoint && IsOnGlidePath)
+            if (didAdvanceWaypoint && IsOnGlideToThreshold)
             {
                 isAt75PercentGlide = false;
                 isAt4PercentGlide = false;
@@ -58,14 +70,9 @@ namespace GTAPilot
                 Timeline.UpdateLocationFromMenu();
             }
 
-            // G/P
-            if (IsOnGlidePath)
+            if (IsOnGlideToThreshold)
             {
-                var approach_dist = Math2.GetDistance(_plan.Points[_plan.CurrentIndex - 1], _plan.Points[_plan.CurrentIndex]);
-                var dist_from_threshold = Math2.GetDistance(Timeline.CurrentLocation, _plan.Points[_plan.CurrentIndex]);
-                var percent_done = dist_from_threshold / approach_dist;
-
-                if (percent_done > 1) percent_done = 1;
+                var percent_done = OnGlidePathPercent();
 
                 if (percent_done < .8 && !isAt75PercentGlide)
                 {
@@ -86,12 +93,12 @@ namespace GTAPilot
             // Flare
             if (_plan.CurrentIndex == _plan.Points.Count - 1)
             {
-                if (!isFlare && Timeline.Altitude < _plan.Destination.Elevation + 25)
+                if (!isFlare && Timeline.AltitudeAvg < _plan.Destination.Elevation + 10)
                 {
                     isFlare = true;
                     _mcp.IAS = 0;
                     _mcp.VSHold = true;
-                    _mcp.VS = 15;
+                    _mcp.VS = 20;
                 }
             }
 

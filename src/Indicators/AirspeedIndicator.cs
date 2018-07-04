@@ -139,7 +139,7 @@ namespace GTAPilot.Indicators
                 circle.Center = new PointF(circle.Center.X + 140, circle.Center.Y + 70);
                 circle.Radius = 55;
                 var firstCrop = Math2.CropCircle(circle, 10);
-                var focus = data.Frame.Copy(firstCrop);
+                var focus = data.Frame.SafeCopy(firstCrop);
 
                 var circles = CvInvoke.HoughCircles(focus.Convert<Hsv, byte>()[2], HoughType.Gradient, 2.0, 20, 10, 180, 45, 55);
                 if (circles.Length == 1)
