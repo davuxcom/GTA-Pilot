@@ -74,7 +74,7 @@ namespace GTAPilot.Indicators
                 circle.Center = new PointF(circle.Center.X, circle.Center.Y + 160);
                 circle.Radius = 64;
                 var firstCrop = Math2.CropCircle(circle, 25);
-                var focus = data.Frame.Copy(firstCrop);
+                var focus = data.Frame.SafeCopy(firstCrop);
 
                 var vs_hsv = focus.Convert<Hsv, byte>().PyrUp().PyrDown();
 

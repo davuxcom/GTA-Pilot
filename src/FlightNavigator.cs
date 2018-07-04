@@ -36,6 +36,9 @@ namespace GTAPilot
         }
 
         double glidePathTopAlt = double.NaN;
+        bool isAt75PercentGlide = false;
+        bool isAt4PercentGlide = false;
+        bool isFlare = false;
         private void Update()
         {
             var didAdvanceWaypoint = _plan.UpdateLocation();
@@ -47,6 +50,14 @@ namespace GTAPilot
                 glidePathTopAlt = _mcp.ALT;
             }
 
+            if (didAdvanceWaypoint && IsOnGlidePath)
+            {
+                isAt75PercentGlide = false;
+                isAt4PercentGlide = false;
+                isFlare = false;
+                Timeline.UpdateLocationFromMenu();
+            }
+
             // G/P
             if (IsOnGlidePath)
             {
@@ -56,15 +67,32 @@ namespace GTAPilot
 
                 if (percent_done > 1) percent_done = 1;
 
-                _mcp.ALT = Math.Round(Math2.MapValue(0, 1, _plan.Destination.Elevation + 50, glidePathTopAlt, percent_done));
+                if (percent_done < .8 && !isAt75PercentGlide)
+                {
+                    isAt75PercentGlide = true;
+
+                    Timeline.UpdateLocationFromMenu();
+                }
+                if (percent_done < .5 && !isAt4PercentGlide)
+                {
+                    isAt4PercentGlide = true;
+
+                    Timeline.UpdateLocationFromMenu();
+                }
+
+                _mcp.ALT = Math.Round(Math2.MapValue(0, 1, _plan.Destination.Elevation, glidePathTopAlt, percent_done));
             }
 
             // Flare
-            if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 1)
+            if (_plan.CurrentIndex == _plan.Points.Count - 1)
             {
-                _mcp.IAS = 0;
-                _mcp.VSHold = true;
-                _mcp.VS = 8;
+                if (!isFlare && Timeline.Altitude < _plan.Destination.Elevation + 25)
+                {
+                    isFlare = true;
+                    _mcp.IAS = 0;
+                    _mcp.VSHold = true;
+                    _mcp.VS = 15;
+                }
             }
 
             // Disconnect
@@ -73,7 +101,7 @@ namespace GTAPilot
             {
                 if (_mcp.LNAV)
                 {
-                    Timeline.EnterMenu();
+                    Timeline.ResetGameFromSavePointByMenu();
                 }
 
                 _mcp.IASHold = false;
@@ -90,9 +118,9 @@ namespace GTAPilot
 
                     var tightHoldLine = (Timeline.Altitude < 300) ||
                                         (_plan.CurrentIndex >= _plan.Points.Count - 2);
-                    var heading_cap = 15;
+                    var heading_cap = 10;
 
-                    var distanceFromTargetLine = (tightHoldLine ? 2 : 0.5) * DistanceFromTargetLine;
+                    var distanceFromTargetLine = (tightHoldLine ? 1.25 : 0.5) * DistanceFromTargetLine;
                     distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
 
                     targetHdg -= distanceFromTargetLine;

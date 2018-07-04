@@ -16,9 +16,9 @@
         {
             Gain = new PID.Gain
             {
-                P = 2,
+                P = 3,
                 I = 0,
-                D = 0
+                D = 0.2
             },
             PV = new PID.Range { Min = -50, Max = 50 },
             OV = new PID.Range { Min = MIN_AXIS_VALUE, Max = MAX_AXIS_VALUE },
@@ -28,9 +28,9 @@
         {
             Gain = new PID.Gain
             {
-                P = 1.4,
-                I = 0.25,
-                D = 0
+                P = 2.8,
+                I = 0.2,
+                D = 0.2
             },
             PV = new PID.Range { Min = -90, Max = 90 },
             OV = new PID.Range { Min = MIN_AXIS_VALUE, Max = MAX_AXIS_VALUE },

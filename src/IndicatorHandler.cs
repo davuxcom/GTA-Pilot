@@ -169,10 +169,10 @@ namespace GTAPilot
                 case Stage.MenuTick:
 
                     var menuDS = new DebugState();
-                    Menu.HandleFrameArrived(data, new DebugState());
-                    Loading.HandleFrameArrived(data, menuDS);
+                    Menu.HandleFrameArrived(data.Frame, menuDS);
+
                     Roll.Image = menuDS.Get(10);
-               
+                    Loading.HandleFrameArrived(data, menuDS);
                     // TODO: do something with 
                     break;
                 default: throw new NotImplementedException();

@@ -91,19 +91,25 @@ namespace GTAPilot
                 {
                     if (_mcp.HeadingHold | _mcp.LNAV)
                     {
-                        var rollDelta = Math2.DiffAngles(Timeline.Heading, _mcp.HDG);
-                        var newRoll = Math2.Clamp(-1 * rollDelta, -25, 25);
+                        var rollDelta = Math2.DiffAngles(Timeline.Heading, _mcp.HDG) * 0.8;
+
+                        var rollMax = 30;
+
+                       // if (SystemManager.Instance.Nav.IsOnGlidePath) rollMax = 15;
+
+                        var newRoll = Math2.Clamp(-1 * rollDelta, -1 * rollMax, rollMax);
                         _mcp.Bank += (_mcp.Bank > newRoll) ? -.25 : .25;
 
-                        if (Timeline.Altitude < 200) _mcp.Bank = 0;
+                        if (Timeline.Altitude < 300) _mcp.Bank = 0;
                     }
 
+                    var rollValue = Timeline.LatestAvg(3, f => f.Roll.Value, id);
                     var output = _rollPid.Compute(
-                        Timeline.Data[id].Roll.Value,
+                        rollValue,
                         _mcp.Bank, 
                         GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Roll.Value));
 
-                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(output, 8000, 10500));
+                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_X, (int)RemoveDeadZone(output, 8500, 9500));
 
                     Timeline.Data[id].Roll.OutputValue = output;
                 }
@@ -117,11 +123,12 @@ namespace GTAPilot
             {
                 if (!double.IsNaN(Timeline.Data[id].Pitch.Value))
                 {
-                    var output = _pitchPid.Compute(Timeline.Data[id].Pitch.Value, _mcp.VS, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Pitch.Value));
+                    var pitchValue = Timeline.LatestAvg(3, f => f.Pitch.Value, id);
+                    var output = _pitchPid.Compute(pitchValue, _mcp.VS, GetTimeBetweenThisFrameAndLastGoodFrame(id, (f) => f.Pitch.Value));
                     // Trim:
-                    output += Math.Abs(Timeline.RollAvg) * 30;
+                    output += Math.Abs(Timeline.RollAvg) * 200;
 
-                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(-1 * output, 6000, FlightComputerConfig.MAX_AXIS_VALUE));
+                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(-1 * output, 7500, 12500));
 
                     Timeline.Data[id].Pitch.OutputValue = output;
                 }
@@ -160,7 +167,7 @@ namespace GTAPilot
                 var altitudeDelta = _mcp.ALT - Timeline.AltitudeAvg;
                 var mult = 10;
                 if (SystemManager.Instance.Nav.IsOnGlidePath) mult = 9;
-                _mcp.VS = Math2.Clamp(altitudeDelta / mult, -10, 13);
+                _mcp.VS = Math2.Clamp(altitudeDelta / mult, -15, 20);
 
                 Timeline.Data[id].Altitude.SetpointValue = _mcp.ALT;
             }
@@ -171,14 +178,17 @@ namespace GTAPilot
             if (_mcp.HeadingHold | _mcp.LNAV)
             {
                 var val = Timeline.Data[id].Heading.Value;
-                if (!double.IsNaN(val) && Timeline.Speed > 10)
+                if (!double.IsNaN(val) && Timeline.Speed > 10 && Timeline.IsInGame)
                 {
                     var diff = Math2.DiffAngles(val, _mcp.HDG);
                     var aDiff = Math.Abs(diff);
 
-                    if (aDiff > 1)
+                    if (aDiff > 1.5 && id % 2 == 0)
                     {
-                        aDiff = Math.Min(aDiff / 3, 100);
+                        //aDiff = Math.Min(aDiff / 3, 100);
+
+                        aDiff = 1;
+
 
                         if (diff < 0)
                         {

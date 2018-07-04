@@ -143,7 +143,8 @@ namespace GTAPilot
             SpeedSetpoint.Text = "" + Math.Round(mcp.IAS);
 
             if (!double.IsNaN(Timeline.Pitch) &&
-                !double.IsNaN(Timeline.Roll))
+                !double.IsNaN(Timeline.Roll) &&
+                 !double.IsNaN(mcp.VS))
             {
                 var top = -1 * (mcp.VS - Timeline.PitchAvg) * 4;
                 FDH.Margin = new Thickness(0, top, 0, 0);
@@ -155,16 +156,16 @@ namespace GTAPilot
             FACDisplay.Visibility = (SystemManager.Instance.Nav.IsOnGlidePath) ? Visibility.Visible : Visibility.Collapsed;
             if (SystemManager.Instance.Nav.IsOnGlidePath)
             {
-                var vx = (mcp.ALT - Timeline.AltitudeAvg) * -2.5;
+                var vx = (mcp.ALT - Timeline.AltitudeAvg) * -2;
                 ILSV.Margin = new Thickness(0, vx, 0, 0);
 
-                var hx = SystemManager.Instance.Nav.DistanceFromTargetLine * 25;
+                var hx = SystemManager.Instance.Nav.DistanceFromTargetLine * -25;
                 ILSH.Margin = new Thickness(hx, 0, 0, 0);
             }
 
             if (!double.IsNaN(Timeline.Pitch))
             {
-                var pitch = Timeline.Pitch * 1.4;
+                var pitch = Timeline.PitchAvg * 0.8;
 
                 VSLine.Y1 = 250 - pitch;
 

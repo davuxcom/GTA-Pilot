@@ -1,4 +1,5 @@
-﻿using GTAPilot.Extensions;
+﻿using Emgu.CV.Structure;
+using GTAPilot.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,12 +38,22 @@ namespace GTAPilot
 
         public static void Begin()
         {
-            IsInGame = true;
             Duration = Stopwatch.StartNew();
-            
+            Resume();
+        }
+
+        public static void Resume()
+        {
+            StartLocationThread();
+        }
+
+        private static void StartLocationThread()
+        {
             var t = new Thread(() =>
             {
-                int lastDoneFrame = -1;
+                int lastDoneFrame = LatestFrameId - 1;
+
+                IsInGame = true;
 
                 while (IsInGame)
                 {
@@ -145,7 +156,15 @@ namespace GTAPilot
                     var dt = newFrame.Seconds - lastFrame.Seconds;
                     var positionDelta = ComputePositionChange(hdg, spd, dt);
                     newFrame.Location = lastFrame.Location.Add(positionDelta);
-                
+
+                    /*
+                    var line = new LineSegment2DF(newFrame.Location, lastFrame.Location);
+                    if (line.Length > 2)
+                    {
+                        var x = 0;
+                        x++;
+                    }
+                */
                     
                   // if (Math.Abs(roll) > 2 && Math.Abs(roll) < 10)
                    {
@@ -218,12 +237,12 @@ namespace GTAPilot
             CurrentLocation = StartLocation;
         }
 
-        public static void EnterMenu()
+        public static void ResetGameFromSavePointByMenu()
         {
             IsInGame = false;
             new Thread(() =>
             {
-                Trace.WriteLine("EnterMenu");
+                Trace.WriteLine("Enter Menu");
 
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.START, 10);
                 SystemManager.Instance.App.Controller.Flush();
@@ -239,15 +258,13 @@ namespace GTAPilot
                     Trace.WriteLine("SELECTED: " + SystemManager.Instance.IndicatorHost.Menu.SelectedMenuItem);
                     SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.DPAD_LEFT, 10);
                     SystemManager.Instance.App.Controller.Flush();
-
-                    Thread.Sleep(1000);
+                    Thread.Sleep(400);
                 }
 
                 Trace.WriteLine("now in game!");
-
+                Thread.Sleep(200);
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
                 SystemManager.Instance.App.Controller.Flush();
-                Thread.Sleep(1000);
 
                 Trace.WriteLine("now game menu list");
 
@@ -258,20 +275,22 @@ namespace GTAPilot
                     SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.DPAD_DOWN, 10);
                     SystemManager.Instance.App.Controller.Flush();
 
-                    Thread.Sleep(2000);
+                    Thread.Sleep(400);
                 }
 
                 Trace.WriteLine("now save list");
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
-                SystemManager.Instance.App.Controller.Flush();
-                Thread.Sleep(1000);
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
 
-                SystemManager.Instance.App.Controller.Flush();
-                Thread.Sleep(1000);
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
                 SystemManager.Instance.App.Controller.Flush();
-                Thread.Sleep(1000);
+                Thread.Sleep(800);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(800);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(800);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
 
                 Trace.WriteLine("now game should be loading");
 
@@ -297,7 +316,7 @@ namespace GTAPilot
                 Trace.WriteLine("GAME READY!");
                 Timeline.Begin();
 
-                Thread.Sleep(7000);
+                Thread.Sleep(2000);
 
                 SystemManager.Instance.MCP.IAS = 120;
                 SystemManager.Instance.MCP.ALT = 700;
@@ -306,8 +325,54 @@ namespace GTAPilot
                 SystemManager.Instance.MCP.IASHold = true;
 
             }).Start();
+        }
 
-            
+        public static void UpdateLocationFromMenu()
+        {
+            IsInGame = false;
+            new Thread(() =>
+            {
+                Trace.WriteLine("EnterMenu");
+
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER, 0);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER, 0);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.START, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                while (!SystemManager.Instance.IndicatorHost.Menu.IsInMenu)
+                {
+                    Thread.Sleep(100);
+                }
+
+                Trace.WriteLine("now in menu!");
+                Thread.Sleep(800);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(1200);
+                Trace.WriteLine("now in selected map");
+
+                var location = SystemManager.Instance.IndicatorHost.Menu.Location;
+                while (location == default(PointF))
+                {
+                    Trace.WriteLine("wait for location");
+                    Thread.Sleep(100);
+                    location = SystemManager.Instance.IndicatorHost.Menu.Location;
+                }
+
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(800);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(400);
+
+                Timeline.CurrentLocation = location;
+                Timeline.Data[Timeline.LatestFrameId - 1].Seconds = Timeline.Duration.Elapsed.TotalSeconds;
+                Timeline.Data[Timeline.LatestFrameId - 1].Location = Timeline.CurrentLocation;
+                Timeline.Data[Timeline.LatestFrameId - 1].IsLocationCalculated = true;
+                Timeline.Data[Timeline.LatestFrameId - 1].IsDataComplete = true;
+
+                Resume();
+            }).Start();
         }
 
         private static PointF ComputePositionChange(double newHeading, double speedInKnots, double timeDeltaInSeconds)

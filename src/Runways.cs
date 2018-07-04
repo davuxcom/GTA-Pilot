@@ -9,6 +9,6 @@ namespace GTAPilot
         public static Runway LSI_RW03 = new Runway(
             new PointF(2029, 4575), new PointF(2133, 4396), LSI_Elevation);
         public static Runway LSI_RW30R = new Runway(
-            new PointF(2261, 4776), new PointF(2003, 4626), LSI_Elevation);
+            new PointF(2233, 4760), new PointF(2003, 4626), LSI_Elevation);
     }
 }

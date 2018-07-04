@@ -3,6 +3,7 @@ using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 
@@ -15,6 +16,7 @@ namespace GTAPilot
         public string SelectedMenuItem { get; private set; }
         public string SelectedGameMenuItem { get; private set; }
         public string SelectedSavePointItem { get; private set; }
+        public PointF Location { get; private set; }
 
         static Rectangle LoadingTextRect = new Rectangle(1748, 1083, 86, 25);
         static string BackText = "SELECT";
@@ -27,15 +29,25 @@ namespace GTAPilot
         static Rectangle Game_SavePointList = new Rectangle(745, 339, 868, 606);
         static int Game_SavePointListVisibleCount = 15;
 
-        public void HandleFrameArrived(IndicatorData data, DebugState debugState)
+        public void HandleFrameArrived(Image<Bgr, byte> frame, DebugState debugState)
         {
-            var text = Utils.ReadTextFromImage(data.Frame.Copy(LoadingTextRect), debugState);
+            var text = Utils.ReadTextFromImage(frame.Copy(LoadingTextRect), debugState);
             IsInMenu = text == BackText || text == WaypointText;
             IsInMap = text == WaypointText;
 
-            SelectedMenuItem = FindSelectedItemInHorizontalRect(data.Frame.Copy(TopMenuRect), TopMenuItemVisibleCount, debugState);
-            SelectedGameMenuItem = FindSelectedItemInVerticalRect(data.Frame.Copy(Game_LeftMenuBar), Game_LeftMenuBarCount, debugState);
-            SelectedSavePointItem = FindSelectedItemInVerticalRect(data.Frame.Copy(Game_SavePointList), Game_SavePointListVisibleCount, debugState);
+            if (IsInMap)
+            {
+                Location = ReadMapLocation(frame, debugState);
+                Trace.WriteLine($"Location: {Location}");
+            }
+            else
+            {
+                Location = default(PointF);
+            }
+
+            SelectedMenuItem = FindSelectedItemInHorizontalRect(frame.Copy(TopMenuRect), TopMenuItemVisibleCount, debugState);
+            SelectedGameMenuItem = FindSelectedItemInVerticalRect(frame.Copy(Game_LeftMenuBar), Game_LeftMenuBarCount, debugState);
+            SelectedSavePointItem = FindSelectedItemInVerticalRect(frame.Copy(Game_SavePointList), Game_SavePointListVisibleCount, debugState);
         }
 
         private string FindSelectedItemInHorizontalRect(Image<Bgr, byte> colorImg, int count, DebugState debugState)
@@ -71,6 +83,35 @@ namespace GTAPilot
             selectedButton = Utils.RemoveBlobs(selectedButton, 1, 10);
 
             return Utils.ReadTextFromImage(selectedButton, debugState);
+        }
+
+        public PointF ReadMapLocation(Image<Bgr,byte> img, DebugState debugState)
+        {
+            var hsv = img.Convert<Hsv, byte>();
+            var onlyGreenBlobs = hsv.InRange(new Hsv(40, 40, 220), new Hsv(180, 100, 255));
+            var blobs = Utils.DetectAndFilterBlobs(onlyGreenBlobs, 170, 220);
+            if (blobs.Any())
+            {
+                Trace.WriteLine("Blobs; " + string.Join(" ", blobs.Select(b => b.Area).ToArray()));
+
+                // Scale on map: 1007m = 207px
+                // Scale factor: 
+                var SCALE_MAP_PX_TO_METERS = 4.86473429952;
+                var scale = SCALE_MAP_PX_TO_METERS * Metrics.SCALE_METERS_TO_MAP4;
+
+                var franlinHangarBlob = blobs.OrderByDescending(b => b.Centroid.Y).First().Centroid;
+
+                var center_pt = new Point((img.Width / 2) - 2, (img.Height / 2) - 5);
+                var x_d = ((center_pt.X - franlinHangarBlob.X) * scale);
+                var y_d = ((center_pt.Y - franlinHangarBlob.Y) * scale);
+
+                var refererence_point = new PointF(2155, 4786);
+                return new PointF((float)(refererence_point.X + x_d), (float)(refererence_point.Y + y_d));
+            }
+
+            debugState.Add(img);
+
+            return default(PointF);
         }
     }
 }

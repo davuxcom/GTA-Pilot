@@ -108,21 +108,21 @@
 
                         <Border Grid.Row="4" Margin="4">
                             <local:IndicatorChart Width="250"
-                                                  Height="200"
+                                                  Height="400"
                                                   Indicator="{Binding}"
                                                   Type="Value" />
                         </Border>
 
                         <Border Grid.Row="5" Margin="4">
                             <local:IndicatorChart Width="250"
-                                                  Height="200"
+                                                  Height="250"
                                                   Indicator="{Binding}"
                                                   Type="InputOutput" />
                         </Border>
 
                         <Border Grid.Row="6" Margin="4">
                             <local:IndicatorChart Width="250"
-                                                  Height="400"
+                                                  Height="200"
                                                   Indicator="{Binding}"
                                                   Type="Delay" />
                         </Border>

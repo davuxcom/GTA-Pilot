@@ -32,7 +32,7 @@ namespace GTAPilot
 
         public void SetError(string msg)
         {
-            Trace.WriteLine(msg);
+            // Trace.WriteLine(msg);
         }
     }
 }

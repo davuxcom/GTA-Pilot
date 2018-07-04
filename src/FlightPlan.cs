@@ -45,7 +45,7 @@ namespace GTAPilot
             Source = Runways.LSI_RW03;
             Points.Add(Runways.LSI_RW03.StartPoint);
             Points.Add(Runways.LSI_RW03.EndPoint);
-            Points.Add(Runways.LSI_RW03.ExtendForward(100));
+            Points.Add(Runways.LSI_RW03.ExtendForward(140));
 
             foreach (var line in System.IO.File.ReadAllLines(fileName))
             {
@@ -70,12 +70,12 @@ namespace GTAPilot
             if (CurrentIndex == Points.Count) return false;
 
             var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
-            double dist_max = 40;
+            double dist_max = 20;
             if (CurrentIndex > 0 && CurrentIndex + 1 < Points.Count - 1)
             {
                 var nextLine = Math2.GetPolarHeadingFromLine(Points[CurrentIndex], Points[CurrentIndex + 1]);
                 var angle_delta = Math.Abs(Math2.DiffAngles(Math2.GetPolarHeadingFromLine(TargetLine), nextLine));
-                dist_max += angle_delta * 1.5;
+                dist_max += angle_delta * 2.5;
             }
 
             if (dist < dist_max)

@@ -27,11 +27,11 @@ namespace GTAPilot
             DrawFlightPlanLines();
 
             var st = imgHost.GetTransform<ScaleTransform>();
-            st.ScaleX = st.ScaleY = 4;
+            st.ScaleX = st.ScaleY = 3;
 
             _locationTimer.Interval = TimeSpan.FromSeconds(2);
             _locationTimer.Tick += LocationTimer_Tick;
-            _locationTimer.Start();
+          //  _locationTimer.Start();
         }
 
         private void NavigationDisplayControl_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)

@@ -1,4 +1,5 @@
-﻿using GTAPilot.Interop;
+﻿using GTAFlightDeck;
+using GTAPilot.Interop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -38,6 +39,14 @@ namespace GTAPilot
 
             return;
             */
+            /*
+            var f = new TestForm();
+            f.Show();
+            System.Windows.Forms.Application.Run();
+            return;
+            */
+
+
             new SystemManager();
 
             if (SystemManager.Instance.App.IsRunning)
@@ -86,7 +95,25 @@ namespace GTAPilot
                 {
                     bucket.Invoke(() =>
                     {
-                        foreach (var t in _ticks[bucket]) t.Tick();
+                        try
+                        {
+                            foreach (var t in _ticks[bucket])
+                            {
+                                try
+                                { t.Tick();
+
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw;
+                                }
+                            }
+
+                        }
+                        catch(Exception ex)
+                        {
+                            throw;
+                        }
                     });
                 }
 

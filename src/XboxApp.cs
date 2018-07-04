@@ -71,7 +71,7 @@ namespace GTAPilot
             FrameProduced?.Invoke(id, frame);
         }
 
-        private IntPtr GetWindow() => User32.FindWindow("ApplicationFrameWindow", "Xbox");
+        public static IntPtr GetWindow() => User32.FindWindow("ApplicationFrameWindow", "Xbox");
 
         private static string GetScriptContent()
         {
