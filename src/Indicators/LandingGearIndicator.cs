@@ -11,7 +11,7 @@ namespace GTAPilot.Indicators
         public double CachedTuningValue => dyn_lower.CachedValue;
         public double LastGoodValue => Timeline.Altitude;
 
-        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.008, 100);
+        DynHsv dyn_lower = new DynHsv(0, 0, double.NaN, 0.2, 100);
 
         public double ReadValue(IndicatorData data, DebugState debugState)
         {
@@ -29,7 +29,8 @@ namespace GTAPilot.Indicators
                     var landingGearFrame = focus.Copy(blobs.First().BoundingBox);
 
                     var hsv = landingGearFrame.Convert<Hsv, byte>();
-                    var black_img = hsv[2].InRange(new Gray(140), new Gray(255));
+                    var black_img = hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
+                    //var black_img = hsv[2].InRange(new Gray(140), new Gray(255));
                     debugState.Add(landingGearFrame);
                     debugState.Add(black_img);
 

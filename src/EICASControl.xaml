@@ -10,7 +10,7 @@
             <Setter Property="Foreground" Value="#00BDE7" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontSize" Value="20" />
 
         </Style>
 
@@ -19,7 +19,7 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="Margin" Value="4" />
-            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontSize" Value="20" />
 
         </Style>
 
@@ -155,12 +155,14 @@
                             <TextBlock HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
                                        Foreground="Yellow"
+                                       FontSize="18"
                                        Text="{Binding}" />
                         </ItemContainerTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
                 <TextBlock Grid.Row="3"
+                           FontSize="12"
                            Margin="0,20"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
