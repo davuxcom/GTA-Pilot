@@ -208,7 +208,7 @@ namespace GTAPilot
                 for (var i = Timeline.LatestFrameId; i >= 0 && i > Timeline.LatestFrameId - NUM_FRAMES; i--)
                 {
                     var current = Timeline.Data[i];
-                    if (last == null)
+                    if (last == null || current == null)
                     {
                         last = current;
                     }

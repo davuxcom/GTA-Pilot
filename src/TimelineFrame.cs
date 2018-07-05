@@ -16,5 +16,6 @@ namespace GTAPilot
         public PointF Location;
         public bool IsDataComplete;
         public bool IsLocationCalculated;
+        public bool IsResetLocation;
     }
 }

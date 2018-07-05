@@ -18,7 +18,7 @@ namespace GTAPilot
         public ReplayFrameProducer Replay { get; }
         public SaveFrameConsumer Recorder { get; private set; }
 
-        private FlightDataComputer _computer;
+        public FlightDataComputer Computer { get; }
 
         public SystemManager()
         {
@@ -30,9 +30,9 @@ namespace GTAPilot
 
             FlightPlan.LoadFromFile(@"c:\workspace\FlightPlan.txt");
 
-            _computer = new FlightDataComputer(MCP, App.Controller);
+            Computer = new FlightDataComputer(MCP, App.Controller);
             Nav = new FlightNavigator(MCP, FlightPlan);
-            IndicatorHost = new IndicatorHandler(_computer);
+            IndicatorHost = new IndicatorHandler(Computer);
 
             Timeline.Begin();
 

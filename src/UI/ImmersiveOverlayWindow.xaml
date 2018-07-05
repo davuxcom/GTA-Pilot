@@ -9,13 +9,52 @@
         ResizeMode="NoResize"
         WindowStyle="None">
 
-    <Grid>
-        <Grid>
+    <Grid Margin="0,-23,0,0">
+        <Canvas>
+            <!--
+            <Polygon Fill="Black" Points="1920,1120, 1920,610 1300,630 570,710, 510,750, 450,900, 400,1120" />            -->
 
-            <Polygon Fill="Black" Points="1920,1120, 1920,610 1300,630 570,710, 510,750, 450,900, 400,1120" />
-        </Grid>
+            <Polygon Fill="#151517" Points="667,744, 1063,709 1063,815, 667,800" />
 
-        <Grid>
+            <Border Canvas.Left="1351"
+                    Canvas.Top="731"
+                    Width="508"
+                    Height="307"
+                    Background="#151517">
+                <local:EICASControl />
+            </Border>
+
+            <Border Canvas.Left="1081"
+                    Canvas.Top="793"
+                    Width="225"
+                    Height="225"
+                    Background="#151517">
+                <Viewbox>
+                    <local:NavigationDisplayControl />
+                </Viewbox>
+            </Border>
+
+            <Border Canvas.Left="667"
+                    Canvas.Top="749"
+                    Width="397"
+                    Height="318"
+                    Background="#151517">
+                <Viewbox>
+                    <local:PrimaryFlightDisplayControl />
+                </Viewbox>
+            </Border>
+
+            <Border Canvas.Left="1266"
+                    Canvas.Top="666"
+                    Width="635"
+                    Height="65"
+                    Background="#151517">
+                <local:MCPControl />
+            </Border>
+
+        </Canvas>
+
+        <Grid Visibility="Collapsed">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -57,50 +96,8 @@
                     Grid.Column="1"
                     Margin="950,0,0,-60"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Bottom">
-                <local:MCPControl Grid.Column="2" />
-            </Border>
-
-            <Border Grid.Row="2" Grid.Column="1">
-                <Viewbox Width="900"
-                         Height="400"
-                         Margin="100,0,0,0"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Center">
-                    <Grid>
-
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-
-                        <Border Margin="12"
-                                BorderBrush="White"
-                                BorderThickness="4">
-                            <local:PrimaryFlightDisplayControl />
-                        </Border>
-
-                        <Border Grid.Column="1"
-                                Margin="12"
-                                BorderBrush="White"
-                                BorderThickness="4">
-                            <local:NavigationDisplayControl />
-
-                        </Border>
-
-                        <!--
-                        <local:FlightPlanControl Grid.Column="2" />
-                        -->
-
-                    </Grid>
-                </Viewbox>
-
-            </Border>
+                    VerticalAlignment="Bottom" />
         </Grid>
-
-
-
     </Grid>
 
 </Window>

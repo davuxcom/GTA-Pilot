@@ -54,7 +54,6 @@ namespace GTAPilot
                 int lastDoneFrame = LatestFrameId - 1;
 
                 IsInGame = true;
-
                 while (IsInGame)
                 {
                     for (var i = lastDoneFrame + 1; i <= LatestFrameId; i++)
@@ -151,7 +150,7 @@ namespace GTAPilot
                 var priorHdg = LatestAvg(1, f => f.Heading.Value, id - 1, useHeadingMath: true);
                 var hdg = LatestAvg(1, f => f.Heading.Value, id, useHeadingMath: true);
                 var spd = LatestAvg(4, f => f.Speed.Value, id);
-                var roll = LatestAvg(4, f => f.Roll.Value, id);
+                var roll = LatestAvg(1, f => f.Roll.Value, id);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd) && !double.IsNaN(roll))
                 {
                     var rollValue = roll * 0.2;
@@ -163,17 +162,17 @@ namespace GTAPilot
                     newFrame.Location = lastFrame.Location.Add(positionDelta);
 
 
-                    /*
+                    
                    if (!double.IsNaN(priorHdg))
                    {
                         var derivative = (hdg - priorHdg) / dt;
                         var angle = 1 * Math.Sign(derivative) * 90;
-                        var rollSkew = 0.2 * Math.Abs(derivative);
+                        var rollSkew = 0.20 * Math.Abs(derivative);
 
                        var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), rollSkew, dt);
                        newFrame.Location = newFrame.Location.Add(side_delta);
                    }
-                   */
+                   
                    /*
                     if (!double.IsNaN(roll))
                     {
@@ -272,14 +271,47 @@ namespace GTAPilot
                     Thread.Sleep(100);
                 }
 
-             //   Trace.WriteLine("now in menu!");
+
+                Thread.Sleep(800);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(1200);
+
+                var location = SystemManager.Instance.IndicatorHost.Menu.Location;
+                while (location == default(PointF))
+                {
+                    //      Trace.WriteLine("wait for location");
+                    Thread.Sleep(400);
+                    location = SystemManager.Instance.IndicatorHost.Menu.Location;
+                }
+
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 10);
+                SystemManager.Instance.App.Controller.Flush();
+                Thread.Sleep(900);
+
+                var line = new LineSegment2DF(Timeline.CurrentLocation, location);
+                Trace.WriteLine($"MOVE: {line.Length} {Math2.GetPolarHeadingFromLine(line)}");
+
+
+
+
+
+
+
+
+
+
+
+
+
+                //   Trace.WriteLine("now in menu!");
 
                 while (!SystemManager.Instance.IndicatorHost.Menu.SelectedMenuItem.Contains("GAME"))
                 {
                  //   Trace.WriteLine("SELECTED: " + SystemManager.Instance.IndicatorHost.Menu.SelectedMenuItem);
                     SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.DPAD_LEFT, 10);
                     SystemManager.Instance.App.Controller.Flush();
-                    Thread.Sleep(400);
+                    Thread.Sleep(500);
                 }
 
              //   Trace.WriteLine("now in game!");
@@ -296,7 +328,7 @@ namespace GTAPilot
                     SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.DPAD_DOWN, 10);
                     SystemManager.Instance.App.Controller.Flush();
 
-                    Thread.Sleep(400);
+                    Thread.Sleep(500);
                 }
 
               //  Trace.WriteLine("now save list");
@@ -356,7 +388,7 @@ namespace GTAPilot
             IsInGame = false;
             new Thread(() =>
             {
-              //  Trace.WriteLine("EnterMenu");
+                Trace.WriteLine("EnterMenu");
 
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER, 0);
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER, 0);
@@ -387,20 +419,33 @@ namespace GTAPilot
                 Thread.Sleep(900);
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 10);
                 SystemManager.Instance.App.Controller.Flush();
-                Thread.Sleep(600);
-                // 500 is pretty ok!
+
+                var final_sleep = 440;
 
                 var line = new LineSegment2DF(Timeline.CurrentLocation, location);
-                Trace.WriteLine($"MOVE: {line.Length}");
+                Trace.WriteLine($"MOVE: {line.Length} {Math2.GetPolarHeadingFromLine(line)}");
                 _moveAccumulator += line.Length;
 
-                Timeline.CurrentLocation = location;
-                Timeline.Data[Timeline.LatestFrameId - 1].Seconds = Timeline.Duration.Elapsed.TotalSeconds;
-                Timeline.Data[Timeline.LatestFrameId - 1].Location = Timeline.CurrentLocation;
-                Timeline.Data[Timeline.LatestFrameId - 1].Roll.Value = Timeline.Roll;
-                Timeline.Data[Timeline.LatestFrameId - 1].Pitch.Value = Timeline.Pitch;
-                Timeline.Data[Timeline.LatestFrameId - 1].IsLocationCalculated = true;
-                Timeline.Data[Timeline.LatestFrameId - 1].IsDataComplete = true;
+                CurrentLocation = location;
+                Data[LatestFrameId - 1].Seconds = Duration.Elapsed.Add(TimeSpan.FromMilliseconds(final_sleep)).TotalSeconds;
+                Data[LatestFrameId - 1].Location = CurrentLocation;
+                Data[LatestFrameId - 1].Roll.Value = Roll;
+                Data[LatestFrameId - 1].Pitch.Value = Pitch;
+                Data[LatestFrameId - 1].IsLocationCalculated = true;
+                Data[LatestFrameId - 1].IsResetLocation = true;
+                Data[LatestFrameId - 1].IsDataComplete = true;
+
+             //   while (Duration.Elapsed.TotalSeconds < Data[LatestFrameId - 1].Seconds)
+             //   {
+             //       Thread.Sleep(0);
+              //  }
+
+                Thread.Sleep(final_sleep);
+                // 500 is pretty ok!
+
+
+
+
 
                 Resume();
             }).Start();

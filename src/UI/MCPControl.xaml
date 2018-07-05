@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:GTAPilot"
              Width="380"
-             Height="110"
              Background="Black">
     <UserControl.Resources>
 
@@ -85,7 +84,7 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="0" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -114,7 +113,7 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="0" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -130,7 +129,7 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="0" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
@@ -145,7 +144,7 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="0" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <TextBox Text="{Binding MCP.VS, StringFormat=N0, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />

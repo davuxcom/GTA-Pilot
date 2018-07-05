@@ -80,6 +80,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DebugState.cs" />
+    <Compile Include="EICASControl.xaml.cs">
+      <DependentUpon>EICASControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="LoadingReader.cs" />
     <Compile Include="MenuReader.cs" />
     <Compile Include="PerThreadUtils.cs" />
@@ -158,6 +161,10 @@
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
     <Compile Include="XboxApp.cs" />
+    <Page Include="EICASControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="RecorderWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
