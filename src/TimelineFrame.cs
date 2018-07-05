@@ -12,6 +12,7 @@ namespace GTAPilot
         public TimelineValue Roll = new TimelineValue();
         public TimelineValue Pitch = new TimelineValue();
         public TimelineValue Altitude = new TimelineValue();
+        public TimelineValue LandingGear = new TimelineValue();
 
         public PointF Location;
         public bool IsDataComplete;

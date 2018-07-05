@@ -141,24 +141,12 @@
 
             </Grid.RowDefinitions>
 
-            <Slider Name="ReplaySlider"
-                    Margin="8"
-                    Maximum="{Binding FrameCount}"
-                    Minimum="0"
-                    Orientation="Horizontal"
-                    ValueChanged="ReplaySlider_ValueChanged"
-                    Value="{Binding CurrentFrame, Mode=OneWay}" />
 
-            <StackPanel Grid.Row="1"
-                        HorizontalAlignment="Center"
-                        Orientation="Horizontal">
-                <Button Command="{Binding PlayPause}">Play / Pause</Button>
-            </StackPanel>
 
             <ListBox Name="lstLog"
                      Grid.Row="2"
                      FontSize="22" />
-
+<!--
             <StackPanel Grid.Row="3" Orientation="Horizontal">
 
                 <StackPanel Orientation="Vertical">
@@ -200,6 +188,7 @@
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
+            -->
         </Grid>
     </Grid>
 </Window>

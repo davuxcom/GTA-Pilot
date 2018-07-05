@@ -94,6 +94,7 @@ namespace GTAPilot
                 case IndicatorType.Speed: return frame.Speed;
                 case IndicatorType.Altitude: return frame.Altitude;
                 case IndicatorType.Yaw: return frame.Heading;
+                case IndicatorType.Gear: return frame.LandingGear;
                 default: throw new NotImplementedException();
             }
         }
@@ -109,6 +110,7 @@ namespace GTAPilot
                     case IndicatorType.Speed: return frame.Speed.SecondsWhenComputed - frame.Pitch.SecondsWhenComputed;
                     case IndicatorType.Altitude: return frame.Altitude.SecondsWhenComputed - frame.Speed.SecondsWhenComputed;
                     case IndicatorType.Yaw: return frame.Heading.SecondsWhenComputed - frame.Altitude.SecondsWhenComputed ;
+                    case IndicatorType.Gear: return frame.LandingGear.SecondsWhenComputed - frame.Speed.SecondsWhenComputed ;
                     default: throw new NotImplementedException();
                 }
             }
@@ -154,6 +156,7 @@ namespace GTAPilot
                     case IndicatorType.Speed: return new double[] { 0, 180 };
                     case IndicatorType.Altitude: return new double[] { 0, 4500 };
                     case IndicatorType.Yaw: return new double[] { 0, 360 };
+                    case IndicatorType.Gear: return new double[] { -1,1 };
                     default: throw new NotImplementedException();
                 }
             }
@@ -166,6 +169,7 @@ namespace GTAPilot
                     case IndicatorType.Speed: return new double[] { FlightComputerConfig.Speed.OV.Min, FlightComputerConfig.Speed.OV.Max };
                     case IndicatorType.Altitude: return new double[] { -1, 1 };
                     case IndicatorType.Yaw: return new double[] { -20, 20 };
+                    case IndicatorType.Gear: return new double[] { 0, 1 };
                     default: throw new NotImplementedException();
                 }
             }

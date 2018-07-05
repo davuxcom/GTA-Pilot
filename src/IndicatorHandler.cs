@@ -28,6 +28,7 @@ namespace GTAPilot
         public Indicator Airspeed = new Indicator(new AirspeedIndicator());
         public Indicator Altitude = new Indicator(new AltitudeIndicator());
         public Indicator Compass = new Indicator(new YawIndicator());
+        public Indicator LandingGear = new Indicator(new LandingGearIndicator());
 
         public MenuReader Menu = new MenuReader();
         public LoadingReader Loading = new LoadingReader();
@@ -159,6 +160,10 @@ namespace GTAPilot
                     Timeline.Data[data.Id].Altitude.Value = Altitude.Tick(data);
                     _computer.OnAltidudeDataSampled(data.Id);
                     Timeline.Data[data.Id].Altitude.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+
+                    Timeline.Data[data.Id].LandingGear.Value = LandingGear.Tick(data);
+                    Timeline.Data[data.Id].LandingGear.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
+
                     break;
                 case Stage.Tick5:
                     Timeline.Data[data.Id].Heading.Value = Compass.Tick(data);

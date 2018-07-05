@@ -39,6 +39,7 @@ namespace GTAPilot
             Indicators.Add(new IndicatorViewModel("Speed", SystemManager.Instance.IndicatorHost.Airspeed));
             Indicators.Add(new IndicatorViewModel("Altitude", SystemManager.Instance.IndicatorHost.Altitude));
             Indicators.Add(new IndicatorViewModel("Yaw", SystemManager.Instance.IndicatorHost.Compass));
+            Indicators.Add(new IndicatorViewModel("Gear", SystemManager.Instance.IndicatorHost.LandingGear));
         }
 
         private void Replay_PropertyChanged(object sender, PropertyChangedEventArgs e)

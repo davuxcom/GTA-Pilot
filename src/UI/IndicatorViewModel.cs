@@ -10,7 +10,7 @@ namespace GTAPilot
 {
     public enum IndicatorType
     {
-        Roll, Pitch, Speed, Altitude, Yaw,
+        Roll, Pitch, Speed, Altitude, Yaw, Gear
     }
 
     public class IndicatorViewModel : INotifyPropertyChanged
@@ -36,6 +36,7 @@ namespace GTAPilot
                     case "Speed": return IndicatorType.Speed;
                     case "Altitude": return IndicatorType.Altitude;
                     case "Yaw": return IndicatorType.Yaw;
+                    case "Gear": return IndicatorType.Gear;
                     default: throw new NotImplementedException();
                 }
             }
