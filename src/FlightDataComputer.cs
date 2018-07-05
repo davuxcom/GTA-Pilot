@@ -14,6 +14,7 @@ namespace GTAPilot
         private PID _speedPid;
 
         public double Thrust { get; internal set; }
+        public double Flaps { get; internal set; }
 
         public FlightDataComputer(ModeControlPanel mcp, XboxController control)
         {
@@ -150,13 +151,15 @@ namespace GTAPilot
                     {
                         _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, (int)output - 235);
                         _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 0);
-                        Thrust = ((int)output - 235) / 255f;
+                        Thrust = (output - 235) / 255f;
+                        Flaps = 0;
                     }
                     else
                     {
                         _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_TRIGGER, 235 - (int)output);
                         _control.Set(XINPUT_GAMEPAD_AXIS.RIGHT_TRIGGER, 0);
                         Thrust = 0;
+                        Flaps = (235 - output) / 235f;
                     }
                     Timeline.Data[id].Speed.OutputValue = output;
                 }

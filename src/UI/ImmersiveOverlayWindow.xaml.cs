@@ -1,11 +1,25 @@
-﻿using System.Linq;
+﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace GTAPilot
 {
     public partial class ImmersiveOverlayWindow : Window
     {
+        class LocalTraceListener : TraceListener
+        {
+            Action<string> _handler;
+
+            public LocalTraceListener(Action<string> handler) => _handler = handler;
+
+            public override void Write(string message) => WriteLine(message);
+            public override void WriteLine(string message) => _handler(message);
+        }
+
         public RelayCommand FlightPlanOpen { get; }
         public RelayCommand FlightPlanSave { get; }
         public RelayCommand FlightPlanEdit { get; }
@@ -15,6 +29,9 @@ namespace GTAPilot
         public ImmersiveOverlayWindow()
         {
             InitializeComponent();
+
+            Trace.Listeners.Clear();
+            Trace.Listeners.Add(new LocalTraceListener(OnMessage));
 
             var plan = SystemManager.Instance.FlightPlan;
             FlightPlanEdit = new RelayCommand(() =>
@@ -87,6 +104,38 @@ namespace GTAPilot
             });
 
             DataContext = this;
+        }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            lstLog.Visibility = lstLog.Visibility == Visibility.Collapsed ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void MenuItem2_Click(object sender, RoutedEventArgs e)
+        {
+            AnalyzerWindow.Raise();
+        }
+
+        private void OnMessage(string msg)
+        {
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
+                bool isAutoScroll = lstLog.Items.Count == 0 || lstLog.Items.Count - 1 == lstLog.SelectedIndex;
+
+                lstLog.Items.Add(msg);
+
+                if (isAutoScroll)
+                {
+                    lstLog.SelectedIndex = lstLog.Items.Count - 1;
+
+                    if (VisualTreeHelper.GetChildrenCount(lstLog) > 0)
+                    {
+                        Border border = (Border)VisualTreeHelper.GetChild(lstLog, 0);
+                        ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
+                        scrollViewer.ScrollToBottom();
+                    }
+                }
+            }));
         }
     }
 }

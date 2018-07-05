@@ -28,6 +28,7 @@ namespace GTAPilot
         public static double Speed => LatestAvg(1, f => f.Speed.Value, LatestFrameId);
         public static double Altitude => LatestAvg(1, f => f.Altitude.Value, LatestFrameId);
         public static double Heading => LatestAvg(1, f => f.Heading.Value, LatestFrameId);
+        public static double Gear => LatestAvg(1, f => f.LandingGear.Value, LatestFrameId);
 
         public static double RollAvg => LatestAvg(25, f => f.Roll.Value, LatestFrameId);
         public static double PitchAvg => LatestAvg(25, f => f.Pitch.Value, LatestFrameId);

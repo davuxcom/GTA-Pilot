@@ -50,10 +50,16 @@ namespace GTAPilot
         double glidePathTopAlt = double.NaN;
         bool isAt75PercentGlide = false;
         bool isAt4PercentGlide = false;
+        bool isAt3PercentGlide = false;
         bool isFlare = false;
         private void Update()
         {
             var didAdvanceWaypoint = _plan.UpdateLocation();
+
+            if (didAdvanceWaypoint && _plan.CurrentIndex == 2)
+            {
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_THUMB, 10);
+            }
 
             // One waypoint before top of G/P
             if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
@@ -66,6 +72,7 @@ namespace GTAPilot
             {
                 isAt75PercentGlide = false;
                 isAt4PercentGlide = false;
+                isAt3PercentGlide = false;
                 isFlare = false;
                 Timeline.UpdateLocationFromMenu();
             }
@@ -85,6 +92,11 @@ namespace GTAPilot
                     isAt4PercentGlide = true;
 
                     Timeline.UpdateLocationFromMenu();
+                }
+                if (percent_done < .3 && !isAt3PercentGlide)
+                {
+                    isAt3PercentGlide = true;
+                    SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_THUMB, 10);
                 }
 
                 _mcp.ALT = Math.Round(Math2.MapValue(0, 1, _plan.Destination.Elevation, glidePathTopAlt, percent_done));

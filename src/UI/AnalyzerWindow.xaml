@@ -142,10 +142,6 @@
             </Grid.RowDefinitions>
 
 
-
-            <ListBox Name="lstLog"
-                     Grid.Row="2"
-                     FontSize="22" />
 <!--
             <StackPanel Grid.Row="3" Orientation="Horizontal">
 

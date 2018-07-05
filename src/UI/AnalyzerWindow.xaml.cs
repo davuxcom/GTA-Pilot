@@ -1,35 +1,22 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace GTAPilot
 {
     public partial class AnalyzerWindow : Window, ICanTick
     {
-        class LocalTraceListener : TraceListener
-        {
-            Action<string> _handler;
-
-            public LocalTraceListener(Action<string> handler) => _handler = handler;
-
-            public override void Write(string message) => WriteLine(message);
-            public override void WriteLine(string message) => _handler(message);
-        }
-
+        static AnalyzerWindow _instance;
         AnalyzerViewModel _viewModel;
 
         internal AnalyzerWindow()
         {
+            _instance = this;
+
             InitializeComponent();
 
             Activated += MainWindow_Activated;
-
-            Trace.Listeners.Clear();
-            Trace.Listeners.Add(new LocalTraceListener(OnMessage));
 
             Closing += Window_Closing;
         }
@@ -38,28 +25,6 @@ namespace GTAPilot
         {
             e.Cancel = true;
             Hide();
-        }
-
-        private void OnMessage(string msg)
-        {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-                bool isAutoScroll = lstLog.Items.Count == 0 || lstLog.Items.Count - 1 == lstLog.SelectedIndex;
-
-                lstLog.Items.Add(msg);
-
-                if (isAutoScroll)
-                {
-                    lstLog.SelectedIndex = lstLog.Items.Count - 1;
-
-                    if (VisualTreeHelper.GetChildrenCount(lstLog) > 0)
-                    {
-                        Border border = (Border)VisualTreeHelper.GetChild(lstLog, 0);
-                        ScrollViewer scrollViewer = (ScrollViewer)VisualTreeHelper.GetChild(border, 0);
-                        scrollViewer.ScrollToBottom();
-                    }
-                }
-            }));
         }
 
         private void MainWindow_Activated(object sender, EventArgs e)
@@ -115,6 +80,14 @@ namespace GTAPilot
         {
             var slider = (Slider)sender;
             SystemManager.Instance.Replay.Seek((int)slider.Value);
+        }
+
+        internal static void Raise()
+        {
+            _instance.Dispatcher.Invoke(() =>
+            {
+                _instance.Show();
+            });
         }
     }
 }

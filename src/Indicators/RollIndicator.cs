@@ -154,6 +154,7 @@ namespace GTAPilot.Indicators
             var localRect = MovementRect;
 
             if (data.Id > 0 &&
+                Timeline.Data[data.Id - 1] != null &&
                 Timeline.Data[data.Id - 1].Roll != null &&
                 Timeline.Data[data.Id - 1].Roll.ForIndicatorUse != null)
             {

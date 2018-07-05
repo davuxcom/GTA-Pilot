@@ -9,8 +9,8 @@
         ResizeMode="NoResize"
         WindowStyle="None">
 
-    <Grid Margin="0,-23,0,0">
-        <Canvas>
+    <Grid>
+        <Canvas Margin="0,-23,0,0">
             <!--
             <Polygon Fill="Black" Points="1920,1120, 1920,610 1300,630 570,710, 510,750, 450,900, 400,1120" />            -->
 
@@ -20,6 +20,8 @@
                     Canvas.Top="731"
                     Width="508"
                     Height="307"
+                    BorderBrush="White"
+                    BorderThickness="1"
                     Background="#151517">
                 <local:EICASControl />
             </Border>
@@ -28,6 +30,8 @@
                     Canvas.Top="793"
                     Width="225"
                     Height="225"
+                    BorderBrush="White"
+                    BorderThickness="1"
                     Background="#151517">
                 <Viewbox>
                     <local:NavigationDisplayControl />
@@ -38,6 +42,8 @@
                     Canvas.Top="749"
                     Width="397"
                     Height="318"
+                    BorderBrush="White"
+                    BorderThickness="1"
                     Background="#151517">
                 <Viewbox>
                     <local:PrimaryFlightDisplayControl />
@@ -48,13 +54,21 @@
                     Canvas.Top="666"
                     Width="635"
                     Height="65"
+
                     Background="#151517">
                 <local:MCPControl />
             </Border>
 
+            <ListBox Name="lstLog"
+                     FontSize="22"
+                     Width="600"
+                     Height="600"
+                     Background="#aaFFFFFF"
+                     Canvas.Left="10"
+                     Canvas.Top="613" />
         </Canvas>
 
-        <Grid Visibility="Collapsed">
+        <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -90,6 +104,16 @@
                           Command="{Binding SaveData}"
                           Foreground="White"
                           Header="Save Data" />
+
+                <MenuItem Background="Transparent"
+                          Click="MenuItem_Click"
+                          Foreground="White"
+                          Header="Error Log" />
+
+                <MenuItem Background="Transparent"
+                          Click="MenuItem2_Click"
+                          Foreground="White"
+                          Header="Analyze" />
             </Menu>
 
             <Border Grid.Row="1"
