@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace GTAPilot
@@ -56,14 +57,18 @@ namespace GTAPilot
         {
             var didAdvanceWaypoint = _plan.UpdateLocation();
 
-            if (didAdvanceWaypoint && _plan.CurrentIndex == 2)
+            if (didAdvanceWaypoint && _plan.CurrentIndex == 4)
             {
+
+                Trace.WriteLine("Gear up");
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_THUMB, 10);
+
             }
 
             // One waypoint before top of G/P
             if (didAdvanceWaypoint && _plan.CurrentIndex == _plan.Points.Count - 3)
             {
+                _mcp.ALT = 800;
                 _mcp.IAS = 80;
                 glidePathTopAlt = _mcp.ALT;
             }
@@ -81,23 +86,26 @@ namespace GTAPilot
             {
                 var percent_done = OnGlidePathPercent();
 
-                if (percent_done < .8 && !isAt75PercentGlide)
+                if (percent_done < .7 && !isAt75PercentGlide)
                 {
                     isAt75PercentGlide = true;
 
                     Timeline.UpdateLocationFromMenu();
                 }
-                if (percent_done < .5 && !isAt4PercentGlide)
+
+                if (percent_done < .5 && !isAt3PercentGlide)
+                {
+                    isAt3PercentGlide = true;
+                    SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_THUMB, 10);
+                }
+
+                if (percent_done < .3 && !isAt4PercentGlide)
                 {
                     isAt4PercentGlide = true;
 
                     Timeline.UpdateLocationFromMenu();
                 }
-                if (percent_done < .3 && !isAt3PercentGlide)
-                {
-                    isAt3PercentGlide = true;
-                    SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_THUMB, 10);
-                }
+
 
                 _mcp.ALT = Math.Round(Math2.MapValue(0, 1, _plan.Destination.Elevation, glidePathTopAlt, percent_done));
             }
@@ -105,7 +113,10 @@ namespace GTAPilot
             // Flare
             if (_plan.CurrentIndex == _plan.Points.Count - 1)
             {
-                if (!isFlare && Timeline.AltitudeAvg < _plan.Destination.Elevation + 10)
+                _mcp.ALT = _plan.Destination.Elevation;
+
+
+                if (!isFlare && Timeline.AltitudeAvg < _plan.Destination.Elevation + 15)
                 {
                     isFlare = true;
                     _mcp.IAS = 0;
@@ -135,11 +146,17 @@ namespace GTAPilot
                 if (_plan.CurrentIndex > 0)
                 {
 
-                    var tightHoldLine = (Timeline.Altitude < 300) ||
+                    var tightHoldLine = (Timeline.Altitude < 500) ||
                                         (_plan.CurrentIndex >= _plan.Points.Count - 2);
-                    var heading_cap = 10;
+                    var heading_cap = 8;
 
-                    var distanceFromTargetLine = (tightHoldLine ? 1.25 : 0.5) * DistanceFromTargetLine;
+                    var mult = (tightHoldLine ? 2 : 0.5);
+                    if (Timeline.Altitude < 150)
+                    {
+                        mult = 2;
+                    }
+
+                    var distanceFromTargetLine = mult * DistanceFromTargetLine;
                     distanceFromTargetLine = Math.Max(Math.Min(heading_cap, distanceFromTargetLine), -1 * heading_cap);
 
                     targetHdg -= distanceFromTargetLine;

@@ -10,7 +10,7 @@ namespace GTAPilot
         private XboxController _control;
 
         private PID _pitchPid;
-        private PID _rollPid;
+        public PID _rollPid;
         private PID _speedPid;
 
         public double Thrust { get; internal set; }
@@ -94,16 +94,16 @@ namespace GTAPilot
                 {
                     if (_mcp.HeadingHold | _mcp.LNAV)
                     {
-                        var rollDelta = Math2.DiffAngles(Timeline.Heading, _mcp.HDG) * 0.8;
+                        var rollDelta = Math2.DiffAngles(Timeline.Heading, _mcp.HDG) * 0.7;
 
-                        var rollMax = 30;
+                        var rollMax = 25;
 
-                        if (SystemManager.Instance.Nav.IsOnGlidePath90) rollMax = 0;
+                       // if (SystemManager.Instance.Nav.IsOnGlidePath90) rollMax = 0;
 
                         var newRoll = Math2.Clamp(-1 * rollDelta, -1 * rollMax, rollMax);
-                        _mcp.Bank += (_mcp.Bank > newRoll) ? -.25 : .25;
+                        _mcp.Bank += (_mcp.Bank > newRoll) ? -.15 : .15;
 
-                        if (Timeline.Altitude < 300) _mcp.Bank = 0;
+                        if (Timeline.Altitude < 600) _mcp.Bank = 0;
                     }
 
                     var rollValue = Timeline.LatestAvg(3, f => f.Roll.Value, id);
@@ -131,7 +131,7 @@ namespace GTAPilot
                     // Trim:
                     output += Math.Abs(Timeline.RollAvg) * 200;
 
-                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(-1 * output, 7500, 12500));
+                    _control.Set(XINPUT_GAMEPAD_AXIS.LEFT_THUMB_Y, (int)RemoveDeadZone(-1 * output, 7500, 13000));
 
                     Timeline.Data[id].Pitch.OutputValue = output;
                 }
@@ -190,11 +190,11 @@ namespace GTAPilot
                     var diff = Math2.DiffAngles(val, _mcp.HDG);
                     var aDiff = Math.Abs(diff);
 
-                    if (aDiff > 1.5 && id % 2 == 0)
+                    if (aDiff > 1.5 && id % 2 == 0 || SystemManager.Instance.Nav.IsOnGlidePath90)
                     {
                         //aDiff = Math.Min(aDiff / 3, 100);
 
-                        aDiff = 1;
+                        aDiff = SystemManager.Instance.Nav.IsOnGlidePath ? 2 : 1;
 
 
                         if (diff < 0)

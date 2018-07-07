@@ -16,7 +16,16 @@ namespace GTAPilot
         public Runway Destination { get; private set; }
         public int CurrentIndex { get; set; }
         public ObservableCollection<PointF> Points { get; }
-        public LineSegment2DF TargetLine => new LineSegment2DF(Points[CurrentIndex - 1], Points[CurrentIndex]);
+        public LineSegment2DF TargetLine
+        {
+            get
+            {
+                if (CurrentIndex == 0 || CurrentIndex >= Points.Count) return default(LineSegment2DF);
+
+                return new LineSegment2DF(Points[CurrentIndex - 1], Points[CurrentIndex]);
+            }
+
+        }
         public double TargetHeading => CurrentIndex == Points.Count ? 0 : Math2.GetPolarHeadingFromLine(Points[CurrentIndex], Timeline.CurrentLocation);
 
         public FlightPlan()
@@ -70,7 +79,7 @@ namespace GTAPilot
             if (CurrentIndex == Points.Count) return false;
 
             var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
-            double dist_max = 20;
+            double dist_max = 40;
             if (CurrentIndex > 0 && CurrentIndex + 1 < Points.Count - 1)
             {
                 var nextLine = Math2.GetPolarHeadingFromLine(Points[CurrentIndex], Points[CurrentIndex + 1]);

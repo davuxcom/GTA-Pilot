@@ -1,5 +1,4 @@
-﻿using Emgu.CV;
-using Emgu.CV.Structure;
+﻿using Emgu.CV.Structure;
 using GTAPilot.Extensions;
 using System.Drawing;
 using System.Linq;
@@ -22,7 +21,6 @@ namespace GTAPilot.Indicators
 
                 var vs_blackImg = focus.Convert<Hsv, byte>().InRange(new Hsv(0, 120, 0), new Hsv(180, 255, 255));
 
-
                 var blobs = Utils.DetectAndFilterBlobs(vs_blackImg.PyrUp().PyrDown(), 1500, 2500);
                 if (blobs.Any())
                 {
@@ -30,7 +28,6 @@ namespace GTAPilot.Indicators
 
                     var hsv = landingGearFrame.Convert<Hsv, byte>();
                     var black_img = hsv.DynLowInRange(dyn_lower, new Hsv(180, 255, 255));
-                    //var black_img = hsv[2].InRange(new Gray(140), new Gray(255));
                     debugState.Add(landingGearFrame);
                     debugState.Add(black_img);
 

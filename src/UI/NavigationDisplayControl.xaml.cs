@@ -29,9 +29,9 @@ namespace GTAPilot
             var st = imgHost.GetTransform<ScaleTransform>();
             st.ScaleX = st.ScaleY = 3;
 
-            _locationTimer.Interval = TimeSpan.FromSeconds(2);
+            _locationTimer.Interval = TimeSpan.FromSeconds(0.5);
             _locationTimer.Tick += LocationTimer_Tick;
-          //  _locationTimer.Start();
+            _locationTimer.Start();
         }
 
         private void NavigationDisplayControl_MouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
@@ -87,7 +87,7 @@ namespace GTAPilot
                     Y2 = lastPoint.Y
                 };
                 l.Stroke = Brushes.Magenta;
-                l.StrokeThickness = 1;
+                l.StrokeThickness = 0.4;
                 canvas.Children.Insert(canvas.Children.Count - 1, l);
 
                 heading = Math2.GetPolarHeadingFromLine(pt.ToPointF(), lastPoint.ToPointF());
@@ -95,7 +95,7 @@ namespace GTAPilot
 
             Ellipse dot = new Ellipse();
             dot.Fill = Brushes.Gray;
-            dot.Height = dot.Width = 3;
+            dot.Height = dot.Width = 1;
             Canvas.SetTop(dot, pt.Y - dot.Height / 2);
             Canvas.SetLeft(dot, pt.X - dot.Width / 2);
             canvas.Children.Add(dot);
@@ -106,7 +106,7 @@ namespace GTAPilot
         {
             Line l = new Line();
             l.Stroke = Brushes.Red;
-            l.StrokeThickness = 1;
+            l.StrokeThickness = 0.4;
 
             if (_lastRenderedFrame != null)
             {
@@ -114,6 +114,12 @@ namespace GTAPilot
                 l.X2 = frame.Location.X / Metrics.SCALE_Map4_20_TO_100;
                 l.Y1 = _lastRenderedFrame.Location.Y / Metrics.SCALE_Map4_20_TO_100;
                 l.Y2 = frame.Location.Y / Metrics.SCALE_Map4_20_TO_100;
+
+                var len = Math2.GetDistance(_lastRenderedFrame.Location, frame.Location);
+                if (len > 5)
+                {
+                    l.Stroke = Brushes.Red;
+                }
             }
             else
             {
@@ -121,6 +127,9 @@ namespace GTAPilot
                 l.X1 = l.X2 = frame.Location.X / Metrics.SCALE_Map4_20_TO_100;
                 l.Y1 = l.Y2 = frame.Location.Y / Metrics.SCALE_Map4_20_TO_100;
             }
+
+
+
 
             canvas.Children.Add(l);
         }
@@ -134,7 +143,7 @@ namespace GTAPilot
             var st = imgHost.GetTransform<ScaleTransform>();
 
             // Extend such that our center point is at the bottom of the viewport.
-            pt = pt.ExtendAlongHeading(Timeline.Heading, 220 / st.ScaleX);
+        //    pt = pt.ExtendAlongHeading(Timeline.Heading, 220 / st.ScaleX);
 
             var tt = imgHost.GetTransform<TranslateTransform>();
 

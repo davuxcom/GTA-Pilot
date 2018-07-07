@@ -101,11 +101,11 @@ namespace GTAPilot
 
                 var franlinHangarBlob = blobs.OrderByDescending(b => b.Centroid.Y).First().Centroid;
 
-                var center_pt = new Point((img.Width / 2) - 2, (img.Height / 2) - 5);
+                var center_pt = new Point((img.Width / 2), (img.Height / 2));
                 var x_d = ((center_pt.X - franlinHangarBlob.X) * scale);
                 var y_d = ((center_pt.Y - franlinHangarBlob.Y) * scale);
 
-                var refererence_point = new PointF(2155, 4786);
+                var refererence_point = new PointF(2152, 4777);
                 return new PointF((float)(refererence_point.X + x_d), (float)(refererence_point.Y + y_d));
             }
 

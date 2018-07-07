@@ -46,7 +46,7 @@ namespace GTAPilot.Indicators
 
         private double ReadKnotsFromNeedleLine(LineSegment2D line)
         {
-            var polarAngleOfNeedle = Math2.GetPolarHeadingFromLine(line) - 2; // Skew angle.
+            var polarAngleOfNeedle =Math2.ClampAngle(Math2.GetPolarHeadingFromLine(line) - 4); // Skew angle.
 
             // 0-360 deg -> 0-180 kt
             var knots = (polarAngleOfNeedle / 2);

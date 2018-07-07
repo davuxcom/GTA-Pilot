@@ -63,6 +63,10 @@ namespace GTAPilot
                         {
                             CompleteFrame(i);
                             lastDoneFrame = i;
+
+                            var dt = Duration.Elapsed.TotalSeconds - Data[i].Seconds;
+
+                           // Trace.WriteLine("LOC: " + dt);
                         }
                         else
                         {
@@ -154,26 +158,36 @@ namespace GTAPilot
                 var roll = LatestAvg(1, f => f.Roll.Value, id);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd) && !double.IsNaN(roll))
                 {
-                    var rollValue = roll * 0.2;
+                    var rollValue = roll * 0.1;
 
-                    rollValue = Math2.Clamp(rollValue, -1, 1);
+                    rollValue = Math2.Clamp(rollValue, -3, 3);
 
                     var dt = newFrame.Seconds - lastFrame.Seconds;
                     var positionDelta = ComputePositionChange(Math2.ClampAngle(hdg - rollValue), spd, dt);
                     newFrame.Location = lastFrame.Location.Add(positionDelta);
 
-
+                    
                     
                    if (!double.IsNaN(priorHdg))
                    {
                         var derivative = (hdg - priorHdg) / dt;
                         var angle = 1 * Math.Sign(derivative) * 90;
-                        var rollSkew = 0.20 * Math.Abs(derivative);
+                        var rollSkew = 0.3 * Math.Abs(derivative);
 
                        var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), rollSkew, dt);
-                       newFrame.Location = newFrame.Location.Add(side_delta);
+                        var dist = Math2.GetDistance(default(PointF), side_delta);
+                        if (dist < 0.5)
+                        {
+                            newFrame.Location = newFrame.Location.Add(side_delta);
+                        }
+                        else
+                        {
+                            Trace.WriteLine("TL: SIDE: " + dist);
+                        }
+                        
                    }
                    
+
                    /*
                     if (!double.IsNaN(roll))
                     {
@@ -250,21 +264,8 @@ namespace GTAPilot
         {
             IsInGame = false;
 
-            var moves = _moveAccumulator;
-            if (moves < _lastMoveAccumulator)
-            {
-                menuExitDelay += 100;
-            }
-
-        //    Trace.WriteLine($"NEW: {menuExitDelay} {_moveAccumulator} l={_lastMoveAccumulator}");
-
-            _lastMoveAccumulator = _moveAccumulator;
-            _moveAccumulator = 0;
-
             new Thread(() =>
             {
-            //    Trace.WriteLine("Enter Menu");
-
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.START, 10);
                 SystemManager.Instance.App.Controller.Flush();
                 while (!SystemManager.Instance.IndicatorHost.Menu.IsInMenu)
@@ -291,7 +292,8 @@ namespace GTAPilot
                 Thread.Sleep(900);
 
                 var line = new LineSegment2DF(Timeline.CurrentLocation, location);
-                Trace.WriteLine($"MOVE: {line.Length} {Math2.GetPolarHeadingFromLine(line)}");
+                Trace.WriteLine($"MOVE: {Math.Round(line.Length)} {Math.Round(Math2.GetPolarHeadingFromLine(line))}");
+                Trace.WriteLine($"Location: {location}");
 
 
 
@@ -381,9 +383,6 @@ namespace GTAPilot
             }).Start();
         }
 
-        static double _moveAccumulator;
-        static double _lastMoveAccumulator;
-
         public static void UpdateLocationFromMenu()
         {
             IsInGame = false;
@@ -393,7 +392,7 @@ namespace GTAPilot
 
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER, 0);
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER, 0);
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.START, 10);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.START, 12);
                 SystemManager.Instance.App.Controller.Flush();
                 while (!SystemManager.Instance.IndicatorHost.Menu.IsInMenu)
                 {
@@ -402,7 +401,7 @@ namespace GTAPilot
 
              //   Trace.WriteLine("now in menu!");
                 Thread.Sleep(800);
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 10);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.A, 12);
                 SystemManager.Instance.App.Controller.Flush();
                 Thread.Sleep(1200);
               //  Trace.WriteLine("now in selected map");
@@ -414,37 +413,42 @@ namespace GTAPilot
                     Thread.Sleep(400);
                     location = SystemManager.Instance.IndicatorHost.Menu.Location;
                 }
-
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 10);
+                Thread.Sleep(400);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 15);
                 SystemManager.Instance.App.Controller.Flush();
                 Thread.Sleep(900);
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 10);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 15);
                 SystemManager.Instance.App.Controller.Flush();
 
-                var final_sleep = 440;
+                var final_sleep = 100;
 
                 var line = new LineSegment2DF(Timeline.CurrentLocation, location);
-                Trace.WriteLine($"MOVE: {line.Length} {Math2.GetPolarHeadingFromLine(line)}");
-                _moveAccumulator += line.Length;
+                Trace.WriteLine($"MOVE: {Math.Round(line.Length)} {Math.Round(Math2.GetPolarHeadingFromLine(line))}");
+                Trace.WriteLine($"Location: {location}");
+
 
                 CurrentLocation = location;
-                Data[LatestFrameId - 1].Seconds = Duration.Elapsed.Add(TimeSpan.FromMilliseconds(final_sleep)).TotalSeconds;
-                Data[LatestFrameId - 1].Location = CurrentLocation;
-                Data[LatestFrameId - 1].Roll.Value = Roll;
-                Data[LatestFrameId - 1].Pitch.Value = Pitch;
-                Data[LatestFrameId - 1].IsLocationCalculated = true;
-                Data[LatestFrameId - 1].IsResetLocation = true;
-                Data[LatestFrameId - 1].IsDataComplete = true;
+                for (var i = 1; i < 5; i++)
+                {
 
-             //   while (Duration.Elapsed.TotalSeconds < Data[LatestFrameId - 1].Seconds)
-             //   {
-             //       Thread.Sleep(0);
-              //  }
+                    Data[LatestFrameId - i].Seconds = Duration.Elapsed.Add(TimeSpan.FromMilliseconds(final_sleep)).TotalSeconds;
+                    Data[LatestFrameId - i].Location = CurrentLocation;
+                    Data[LatestFrameId - i].Roll.Value = RollAvg;
+                    Data[LatestFrameId - i].Pitch.Value = PitchAvg;
+                    Data[LatestFrameId - i].IsLocationCalculated = true;
+                    Data[LatestFrameId - i].IsResetLocation = true;
+                    Data[LatestFrameId - i].IsDataComplete = true;
+                }
 
-                Thread.Sleep(final_sleep);
+                while (Duration.Elapsed.TotalSeconds < Data[LatestFrameId - 1].Seconds)
+               {
+                   Thread.Sleep(1); 
+                }
+
+                //   Thread.Sleep(final_sleep);
                 // 500 is pretty ok!
 
-
+                SystemManager.Instance.Computer._rollPid.ClearError();
 
 
 
