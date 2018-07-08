@@ -80,7 +80,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="DebugState.cs" />
-    <Compile Include="EICASControl.xaml.cs">
+    <Compile Include="UI\EICASControl.xaml.cs">
       <DependentUpon>EICASControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Indicators\LandingGearIndicator.cs" />
@@ -88,20 +88,18 @@
     <Compile Include="MenuReader.cs" />
     <Compile Include="PerThreadUtils.cs" />
     <Compile Include="Runways.cs" />
-    <Compile Include="Approach.cs" />
-    <Compile Include="Departure.cs" />
     <Compile Include="Extensions\RawRectangleExtensions.cs" />
     <Compile Include="FlightNavigator.cs" />
     <Compile Include="Interop\Gdi32.cs" />
     <Compile Include="Interop\XINPUT_GAMEPAD.cs" />
-    <Compile Include="RecorderWindow.xaml.cs">
+    <Compile Include="UI\RecorderWindow.xaml.cs">
       <DependentUpon>RecorderWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Runway.cs" />
-    <Compile Include="TestForm.cs">
+    <Compile Include="UI\TestForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TestForm.Designer.cs">
+    <Compile Include="UI\TestForm.Designer.cs">
       <DependentUpon>TestForm.cs</DependentUpon>
     </Compile>
     <Compile Include="TimelineFrame.cs" />
@@ -162,11 +160,11 @@
     <Compile Include="Timeline.cs" />
     <Compile Include="UI\ZoomBorder.cs" />
     <Compile Include="XboxApp.cs" />
-    <Page Include="EICASControl.xaml">
+    <Page Include="UI\EICASControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="RecorderWindow.xaml">
+    <Page Include="UI\RecorderWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -256,7 +254,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="TestForm.resx" />
+    <EmbeddedResource Include="UI\TestForm.resx" />
     <EmbeddedResource Include="XboxApp.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -154,18 +154,18 @@
                         <ItemContainerTemplate>
                             <TextBlock HorizontalAlignment="Center"
                                        VerticalAlignment="Center"
-                                       Foreground="Yellow"
                                        FontSize="18"
+                                       Foreground="Yellow"
                                        Text="{Binding}" />
                         </ItemContainerTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
                 <TextBlock Grid.Row="3"
-                           FontSize="12"
                            Margin="0,20"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
+                           FontSize="12"
                            Style="{StaticResource InfoTextStyle}">
                     STATUS
                 </TextBlock>

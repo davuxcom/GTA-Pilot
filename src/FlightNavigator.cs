@@ -116,7 +116,7 @@ namespace GTAPilot
                 _mcp.ALT = _plan.Destination.Elevation;
 
 
-                if (!isFlare && Timeline.AltitudeAvg < _plan.Destination.Elevation + 15)
+                if (!isFlare && Timeline.AltitudeAvg < _plan.Destination.Elevation + 30)
                 {
                     isFlare = true;
                     _mcp.IAS = 0;

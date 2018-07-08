@@ -158,50 +158,29 @@ namespace GTAPilot
                 var roll = LatestAvg(1, f => f.Roll.Value, id);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd) && !double.IsNaN(roll))
                 {
-                    var rollValue = roll * 0.1;
-
-                    rollValue = Math2.Clamp(rollValue, -3, 3);
+                    var rollValue = Math2.Clamp(roll * 0.1, -3, 3);
 
                     var dt = newFrame.Seconds - lastFrame.Seconds;
                     var positionDelta = ComputePositionChange(Math2.ClampAngle(hdg - rollValue), spd, dt);
                     newFrame.Location = lastFrame.Location.Add(positionDelta);
 
-                    
-                    
                    if (!double.IsNaN(priorHdg))
                    {
                         var derivative = (hdg - priorHdg) / dt;
                         var angle = 1 * Math.Sign(derivative) * 90;
-                        var rollSkew = 0.3 * Math.Abs(derivative);
+                        var rollSkew = 0.2 * Math.Abs(derivative);
 
                        var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), rollSkew, dt);
                         var dist = Math2.GetDistance(default(PointF), side_delta);
-                        if (dist < 0.5)
+                        if (dist < 0.3)
                         {
                             newFrame.Location = newFrame.Location.Add(side_delta);
                         }
                         else
                         {
-                            Trace.WriteLine("TL: SIDE: " + dist);
+                           // Trace.WriteLine("TL: SIDE: " + dist);
                         }
-                        
                    }
-                   
-
-                   /*
-                    if (!double.IsNaN(roll))
-                    {
-                        if (Math.Abs(roll) > 1 && Math.Abs(roll) < 5)
-                        {
-                            var angle = -1 * Math.Sign(roll) * 90;
-                            var rollSkew = 0.4 * Math.Abs(roll);
-
-                            var side_delta = ComputePositionChange(Math2.SafeAddAngle(hdg, angle), rollSkew, dt);
-                            newFrame.Location = newFrame.Location.Add(side_delta);
-                        }
-                    }
-                    */
-
                 }
                 else
                 {
@@ -388,7 +367,7 @@ namespace GTAPilot
             IsInGame = false;
             new Thread(() =>
             {
-                Trace.WriteLine("EnterMenu");
+                //Trace.WriteLine("EnterMenu");
 
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.RIGHT_SHOULDER, 0);
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_SHOULDER, 0);
@@ -413,14 +392,14 @@ namespace GTAPilot
                     Thread.Sleep(400);
                     location = SystemManager.Instance.IndicatorHost.Menu.Location;
                 }
-                Thread.Sleep(400);
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 15);
+                Thread.Sleep(700);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 18);
                 SystemManager.Instance.App.Controller.Flush();
-                Thread.Sleep(900);
-                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 15);
+                Thread.Sleep(1000);
+                SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 18);
                 SystemManager.Instance.App.Controller.Flush();
 
-                var final_sleep = 100;
+                var final_sleep = (int)(18*(1000/90));
 
                 var line = new LineSegment2DF(Timeline.CurrentLocation, location);
                 Trace.WriteLine($"MOVE: {Math.Round(line.Length)} {Math.Round(Math2.GetPolarHeadingFromLine(line))}");
