@@ -62,11 +62,11 @@ namespace GTAPilot
 
             RW30RApproach = new RelayCommand(() =>
             {
-                 AddPosition_FullCoordinates(Runways.LSI_RW30R.ExtendBackward(500), false);
+                 AddPosition_FullCoordinates(Runways.LSI_RW30L.ExtendBackward(500), false);
 
 
-                 AddPosition_FullCoordinates(Runways.LSI_RW30R.StartPoint, false);
-                 AddPosition_FullCoordinates(Runways.LSI_RW30R.EndPoint, false);
+                 AddPosition_FullCoordinates(Runways.LSI_RW30L.StartPoint, false);
+                 AddPosition_FullCoordinates(Runways.LSI_RW30L.EndPoint, false);
             });
         }
 

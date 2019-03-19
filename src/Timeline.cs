@@ -153,17 +153,20 @@ namespace GTAPilot
                 var lastFrame = Data[id - 1];
 
                 var priorHdg = LatestAvg(1, f => f.Heading.Value, id - 1, useHeadingMath: true);
-                var hdg = LatestAvg(1, f => f.Heading.Value, id, useHeadingMath: true);
                 var spd = LatestAvg(4, f => f.Speed.Value, id);
+
+                var hdg = LatestAvg(spd > 100 ? 60 : 240, f => f.Heading.Value, id, useHeadingMath: true);
+
                 var roll = LatestAvg(1, f => f.Roll.Value, id);
                 if (!double.IsNaN(hdg) && !double.IsNaN(spd) && !double.IsNaN(roll))
                 {
-                    var rollValue = Math2.Clamp(roll * 0.1, -3, 3);
+                    var rollValue = 0; // Math2.Clamp(roll * 0.09, -3, 3);
 
                     var dt = newFrame.Seconds - lastFrame.Seconds;
                     var positionDelta = ComputePositionChange(Math2.ClampAngle(hdg - rollValue), spd, dt);
                     newFrame.Location = lastFrame.Location.Add(positionDelta);
-
+                    
+                    /*
                    if (!double.IsNaN(priorHdg))
                    {
                         var derivative = (hdg - priorHdg) / dt;
@@ -181,6 +184,7 @@ namespace GTAPilot
                            // Trace.WriteLine("TL: SIDE: " + dist);
                         }
                    }
+                   */
                 }
                 else
                 {
@@ -354,7 +358,7 @@ namespace GTAPilot
                 Thread.Sleep(2000);
 
                 SystemManager.Instance.MCP.IAS = 120;
-                SystemManager.Instance.MCP.ALT = 700;
+                SystemManager.Instance.MCP.ALT = 1200;
                 SystemManager.Instance.MCP.AltitudeHold = true;
                 SystemManager.Instance.MCP.LNAV = true;
                 SystemManager.Instance.MCP.IASHold = true;
@@ -399,11 +403,11 @@ namespace GTAPilot
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.B, 18);
                 SystemManager.Instance.App.Controller.Flush();
 
-                var final_sleep = (int)(18*(1000/90));
+                var final_sleep = (int)(18*(1000/SystemManager.Instance.App.Controller.XInput_In.Fps));
 
                 var line = new LineSegment2DF(Timeline.CurrentLocation, location);
-                Trace.WriteLine($"MOVE: {Math.Round(line.Length)} {Math.Round(Math2.GetPolarHeadingFromLine(line))}");
-                Trace.WriteLine($"Location: {location}");
+                Trace.WriteLine($"MOVE: {Math.Round(line.Length)}");
+                Trace.WriteLine($"Location: {location} sleep={final_sleep}");
 
 
                 CurrentLocation = location;
@@ -428,6 +432,7 @@ namespace GTAPilot
                 // 500 is pretty ok!
 
                 SystemManager.Instance.Computer._rollPid.ClearError();
+                SystemManager.Instance.Computer._pitchPid.ClearError();
 
 
 

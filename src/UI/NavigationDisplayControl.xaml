@@ -49,10 +49,12 @@
                     BorderBrush="White"
                     BorderThickness="2">
                 <TextBlock Name="HeadingText"
+                           Width="75"
                            Margin="4,0,4,0"
-                           FontSize="35"
+                           FontSize="40"
                            Foreground="White"
-                           Text="359" />
+                           Text="359"
+                           TextAlignment="Center" />
             </Border>
 
             <Border Grid.Row="2" HorizontalAlignment="Center">

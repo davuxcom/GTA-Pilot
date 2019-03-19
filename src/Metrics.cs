@@ -13,8 +13,8 @@ namespace GTAPilot
         // Note: These bounds are past the 'vehicile falls apart' threshold to make things easier.
         public static readonly PointF WorldSize = new PointF(6000, 6000);
 
-        public static Uri Map_Zoom4_Full_20 => new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full_20.png"));
-        public static Uri Map_Zoom4_Full => new Uri(System.IO.Path.GetFullPath("../../../../res/map_zoom4_full.png"));
+        public static Uri Map_Zoom4_Full_20 => new Uri(System.IO.Path.GetFullPath("../../../../res/sat_zoom4_full_20.png"));
+        public static Uri Map_Zoom4_Full => new Uri(System.IO.Path.GetFullPath("../../../../res/sat_zoom4_full.png"));
 
         public static readonly int SCALE_Map4_20_TO_100 = 5;
 

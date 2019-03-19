@@ -22,8 +22,8 @@ namespace GTAPilot
 
 3636, 857));
 */
-/*
-            
+
+            /*
             FlightPlan fp = new FlightPlan();
             fp.LoadFromFile(@"c:\workspace\FlightPlan.txt");
 
@@ -38,12 +38,7 @@ namespace GTAPilot
             new FlightPlanMap(fp.Points.ToArray(), locationPoints.ToArray()).Show();
 
             return;
-            */
-            /*
-            var f = new TestForm();
-            f.Show();
-            System.Windows.Forms.Application.Run();
-            return;
+            
             */
 
 
@@ -67,6 +62,7 @@ namespace GTAPilot
             t.IsBackground = true;
             t.SetApartmentState(ApartmentState.STA);
             t.Start();
+            
         }
 
         internal static void Register(ICanTick tick)

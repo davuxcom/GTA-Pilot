@@ -16,54 +16,60 @@
 
             <Polygon Fill="#151517" Points="667,744, 1063,709 1063,815, 667,800" />
 
-            <Border Canvas.Left="1351"
+            <StackPanel Orientation="Horizontal" Canvas.Left="490"
+                    Canvas.Top="730">
+
+                <Border 
+                    Width="600"
+                    Height="430"
+                    Background="#151517"
+                    BorderBrush="White"
+                    BorderThickness="1">
+                    <Viewbox>
+                        <local:PrimaryFlightDisplayControl />
+                    </Viewbox>
+                </Border>
+                <Border Canvas.Left="1065"
                     Canvas.Top="731"
-                    Width="508"
-                    Height="307"
+                    Width="430"
+                    Height="430"
                     Background="#151517"
                     BorderBrush="White"
                     BorderThickness="1">
-                <local:EICASControl />
-            </Border>
+                    <Viewbox>
+                        <local:NavigationDisplayControl />
+                    </Viewbox>
+                </Border>
 
-            <Border Canvas.Left="1081"
-                    Canvas.Top="793"
-                    Width="225"
-                    Height="225"
-                    Background="#151517"
-                    BorderBrush="White"
-                    BorderThickness="1">
-                <Viewbox>
-                    <local:NavigationDisplayControl />
-                </Viewbox>
-            </Border>
 
-            <Border Canvas.Left="667"
-                    Canvas.Top="749"
-                    Width="397"
-                    Height="318"
+                <Border 
+                    Width="400"
+                    Height="430"
                     Background="#151517"
                     BorderBrush="White"
                     BorderThickness="1">
-                <Viewbox>
-                    <local:PrimaryFlightDisplayControl />
-                </Viewbox>
-            </Border>
+                    <local:EICASControl />
+                </Border>
+            </StackPanel>
+
+
 
             <Border Canvas.Left="1266"
-                    Canvas.Top="666"
-                    Width="635"
+                    Canvas.Top="664"
+                    Width="655"
                     Height="65"
                     Background="#151517">
                 <local:MCPControl />
             </Border>
 
             <ListBox Name="lstLog"
-                     Canvas.Left="10"
-                     Canvas.Top="613"
-                     Width="600"
-                     Height="600"
-                     Background="#aaFFFFFF"
+                     Background="#77000000"
+                     Opacity="0.7"
+                     Foreground="White"
+                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                     Canvas.Top="40"
+                     Width="740"
+                     Height="106"
                      FontSize="22" />
         </Canvas>
 

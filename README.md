@@ -1,50 +1,45 @@
 # GTA Pilot 
-## Fly airplanes in GTA V without touching the controls.
+![GTA Pilot running on Xbox One](./res/hero1.gif)
 
-![GTA Pilot running on Xbox One](./res/hero1.png)
+This is a research project; the goal is to intercept the Xbox One streaming app and control the game.
 
-This is a research project I started some time ago.  The goal is to use the Xbox One streaming app to view the screen and intercept the controller input.
+I use Frida to inject a Javascript hook into XboxApp.exe to read and write the controller state, and EmguCV to interpret the game visuals.
 
-We use Frida to inject a Javascript hook into XboxApp.exe, and EmguCV to interpret the screen.
+![GTA Pilot running on Xbox One](./res/analyzer.gif)
 
-To control the movements of the airplane, there is a flight planner and auto-pilot modes for vertical and lateral movement.
+There is a simple autoflight system, a basic flight director, modern primary flight/navigation displays, a virtual Inertial Reference System based on compass heading and airspeed.
 
-Control outputs are dictated by simple PID with the a dead-zone removed and a maximum bound set.
+I am unable to model the relationship between thrust and momentum, so there is sideslip error and we open the map to get a known position.  For this reason the Franklin avatar must be used as we expect to find the green hangar building.
 
-### A/P Modes:
+### Requirements:
+- Two 1920x1200 displays, system DPI set to 100%
+- Xbox Controller connected via USB
+- GTA V
+- Franklin avatar must have access to Los Santos Airport
+
+## Getting Started:
+![GTA starting position at Runway 3](./res/ls_rw3_start.png)
+
+A starting position must be set in the game.  Create a save point in the Luxor or Shamal airplane, in the blast zone for RW3 at Los Santos airport.  Other airplanes will not work.
+
+![GTA starting position at Runway 3](./res/settings.png)
+
+Ensure that these options are off under Settings / Camera:
+- Head Bobbing: Off
+- Ragdoll: Off
+
+![Buckingham Luxor airplane](./res/streaming_quality.png)
+
+- Start the Xbox app, proceed to the starting position.
+- Ensure that streaming quality is set to 'Very High.'  Keep the app in fullscreen mode.
+- Start GTA Pilot.  Set focus to the Xbox streaming window, and observe the view move down as it locks.
+- Press SELECT/CAMERA button on the controller to activate the flight plan and begin the flight.
+
+## More information
+
+### Autopilot Modes:
 - HDG SEL: Heading Select, turn to and hold a heading
 - VS: Vertical speed, maintain a vertical speed ignoring other factors (i.e. airspeed)
 - ALT HOLD: Climb or Descend and maintain and altitude
-- LNAV: Use HDG SEL to navigate to next waypoint
+- LNAV: Internally uses HDG SEL to navigate to track the navigation line.
 - IAS: Maintain speed using thrust lever control.
-
-These modes approximate a 1950's style Auto pilot system, similar to the Boeing 707.
-
-### Requirements:
-- Display with resolution of 1920x1200
-- Additional display for GTAPilot window
-- 100% system DPI
-- Xbox Controller, plugged in to PC via USB
-- Xbox One GTA V (Xbox 360 doesn't have streaming and thus can't be used)
-- Xbox app must have streaming quality set to 'Very High'
-- Franklin must have access to Los Santos Airport
-- Must be in the Buckingham Luxor or Buckingham Shamal airplane, other types have differnet indicator positions.
-- Save point starting at LS RW3
-
-![Buckingham Luxor airplane](./res/luxor.png)
-
-### Getting Started:
-- Configure Xbox app for streaming, connect controller to PC
-- Start GTA and proceed to LS RW3 start position.
-- Start GTAPilot app
-- The view will lock and you are ready to go.
-
-### Knowledgebase:
-- The attitude indicator is backwards, possibly the non-Western variant.
-- The attitude indicator pitch doesn't have enough pixels to use for interpretation data, but the VS indicator seems to be wired identically.  Ideally we could devise a test to change the pitch angle and VS independently (think high or low AOA), but I haven't been able to prove this yet.
-- the VS indicator doesn't match the ALT indicator, suspect the ALT is not correct and VS is.  Devise a test for this (stopwatch + constant climb/VS)
-- There are no flaps but LT=235 will give you maximum spoilers
-
-### Glossary:
-- A/P: Auto-pilot
-- LNAV: Lateral Navigation [mode]

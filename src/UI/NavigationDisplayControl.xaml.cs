@@ -105,8 +105,8 @@ namespace GTAPilot
         private void RenderFrame(TimelineFrame frame)
         {
             Line l = new Line();
-            l.Stroke = Brushes.Red;
-            l.StrokeThickness = 0.4;
+            l.Stroke = Brushes.Yellow;
+            l.StrokeThickness = 1;
 
             if (_lastRenderedFrame != null)
             {
@@ -123,13 +123,9 @@ namespace GTAPilot
             }
             else
             {
-
                 l.X1 = l.X2 = frame.Location.X / Metrics.SCALE_Map4_20_TO_100;
                 l.Y1 = l.Y2 = frame.Location.Y / Metrics.SCALE_Map4_20_TO_100;
             }
-
-
-
 
             canvas.Children.Add(l);
         }
@@ -153,7 +149,7 @@ namespace GTAPilot
            var rt = rotHost.GetTransform<RotateTransform>();
            rt.Angle = -1 * Timeline.Heading;
 
-            HeadingText.Text = "" + Math.Round(Timeline.Heading,1);
+            HeadingText.Text = "" + Math.Round(Timeline.Heading,0);
         }
     }
 }

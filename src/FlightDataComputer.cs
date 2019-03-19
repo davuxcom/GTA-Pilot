@@ -9,7 +9,7 @@ namespace GTAPilot
         private ModeControlPanel _mcp;
         private XboxController _control;
 
-        private PID _pitchPid;
+        public PID _pitchPid;
         public PID _rollPid;
         private PID _speedPid;
 
@@ -97,13 +97,22 @@ namespace GTAPilot
                         var rollDelta = Math2.DiffAngles(Timeline.Heading, _mcp.HDG) * 0.7;
 
                         var rollMax = 25;
+                        if (Math.Abs(rollDelta) > 5)
+                        {
+                            // if (SystemManager.Instance.Nav.IsOnGlidePath90) rollMax = 0;
 
-                       // if (SystemManager.Instance.Nav.IsOnGlidePath90) rollMax = 0;
+                            var newRoll = Math2.Clamp(-1 * rollDelta, -1 * rollMax, rollMax);
+                            _mcp.Bank += (_mcp.Bank > newRoll) ? -.15 : .15;
 
-                        var newRoll = Math2.Clamp(-1 * rollDelta, -1 * rollMax, rollMax);
-                        _mcp.Bank += (_mcp.Bank > newRoll) ? -.15 : .15;
-
-                        if (Timeline.Altitude < 600) _mcp.Bank = 0;
+                            if (Timeline.Altitude < 800)
+                            {
+                                _mcp.Bank = 0;
+                            }
+                        }
+                        else
+                        {
+                            _mcp.Bank = 0;
+                        }
                     }
 
                     var rollValue = Timeline.LatestAvg(3, f => f.Roll.Value, id);
@@ -173,7 +182,7 @@ namespace GTAPilot
             {
                 var altitudeDelta = _mcp.ALT - Timeline.AltitudeAvg;
                 var mult = 10;
-                if (SystemManager.Instance.Nav.IsOnGlidePath) mult = 9;
+                if (SystemManager.Instance.Nav.IsOnGlidePath) mult = 6;
                 _mcp.VS = Math2.Clamp(altitudeDelta / mult, -15, 20);
 
                 Timeline.Data[id].Altitude.SetpointValue = _mcp.ALT;
@@ -190,11 +199,11 @@ namespace GTAPilot
                     var diff = Math2.DiffAngles(val, _mcp.HDG);
                     var aDiff = Math.Abs(diff);
 
-                    if (aDiff > 1.5 && id % 2 == 0 || SystemManager.Instance.Nav.IsOnGlidePath90)
+                    if (aDiff > 1 && id % 4 == 0)
                     {
                         //aDiff = Math.Min(aDiff / 3, 100);
 
-                        aDiff = SystemManager.Instance.Nav.IsOnGlidePath ? 2 : 1;
+                        aDiff = SystemManager.Instance.Nav.IsOnGlidePath ? aDiff / 3 : 1;
 
 
                         if (diff < 0)
@@ -211,6 +220,7 @@ namespace GTAPilot
                 }
                 Timeline.Data[id].Heading.SetpointValue = _mcp.HDG;
             }
+            
         }
 
         private double GetTimeBetweenThisFrameAndLastGoodFrame(int thisFrameId, Func<TimelineFrame, double> finder)

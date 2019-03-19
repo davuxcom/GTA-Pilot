@@ -262,13 +262,13 @@ function recv_one_message(packet) {
 
 function sendInputFpsEachMinute() {
     setTimeout(function () {
-        var fps = (ticks / 60);
+        var fps = (ticks / 30);
         ticks = 0;
 
         send(JSON.stringify({ Type: "XInputFPS", Value: parseInt(fps, 10) }));
 
         sendInputFpsEachMinute();
-    }, 60 * 1000);
+    }, 30 * 1000);
 }
 
 recv(recv_one_message);

@@ -57,12 +57,10 @@ namespace GTAPilot
         {
             var didAdvanceWaypoint = _plan.UpdateLocation();
 
-            if (didAdvanceWaypoint && _plan.CurrentIndex == 4)
+            if (didAdvanceWaypoint && _plan.CurrentIndex == 3)
             {
-
                 Trace.WriteLine("Gear up");
                 SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_THUMB, 10);
-
             }
 
             // One waypoint before top of G/P
@@ -96,6 +94,7 @@ namespace GTAPilot
                 if (percent_done < .5 && !isAt3PercentGlide)
                 {
                     isAt3PercentGlide = true;
+                    Trace.WriteLine("Gear down");
                     SystemManager.Instance.App.Controller.Press(Interop.XINPUT_GAMEPAD_BUTTONS.LEFT_THUMB, 10);
                 }
 
@@ -116,12 +115,13 @@ namespace GTAPilot
                 _mcp.ALT = _plan.Destination.Elevation;
 
 
-                if (!isFlare && Timeline.AltitudeAvg < _plan.Destination.Elevation + 30)
+                if (!isFlare && Timeline.AltitudeAvg < _plan.Destination.Elevation + 25)
                 {
+                    Trace.WriteLine("Flare");
                     isFlare = true;
                     _mcp.IAS = 0;
                     _mcp.VSHold = true;
-                    _mcp.VS = 20;
+                    _mcp.VS = 10;
                 }
             }
 
@@ -146,11 +146,11 @@ namespace GTAPilot
                 if (_plan.CurrentIndex > 0)
                 {
 
-                    var tightHoldLine = (Timeline.Altitude < 500) ||
+                    var tightHoldLine = (Timeline.Altitude < 800) ||
                                         (_plan.CurrentIndex >= _plan.Points.Count - 2);
                     var heading_cap = 8;
 
-                    var mult = (tightHoldLine ? 2 : 0.5);
+                    var mult = (tightHoldLine ? 1.5 : 0.5);
                     if (Timeline.Altitude < 150)
                     {
                         mult = 2;

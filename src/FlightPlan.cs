@@ -64,10 +64,10 @@ namespace GTAPilot
             }
 
             // Approach
-            Points.Add(Runways.LSI_RW30R.ExtendBackward(800));
-            Points.Add(Runways.LSI_RW30R.StartPoint);
-            Points.Add(Runways.LSI_RW30R.EndPoint);
-            Destination = Runways.LSI_RW30R;
+            Points.Add(Runways.LSI_RW30L.ExtendBackward(800));
+            Points.Add(Runways.LSI_RW30L.StartPoint);
+            Points.Add(Runways.LSI_RW30L.EndPoint);
+            Destination = Runways.LSI_RW30L;
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Points)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentIndex)));
@@ -79,7 +79,7 @@ namespace GTAPilot
             if (CurrentIndex == Points.Count) return false;
 
             var dist = Math2.GetDistance(Points[CurrentIndex], Timeline.CurrentLocation);
-            double dist_max = 40;
+            double dist_max = 50;
             if (CurrentIndex > 0 && CurrentIndex + 1 < Points.Count - 1)
             {
                 var nextLine = Math2.GetPolarHeadingFromLine(Points[CurrentIndex], Points[CurrentIndex + 1]);

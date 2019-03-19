@@ -163,7 +163,6 @@ namespace GTAPilot
 
                     Timeline.Data[data.Id].LandingGear.Value = LandingGear.Tick(data);
                     Timeline.Data[data.Id].LandingGear.SecondsWhenComputed = Timeline.Duration.Elapsed.TotalSeconds - Timeline.Data[data.Id].Seconds;
-
                     break;
                 case Stage.Tick5:
                     Timeline.Data[data.Id].Heading.Value = Compass.Tick(data);
