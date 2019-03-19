@@ -22,16 +22,16 @@ There is a simple autoflight system, a basic flight director, modern primary fli
 
 I haven't yet figured out how to model the relationship between thrust and momentum, so there is sideslip error and we open the map to get a known position.  For this reason the **Franklin avatar must be used** as we expect to find the green hangar building.
 
-## Requirements:
+## Requirements
 - Two 1920x1200 displays, system DPI set to 100%
 - Xbox app & controller
 - GTA V
 - Franklin avatar must have a hangar at the Los Santos Airport
 
 ## Instructions
-For simplicity sake, you must start at a predefined location in the first-person view of the Luxor or Shamal airplane.
+To keep things simple, you must start at a predefined location in the first-person view of the Luxor or Shamal airplane.
 
-#### Start position
+#### Game start position
 A starting position must be set in the game.  Create a save point in the Luxor or Shamal airplane, in the blast zone for RW3 at Los Santos airport.  Other airplanes will **not** work.
 ![GTA starting position at Runway 3](./res/ls_rw3_start.png)
 
@@ -45,17 +45,17 @@ Verify options under **Settings** / **Camera**:
 
 Ensure that Streaming Quality is set to **Very High**
 
-- Start the Xbox app, proceed to the LS RW3 start position
+- Start the Xbox app, proceed to the game start position
 - Keep the app in **fullscreen** mode
 - Start GTA Pilot
-- Set focus to the Xbox streaming window, and observe the view move down as it locks
+- Set focus to (click) the Xbox streaming window, and observe the view move down as it locks
 - Press **CAMERA** button on the controller to activate the flight plan, engage autopilot modes and begin the flight
 
 ## More information
 
 ### Autopilot Modes:
-- HDG SEL: Heading Select, turn to and hold a heading
-- VS: Vertical speed, maintain a vertical speed ignoring other factors (i.e. airspeed)
-- ALT HOLD: Climb or Descend and maintain and altitude
-- LNAV: Internally uses HDG SEL to navigate to track the navigation line
-- IAS: Maintain speed using thrust lever control
+- **HDG SEL**: Heading Select, turn to and hold a heading
+- **VS**: Vertical speed, hold a pitch
+- **ALT HOLD**: climb or descend and then maintain an altitude
+- **LNAV**: Lateral navigation, follow the magenta line
+- **IAS**: Hold speed using thrust
