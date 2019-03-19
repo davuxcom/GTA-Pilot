@@ -22,6 +22,12 @@ There is a simple autoflight system, a basic flight director, modern primary fli
 
 I haven't yet figured out how to model the relationship between thrust and momentum, so there is sideslip error and we open the map to get a known position.  For this reason the **Franklin avatar must be used** as we expect to find the green hangar building.
 
+## More demo flights
+
+Watch a [full flight 5 minute flight at 1x speed](https://youtu.be/kP5KetlT5cI)
+
+Watch a [full flight with analyzer data](https://youtu.be/3XgPUpMZ898)
+
 ## Requirements
 - Two 1920x1200 displays, system DPI set to 100%
 - Xbox app & controller
